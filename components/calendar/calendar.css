@@ -1,0 +1,615 @@
+/*
+========================================================================
+CALENDRIER WINDOWS RÉTRO - STYLES CSS
+========================================================================
+
+Styles complets pour le composant calendrier autonome avec :
+- Design Windows 98 authentique (inset, outset, bordures grises)
+- Horloge temps réel stylisée
+- Navigation mois avec boutons rétro
+- Grille calendrier avec highlight aujourd'hui
+- Dates avec notes en vert (cliquables)
+- Modales d'édition style Windows
+- Responsive et accessible
+*/
+
+/* ========================================================================
+   CONTENEUR PRINCIPAL
+   ======================================================================== */
+
+.retro-calendar {
+    background: #c0c0c0;
+    border: 2px inset #c0c0c0;
+    padding: 12px;
+    font-family: 'MS Sans Serif', sans-serif;
+    font-size: 11px;
+    max-width: 380px;
+    min-width: 320px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    user-select: none;
+}
+
+/* ========================================================================
+   HORLOGE TEMPS RÉEL
+   ======================================================================== */
+
+.calendar-clock {
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 6px;
+    background: #000000;
+    border: 1px inset #c0c0c0;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+#retro-clock {
+    display: inline-block;
+    min-width: 80px;
+}
+
+/* ========================================================================
+   NAVIGATION MOIS
+   ======================================================================== */
+
+.calendar-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 4px;
+}
+
+.nav-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    width: 28px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.nav-btn:hover {
+    background: #d0d0d0;
+}
+
+.month-year-display {
+    font-weight: bold;
+    font-size: 12px;
+    color: #000080;
+    text-align: center;
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+/* ========================================================================
+   BOUTON AUJOURD'HUI
+   ======================================================================== */
+
+.calendar-today {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.today-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 4px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #000000;
+}
+
+.today-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.today-btn:hover {
+    background: #d0d0d0;
+}
+
+/* ========================================================================
+   GRILLE CALENDRIER
+   ======================================================================== */
+
+.calendar-grid-container {
+    border: 1px inset #c0c0c0;
+    background: #ffffff;
+    margin-bottom: 8px;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.calendar-header-row {
+    background: #c0c0c0;
+    border-bottom: 1px solid #808080;
+}
+
+.day-header {
+    padding: 4px 2px;
+    text-align: center;
+    font-weight: bold;
+    color: #000080;
+    border-right: 1px solid #808080;
+    font-size: 10px;
+}
+
+.day-header:last-child {
+    border-right: none;
+}
+
+.calendar-day {
+    width: 14.28%;
+    height: 24px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    vertical-align: middle;
+    background: #ffffff;
+    position: relative;
+    cursor: default;
+}
+
+.calendar-day:not(.empty-day):hover {
+    background: #f0f0f0;
+}
+
+.calendar-day.today {
+    background: #ffff80 !important;
+    border: 2px solid #ff8000;
+    font-weight: bold;
+}
+
+.calendar-day.has-note {
+    background: #80ff80 !important;
+    color: #004000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.calendar-day.has-note:hover {
+    background: #60ff60 !important;
+    border-color: #008000;
+}
+
+.empty-day {
+    background: #f8f8f8;
+    color: #c0c0c0;
+    cursor: default;
+}
+
+.day-number {
+    display: inline-block;
+    line-height: 20px;
+    font-size: 11px;
+}
+
+/* ========================================================================
+   INSTRUCTIONS ET GESTION
+   ======================================================================== */
+
+.calendar-instructions {
+    text-align: center;
+    margin-bottom: 6px;
+    color: #606060;
+    font-size: 10px;
+}
+
+.calendar-management {
+    text-align: center;
+}
+
+.manage-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 6px 16px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #000000;
+}
+
+.manage-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.manage-btn:hover {
+    background: #d0d0d0;
+}
+
+/* ========================================================================
+   MODALES (GESTION ET ÉDITION NOTES)
+   ======================================================================== */
+
+.note-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    font-family: 'MS Sans Serif', sans-serif;
+}
+
+.note-modal {
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    min-width: 400px;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.note-modal-header {
+    background: #000080;
+    color: #ffffff;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.close-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    width: 18px;
+    height: 16px;
+    font-size: 10px;
+    cursor: pointer;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.close-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.note-modal-content {
+    padding: 12px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* ========================================================================
+   MODALE DE GESTION - SÉLECTEUR DE DATE
+   ======================================================================== */
+
+.manage-instructions {
+    background: #ffffcc;
+    border: 1px inset #c0c0c0;
+    padding: 8px;
+    margin-bottom: 12px;
+    font-size: 11px;
+}
+
+.manage-instructions p {
+    margin: 4px 0;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px;
+    border: 1px inset #c0c0c0;
+    background: #f0f0f0;
+}
+
+.date-selector label {
+    font-weight: bold;
+    color: #000080;
+    font-size: 11px;
+}
+
+.date-input {
+    border: 1px inset #c0c0c0;
+    padding: 2px 4px;
+    font-size: 11px;
+    background: #ffffff;
+    font-family: inherit;
+}
+
+.edit-date-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #000000;
+}
+
+.edit-date-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+/* ========================================================================
+   LISTE DES NOTES EXISTANTES
+   ======================================================================== */
+
+.existing-notes h4 {
+    color: #000080;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.notes-list {
+    border: 1px inset #c0c0c0;
+    background: #ffffff;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.note-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 11px;
+    gap: 8px;
+}
+
+.note-item:last-child {
+    border-bottom: none;
+}
+
+.note-date {
+    font-weight: bold;
+    color: #000080;
+    min-width: 120px;
+    font-size: 10px;
+}
+
+.note-preview {
+    flex-grow: 1;
+    color: #404040;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edit-note-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 2px 6px;
+    font-size: 10px;
+    cursor: pointer;
+    color: #000000;
+    min-width: 50px;
+}
+
+.edit-note-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.no-notes {
+    text-align: center;
+    color: #808080;
+    font-style: italic;
+    padding: 16px;
+    font-size: 11px;
+}
+
+/* ========================================================================
+   ÉDITEUR DE NOTE
+   ======================================================================== */
+
+.note-editor {
+    margin-bottom: 12px;
+}
+
+.note-textarea {
+    width: 100%;
+    height: 120px;
+    border: 1px inset #c0c0c0;
+    padding: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: #ffffff;
+    color: #000000;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.note-textarea:focus {
+    outline: 1px dotted #000080;
+    outline-offset: -1px;
+}
+
+/* ========================================================================
+   ACTIONS DE NOTE
+   ======================================================================== */
+
+.note-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.save-btn, .cancel-btn, .delete-btn {
+    border: 1px outset #c0c0c0;
+    padding: 6px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.save-btn {
+    background: #80ff80;
+    color: #004000;
+}
+
+.save-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #60ff60;
+}
+
+.cancel-btn {
+    background: #c0c0c0;
+    color: #000000;
+}
+
+.cancel-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.delete-btn {
+    background: #ff8080;
+    color: #800000;
+}
+
+.delete-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #ff6060;
+}
+
+/* ========================================================================
+   RESPONSIVE - ADAPTATION MOBILE
+   ======================================================================== */
+
+@media (max-width: 480px) {
+    .retro-calendar {
+        max-width: 100%;
+        min-width: 280px;
+        padding: 8px;
+    }
+    
+    .calendar-clock {
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    
+    .calendar-day {
+        height: 22px;
+        font-size: 10px;
+    }
+    
+    .day-number {
+        line-height: 18px;
+    }
+    
+    .note-modal {
+        min-width: 90%;
+        margin: 10px;
+    }
+    
+    .date-selector {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    
+    .note-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .note-date {
+        min-width: auto;
+    }
+}
+
+/* ========================================================================
+   AMÉLIORATION ACCESSIBILITÉ
+   ======================================================================== */
+
+.calendar-day:focus,
+.nav-btn:focus,
+.today-btn:focus,
+.manage-btn:focus,
+button:focus {
+    outline: 2px dotted #000080;
+    outline-offset: 1px;
+}
+
+.calendar-day[tabindex]:hover,
+.calendar-day.has-note:hover {
+    outline: 1px solid #008000;
+}
+
+/* État désactivé pour les jours non cliquables */
+.calendar-day:not(.has-note):not(.today) {
+    cursor: default;
+}
+
+.calendar-day.has-note {
+    position: relative;
+}
+
+.calendar-day.has-note::after {
+    content: '●';
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    color: #008000;
+    font-size: 8px;
+}
+
+/* ========================================================================
+   ANIMATION ET TRANSITIONS
+   ======================================================================== */
+
+.calendar-day, .nav-btn, .today-btn, .manage-btn, .edit-note-btn, .save-btn, .cancel-btn, .delete-btn {
+    transition: background-color 0.1s, border-color 0.1s;
+}
+
+.note-modal-overlay {
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(2px);
+    }
+}

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!--
+========================================================================
+CALENDRIER WINDOWS RÉTRO - COMPOSANT AUTONOME
+========================================================================
+
+Interface HTML dédiée au calendrier, intégrée dans le système de modales.
+Structure :
+- Titre de fenêtre Windows avec boutons de contrôle
+- Conteneur pour l'instance JavaScript du calendrier  
+- Intégration transparente avec l'écosystème rétro existant
+
+Ce fichier sera chargé dynamiquement dans une modale par le système principal.
+-->
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier Rétro</title>
+    <style>
+        /* Reset minimal pour l'intégration */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'MS Sans Serif', sans-serif;
+            background: #c0c0c0;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Conteneur principal sans padding supplémentaire */
+        .calendar-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header de fenêtre Windows style */
+        .window-header {
+            background: linear-gradient(90deg, #000080 0%, #0000a0 100%);
+            color: #ffffff;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: bold;
+            border-bottom: 1px solid #808080;
+            user-select: none;
+        }
+        
+        .window-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .window-controls {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .control-btn {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            font-size: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: bold;
+        }
+        
+        .control-btn:active {
+            border: 1px inset #c0c0c0;
+            background: #a0a0a0;
+        }
+        
+        .control-btn:hover {
+            background: #d0d0d0;
+        }
+        
+        /* Conteneur du calendrier proprement dit */
+        .calendar-mount-point {
+            flex-grow: 1;
+            padding: 8px;
+            background: #c0c0c0;
+            overflow: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .window-header {
+                font-size: 10px;
+            }
+            
+            .control-btn {
+                width: 14px;
+                height: 12px;
+                font-size: 7px;
+            }
+            
+            .calendar-mount-point {
+                padding: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <!-- Header de fenêtre Windows -->
+        <div class="window-header">
+            <div class="window-title">
+                <span>📅</span>
+                <span>Calendrier</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn minimize-btn" title="Réduire" onclick="minimizeCalendar()">_</button>
+                <button class="control-btn maximize-btn" title="Agrandir" onclick="maximizeCalendar()">□</button>
+                <button class="control-btn close-btn" title="Fermer" onclick="closeCalendar()">✕</button>
+            </div>
+        </div>
+        
+        <!-- Point de montage pour le calendrier JavaScript -->
+        <div class="calendar-mount-point" id="calendar-mount-point">
+            <!-- Le composant calendrier sera injecté ici par JavaScript -->
+        </div>
+    </div>
+    
+    <script>
+        /**
+         * ========================================================================
+         * FONCTIONS D'INTERFACE WINDOWS
+         * ========================================================================
+         * 
+         * Ces fonctions gèrent l'interaction avec les contrôles de fenêtre
+         * et l'intégration avec le système de modales principal.
+         */
+        
+        /**
+         * Minimise la fenêtre calendrier (cache la modale)
+         */
+        function minimizeCalendar() {
+            // Jouer son de clic si disponible
+            if (typeof playClickSound === 'function') {
+                playClickSound();
+            }
+            
+            // Si intégré dans une modale, la fermer
+            if (window.parent && window.parent.closeModal) {
+                window.parent.closeModal();
+            } else if (window.closeModal) {
+                closeModal();
+            } else {
+                // Fallback : cacher la fenêtre
+                document.body.style.display = 'none';
+            }
+            
+            console.log('📅 Calendrier minimisé');
+        }
+        
+        /**
+         * Bascule le mode plein écran (maximisé/restauré)
+         */
+        function maximizeCalendar() {
+            // Jouer son de clic si disponible
+            if (typeof playClickSound === 'function') {
+                playClickSound();
+            }
+            
+            const container = document.querySelector('.calendar-container');
+            const btn = document.querySelector('.maximize-btn');
+            
+            if (container.classList.contains('maximized')) {
+                // Restaurer
+                container.classList.remove('maximized');
+                container.style.width = '';
+                container.style.height = '';
+                btn.textContent = '□';
+                btn.title = 'Agrandir';
+            } else {
+                // Maximiser
+                container.classList.add('maximized');
+                container.style.width = '100vw';
+                container.style.height = '100vh';
+                btn.textContent = '❐';
+                btn.title = 'Restaurer';
+            }
+            
+            console.log('📅 Calendrier maximisé/restauré');
+        }
+        
+        /**
+         * Ferme définitivement la fenêtre calendrier
+         */
+        function closeCalendar() {
+            // Jouer son de clic si disponible
+            if (typeof playClickSound === 'function') {
+                playClickSound();
+            }
+            
+            // Démonter proprement le calendrier
+            if (window.unmountCalendar) {
+                unmountCalendar();
+            }
+            
+            // Si intégré dans une modale, la fermer
+            if (window.parent && window.parent.closeModal) {
+                window.parent.closeModal();
+            } else if (window.closeModal) {
+                closeModal();
+            } else {
+                // Fallback : fermer la fenêtre
+                window.close();
+            }
+            
+            console.log('📅 Calendrier fermé');
+        }
+        
+        /**
+         * ========================================================================
+         * INITIALISATION DU CALENDRIER
+         * ========================================================================
+         * 
+         * Monte automatiquement le composant calendrier au chargement
+         */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const mountPoint = document.getElementById('calendar-mount-point');
+            
+            if (!mountPoint) {
+                console.error('❌ Point de montage calendrier introuvable');
+                return;
+            }
+            
+            // Attendre que les scripts externes soient chargés
+            function initCalendar() {
+                if (typeof mountCalendar === 'function') {
+                    try {
+                        mountCalendar(mountPoint, {
+                            // Options de configuration si besoin
+                            showClock: true,
+                            enableNotes: true,
+                            theme: 'retro'
+                        });
+                        
+                        console.log('✅ Calendrier initialisé avec succès');
+                    } catch (error) {
+                        console.error('❌ Erreur initialisation calendrier:', error);
+                        
+                        // Afficher un message d'erreur à l'utilisateur
+                        mountPoint.innerHTML = `
+                            <div style="padding: 20px; text-align: center; color: #800000;">
+                                <p><strong>⚠️ Erreur de chargement</strong></p>
+                                <p>Le calendrier n'a pas pu s'initialiser.</p>
+                                <p style="font-size: 10px; color: #606060; margin-top: 10px;">
+                                    ${error.message}
+                                </p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Réessayer dans 100ms si les scripts ne sont pas encore chargés
+                    setTimeout(initCalendar, 100);
+                }
+            }
+            
+            initCalendar();
+        });
+        
+        /**
+         * Nettoyage à la fermeture de la fenêtre
+         */
+        window.addEventListener('beforeunload', function() {
+            if (window.unmountCalendar) {
+                unmountCalendar();
+            }
+        });
+        
+        /**
+         * Support des raccourcis clavier
+         */
+        document.addEventListener('keydown', function(event) {
+            // ESC = fermer
+            if (event.key === 'Escape') {
+                closeCalendar();
+            }
+            
+            // F11 = basculer plein écran
+            if (event.key === 'F11') {
+                event.preventDefault();
+                maximizeCalendar();
+            }
+            
+            // Ctrl+W = fermer
+            if (event.ctrlKey && event.key === 'w') {
+                event.preventDefault();
+                closeCalendar();
+            }
+        });
+    </script>
+</body>
+</html>

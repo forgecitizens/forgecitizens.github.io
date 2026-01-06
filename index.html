@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>maincitizen - Page d'Accueil</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="desktop" id="desktop">
+        <!-- Desktop Icons -->
+        <div class="desktop-icon" style="top: 20px; left: 20px;" data-modal="simulations">
+            <img class="icon-image" src="img/galaxy.png" alt="Cosmologie">
+            <div class="icon-label">Recherches en cosmologie</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 120px; left: 20px;" data-modal="file-explorer" data-folder-path="Programmes">
+            <img class="icon-image" src="img/3d-computer.png" alt="Programmes">
+            <div class="icon-label">Programmes</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 220px; left: 20px;" onclick="openTypewriter()">
+            <div class="icon-wrapper">
+                <img class="icon-image" src="img/typewriter.png" alt="Drafter">
+                <img class="shortcut-arrow" src="img/shortcut.png" alt="">
+            </div>
+            <div class="icon-label">Drafter</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 320px; left: 20px;" data-modal="ia-articles">
+            <img class="icon-image" src="img/ia.png" alt="Vulgarisation IA générative">
+            <div class="icon-label">Vulgarisation IA générative</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 420px; left: 20px;" data-modal="contact">
+            <img class="icon-image" src="img/email.png" alt="Contact">
+            <div class="icon-label">Contact</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 520px; left: 20px;" onclick="openRadio()">
+            <div class="icon-wrapper">
+                <img class="icon-image" src="img/cassette.png" alt="Radio">
+                <img class="shortcut-arrow" src="img/shortcut.png" alt="">
+            </div>
+            <div class="icon-label">Radio</div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-button" id="startButton">
+            <span style="background: linear-gradient(45deg, red, yellow, green, blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">⊞</span>
+            Démarrer
+        </button>
+
+        <div class="taskbar-windows" id="taskbarWindows">
+            <!-- Minimized windows will appear here -->
+        </div>
+
+        <div class="system-tray">
+            <div id="datetime" style="cursor: pointer;" title="Cliquez pour ouvrir le calendrier"></div>
+        </div>
+    </div>
+
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <div class="start-menu-item" data-folder-path="Programmes">Programmes</div>
+        <div class="start-menu-item" data-modal="documents">Documents</div>
+        <div class="start-menu-item" data-modal="settings">Paramètres</div>
+        <div class="start-menu-item" data-modal="search">Rechercher</div>
+        <div class="start-menu-item" data-modal="help">Aide</div>
+        <div class="start-menu-item" data-modal="run">Exécuter</div>
+        <div class="start-menu-item" data-modal="logoff">Fermer la session</div>
+        <div class="start-menu-item" data-modal="shutdown">Arrêter</div>
+        <div class="start-menu-item" data-modal="calculator">Calculatrice</div>
+        <div class="start-menu-item" data-modal="notepad">Bloc-notes</div>
+        <div class="start-menu-item" data-modal="calendar">📅 Calendrier</div>
+    </div>
+
+    <!-- Contact Modal - PILOTE nouvelle structure -->
+    <div class="window" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+        <div class="window-titlebar">
+            <div class="window-title" id="contact-title">Contact</div>
+            <div class="window-controls">
+                <div class="window-button" onclick="minimizeModal('contact-modal')" aria-label="Réduire">_</div>
+                <div class="window-button" onclick="maximizeModal('contact-modal')" aria-label="Agrandir">□</div>
+                <div class="window-button" onclick="closeModal('contact-modal')" aria-label="Fermer">×</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="window-content">
+                <!-- Mes coordonnées -->
+                <div class="info-section">
+                    <h3 class="section-title">Mes coordonnées</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-icon">👤</span>
+                            <span class="contact-text">Andrei Eleodor Sirbu</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <a href="mailto:eleodorandrei@gmail.com" class="contact-link">eleodorandrei@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <a href="https://www.linkedin.com/in/andrei-eleodor-sirbu/" target="_blank" rel="noopener noreferrer" class="contact-link">LinkedIn Profile</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de contact -->
+                <div class="form-section">
+                    <h3 class="section-title">Envoyez-moi un message</h3>
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label class="field-label">Prénom :</label>
+                                <input type="text" id="firstName" required class="field-input">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Nom :</label>
+                                <input type="text" id="lastName" required class="field-input">
+                            </div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="field-label">Adresse email :</label>
+                            <input type="email" id="email" required class="field-input">
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="field-label">Message :</label>
+                            <textarea id="message" required rows="6" class="field-textarea"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="action-button primary">📧 Envoyer</button>
+                            <button type="reset" class="action-button secondary">🗑️ Effacer</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Message de confirmation -->
+                    <div id="contactMessage" style="display: none; margin-top: 12px; padding: 8px; background: #90ee90; border: 1px solid #008000; font-size: 11px;">
+                        ✅ Votre message a été envoyé avec succès !
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="window-footer">
+            <div class="status-text">Prêt à envoyer</div>
+        </div>
+        <div class="window-resize-handle" aria-hidden="true"></div>
+    </div>
+
+    <!-- Simulations Modal -->
+    <div class="modal" id="simulations-modal">
+        <div class="modal-header">
+            <div class="modal-title">Recherches en cosmologie <span class="alpha-chi-title">α–χ</span></div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('simulations-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('simulations-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('simulations-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <!-- Header / Overview Section (Non-collapsible) -->
+            <div style="background: #f0f0f0; border: 1px inset #c0c0c0; padding: 16px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; background: #c0c0c0; border: 1px outset #c0c0c0; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px;">⚛️</div>
+                    <h2 style="margin: 0; font-size: 16px; font-weight: bold; color: #000080; font-family: 'MS Sans Serif', sans-serif;">Modèle cosmologique auto-régulé</h2>
+                </div>
+                
+                <div style="background: #ffffff; border: 1px inset #c0c0c0; padding: 12px; font-size: 11px; line-height: 1.4; font-family: 'MS Sans Serif', sans-serif;">
+                    <p style="margin: 0 0 8px 0;">
+                        Ce projet de recherche cosmologique indépendant explore l'émergence de l'univers à partir d'un état limite pré-physique appelé « Chaos Absolu ». 
+                        L'approche développée se concentre sur quatre concepts fondamentaux : l'ontologie des structures cosmiques, 
+                        l'irréversibilité temporelle, les processus de médiation entre échelles, et les mécanismes d'auto-régulation universelle.
+                    </p>
+                    <p style="margin: 0; font-style: italic; color: #404040;">
+                        Recherche théorique visant à proposer un cadre conceptuel unifié pour comprendre l'organisation spontanée 
+                        de la matière et de l'énergie aux échelles cosmologiques.
+                    </p>
+                </div>
+                
+                <!-- Publications subsection -->
+                <div style="margin-top: 12px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Publications</h4>
+                    <div style="background: #ffffff; border: 1px inset #c0c0c0; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #666; font-weight: bold;">Décembre 2025</span>
+                            <span>-</span>
+                            <a href="http://ai.vixra.org/abs/2512.0089" target="_blank" rel="noopener noreferrer" style="color: #0000ff; text-decoration: underline;">publication viXra</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sections accordéon modernisées -->
+            <div class="accordion-container">
+            
+                <!-- Section Vulgarisation -->
+                <div class="accordion-item">
+                    <div class="accordion-header" tabindex="0">
+                        <span>📖 Vulgarisation</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            
+                            <!-- Idée centrale -->
+                            <div style="margin-bottom: 16px;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Idée centrale</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    À l'origine, il n'existe ni temps, ni espace, ni matière. Seulement un état de « chaos absolu » où aucune distinction n'est possible. 
+                                    L'univers émerge lorsque des différences commencent spontanément à apparaître dans ce chaos, créant les premières structures.
+                                </p>
+                                <p style="margin: 0;">
+                                    Ces structures naissantes génèrent l'irréversibilité — et c'est cette irréversibilité qui fait naître le temps tel que nous le connaissons. 
+                                    Contrairement aux modèles traditionnels, le temps n'existe pas « avant » : il émerge avec l'organisation de l'univers.
+                                </p>
+                            </div>
+
+                            <!-- Pourquoi ce modèle ? -->
+                            <div style="margin-bottom: 16px;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Pourquoi ce modèle ?</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    Les modèles cosmologiques actuels supposent souvent des conditions initiales très spéciales ou des « réglages fins » 
+                                    pour expliquer pourquoi l'univers fonctionne comme il le fait. Ce modèle propose une alternative : l'univers s'auto-organise 
+                                    naturellement sans avoir besoin de conditions particulières au départ.
+                                </p>
+                                <p style="margin: 0;">
+                                    L'auto-régulation émerge des interactions entre les structures cosmiques elles-mêmes, créant un équilibre dynamique 
+                                    qui explique à la fois la complexité observée et la stabilité à grande échelle de notre cosmos.
+                                </p>
+                            </div>
+
+                            <!-- Ce que ce modèle ne prétend pas faire -->
+                            <div style="margin-bottom: 0;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Ce que ce modèle ne prétend pas faire</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    Ce travail ne cherche pas à remplacer la physique établie ou à prédire de nouvelles observations précises. 
+                                    Il s'agit plutôt d'un cadre conceptuel pour repenser les questions fondamentales sur l'origine et l'organisation cosmique.
+                                </p>
+                                <p style="margin: 0;">
+                                    L'objectif n'est pas non plus de proposer une « théorie du tout », mais d'explorer comment des concepts comme 
+                                    l'émergence, l'irréversibilité et l'auto-organisation peuvent éclairer notre compréhension de l'univers primordial.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Recherche -->
+                <div class="accordion-item">
+                    <div class="accordion-header" tabindex="0">
+                        <span>🔬 Recherche & téléchargements</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                    
+                    <!-- Downloads Area -->
+                    <div style="background: #f8f8f8; border: 1px inset #c0c0c0; padding: 12px; margin-bottom: 16px;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">📁 Documents de travail</h4>
+                        <p style="margin: 0 0 8px 0; font-style: italic; color: #666;">
+                            <strong>Avertissement :</strong> Documents de recherche préliminaires, non soumis à évaluation par les pairs. 
+                            Travaux en cours susceptibles de modifications.
+                        </p>
+                        
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                            <a href="simulations/Vers_un_modèle_cosmologique_auto_régulé_VF.pdf" 
+                               class="download-button" 
+                               download
+                               onclick="playClickSound()"
+                               style="display: inline-flex; align-items: center; gap: 4px;">
+                                🇫🇷 Version française (PDF)
+                            </a>
+                            <a href="simulations/Toward a self regulated cosmological model_EN.pdf" 
+                               class="download-button" 
+                               download
+                               onclick="playClickSound()"
+                               style="display: inline-flex; align-items: center; gap: 4px;">
+                                🇺🇸 English version (PDF)
+                            </a>
+                        </div>
+                        
+                        <div style="font-size: 10px; color: #808080;">
+                            <strong>Prochainement :</strong> Code de simulation • Figures haute résolution • Notes étendues
+                        </div>
+                    </div>
+
+                    <!-- Chapter-based Structure -->
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="margin: 0 0 12px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Structure du document de recherche</h4>
+                        
+                        <!-- Chapter 1 -->
+                        <div style="margin-bottom: 12px; border-left: 2px solid #c0c0c0; padding-left: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <strong style="color: #000080; font-size: 11px;">I. Fondements ontologiques du Chaos Absolu</strong>
+                                <button onclick="toggleDetails('chapter1-details')" style="font-size: 8px; padding: 1px 4px; background: #e0e0e0; border: 1px outset #c0c0c0; cursor: pointer;">détails</button>
+                            </div>
+                            <p style="margin: 0 0 4px 0; color: #404040;">
+                                Définition rigoureuse de l'état limite pré-physique et analyse des conditions d'émergence spontanée.
+                            </p>
+                            <div id="chapter1-details" style="display: none; font-size: 10px; color: #666; margin-top: 6px; padding: 6px; background: #f0f0f0; border: 1px inset #c0c0c0;">
+                                Examine les implications philosophiques et logiques d'un état sans distinctions préalables. 
+                                Discute les limitations conceptuelles et les critères de falsifiabilité de cette approche.
+                            </div>
+                        </div>
+
+                        <!-- Chapter 2 -->
+                        <div style="margin-bottom: 12px; border-left: 2px solid #c0c0c0; padding-left: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <strong style="color: #000080; font-size: 11px;">II. Émergence et différenciation structurelle</strong>
+                                <button onclick="toggleDetails('chapter2-details')" style="font-size: 8px; padding: 1px 4px; background: #e0e0e0; border: 1px outset #c0c0c0; cursor: pointer;">détails</button>
+                            </div>
+                            <p style="margin: 0 0 4px 0; color: #404040;">
+                                Mécanismes théoriques de formation des premières structures cosmiques et processus de complexification.
+                            </p>
+                            <div id="chapter2-details" style="display: none; font-size: 10px; color: #666; margin-top: 6px; padding: 6px; background: #f0f0f0; border: 1px inset #c0c0c0;">
+                                Propose un formalisme conceptuel sans prétendre à la validation expérimentale. 
+                                Identifie les points de divergence avec les modèles cosmologiques standard.
+                            </div>
+                        </div>
+
+                        <!-- Chapter 3 -->
+                        <div style="margin-bottom: 12px; border-left: 2px solid #c0c0c0; padding-left: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <strong style="color: #000080; font-size: 11px;">III. Irréversibilité et genèse temporelle</strong>
+                                <button onclick="toggleDetails('chapter3-details')" style="font-size: 8px; padding: 1px 4px; background: #e0e0e0; border: 1px outset #c0c0c0; cursor: pointer;">détails</button>
+                            </div>
+                            <p style="margin: 0 0 4px 0; color: #404040;">
+                                Analyse de l'émergence du temps comme conséquence de l'irréversibilité structurelle, non comme préalable.
+                            </p>
+                            <div id="chapter3-details" style="display: none; font-size: 10px; color: #666; margin-top: 6px; padding: 6px; background: #f0f0f0; border: 1px inset #c0c0c0;">
+                                Exploration théorique de la causalité émergente. Discussions critiques sur les limites d'observabilité 
+                                et les implications pour la compréhension de l'univers primordial.
+                            </div>
+                        </div>
+
+                        <!-- Chapter 4 -->
+                        <div style="margin-bottom: 12px; border-left: 2px solid #c0c0c0; padding-left: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <strong style="color: #000080; font-size: 11px;">IV. Auto-régulation cosmique</strong>
+                                <button onclick="toggleDetails('chapter4-details')" style="font-size: 8px; padding: 1px 4px; background: #e0e0e0; border: 1px outset #c0c0c0; cursor: pointer;">détails</button>
+                            </div>
+                            <p style="margin: 0 0 4px 0; color: #404040;">
+                                Mécanismes d'équilibrage dynamique sans réglage fin préalable. Analyse des boucles de rétroaction cosmiques.
+                            </p>
+                            <div id="chapter4-details" style="display: none; font-size: 10px; color: #666; margin-top: 6px; padding: 6px; background: #f0f0f0; border: 1px inset #c0c0c0;">
+                                Cadre conceptuel pour comprendre la stabilité cosmique observée sans recours à des conditions initiales 
+                                finement ajustées. Limitations et perspectives de développement théorique.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Limitations and Disclaimer -->
+                    <div style="background: #fff8dc; border: 1px inset #c0c0c0; padding: 8px; font-size: 10px; color: #8b4513;">
+                        <strong>⚠️ Limitations reconnues :</strong> Ce travail demeure purement théorique et conceptuel. 
+                        Aucune validation expérimentale n'est revendiquée. Les propositions avancées nécessitent 
+                        un développement formel approfondi et une analyse critique par la communauté scientifique.
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of accordion-container -->
+            
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- File Explorer Modal (for folder navigation) -->
+    <div class="modal" id="file-explorer-modal">
+        <div class="modal-header">
+            <div class="modal-title" id="file-explorer-title">Programmes</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('file-explorer-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('file-explorer-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('file-explorer-modal')">×</div>
+            </div>
+        </div>
+        <!-- Breadcrumb Navigation Bar -->
+        <div class="folder-navigation-bar">
+            <button class="nav-button" onclick="navigateBack()" title="Retour" id="nav-back-btn" disabled>
+                <span>◀</span>
+            </button>
+            <button class="nav-button" onclick="navigateUp()" title="Dossier parent" id="nav-up-btn" disabled>
+                <span>▲</span>
+            </button>
+            <div class="breadcrumb-container" id="breadcrumb-container">
+                <span class="breadcrumb-item breadcrumb-root" onclick="navigateToPath('')">🖥️ Bureau</span>
+            </div>
+        </div>
+        <div class="modal-content folder-content" id="file-explorer-content">
+            <!-- Folder contents will be dynamically populated -->
+        </div>
+        <div class="folder-status-bar" id="folder-status-bar">
+            <span id="folder-item-count">0 élément(s)</span>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Start Menu Modals -->
+    <div class="modal" id="programs-modal">
+        <div class="modal-header">
+            <div class="modal-title">Programmes</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('programs-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('programs-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('programs-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="documents-modal">
+        <div class="modal-header">
+            <div class="modal-title">Documents</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('documents-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('documents-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('documents-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="settings-modal">
+        <div class="modal-header">
+            <div class="modal-title">Paramètres</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('settings-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('settings-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('settings-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="search-modal">
+        <div class="modal-header">
+            <div class="modal-title">Rechercher</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('search-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('search-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('search-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="help-modal">
+        <div class="modal-header">
+            <div class="modal-title">Aide</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('help-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('help-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('help-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="run-modal">
+        <div class="modal-header">
+            <div class="modal-title">Exécuter</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('run-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('run-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('run-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="logoff-modal">
+        <div class="modal-header">
+            <div class="modal-title">Fermer la session</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('logoff-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('logoff-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('logoff-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="shutdown-modal">
+        <div class="modal-header">
+            <div class="modal-title">Arrêter</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('shutdown-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('shutdown-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('shutdown-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="calculator-modal">
+        <div class="modal-header">
+            <div class="modal-title">Calculatrice</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('calculator-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('calculator-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('calculator-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div class="modal" id="notepad-modal">
+        <div class="modal-header">
+            <div class="modal-title">Bloc-notes</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('notepad-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('notepad-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('notepad-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <p>Contenu à venir...</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" onclick="openFromContext()">Ouvrir</div>
+        <div class="context-menu-item" onclick="showInfo()">En savoir plus</div>
+    </div>
+
+    <!-- Info Popup -->
+    <div class="info-popup" id="infoPopup">
+        <div class="info-popup-header">
+            <div>Informations</div>
+            <div class="modal-button" onclick="closeInfo()">×</div>
+        </div>
+        <div class="info-popup-content">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal" id="event-modal">
+        <div class="modal-header">
+            <div class="modal-title" id="eventModalTitle">Événement du 1er</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('event-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('event-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('event-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content" id="eventModalContent">
+            <h3>Événement spécial</h3>
+            <p>Ceci est un événement prévu pour le premier jour du mois.</p>
+            <p>Vous pourrez personnaliser ce contenu pour afficher des informations spécifiques à chaque date.</p>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- IA Articles Modal -->
+    <div class="window" id="ia-articles-modal" role="dialog" aria-modal="true" aria-labelledby="ia-articles-title">
+        <div class="window-titlebar">
+            <div class="window-title" id="ia-articles-title">📚 Vulgarisation IA générative</div>
+            <div class="window-controls">
+                <div class="window-button" onclick="minimizeModal('ia-articles-modal')" aria-label="Réduire">_</div>
+                <div class="window-button" onclick="maximizeModal('ia-articles-modal')" aria-label="Agrandir">□</div>
+                <div class="window-button" onclick="closeModal('ia-articles-modal')" aria-label="Fermer">×</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="window-content">
+                <!-- Header Section -->
+                <div class="info-section">
+                    <h3 class="section-title">📄 Documents de vulgarisation sur l'IA générative</h3>
+                    <p style="margin: 0; font-size: 11px; color: #666;">
+                        Retrouvez ici des articles et documents de vulgarisation sur l'intelligence artificielle générative.
+                        Cliquez sur un document pour le télécharger.
+                    </p>
+                </div>
+
+                <!-- Documents Table -->
+                <div class="articles-table-container">
+                    <table class="articles-table">
+                        <thead>
+                            <tr>
+                                <th>Document</th>
+                                <th>Auteur</th>
+                                <th>Téléchargements</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articles-list">
+                            <tr class="article-row" data-article-id="prompting-role" data-file="articles/prompting_IA_personnalité.pdf">
+                                <td class="article-name">
+                                    <img src="img/pdf.png" alt="PDF" class="article-icon">
+                                    <span class="article-title-text">Mythe et réalité du prompting par rôle</span>
+                                </td>
+                                <td class="article-author">Andrei Eleodor Sirbu</td>
+                                <td class="article-downloads">
+                                    <span class="download-count" id="downloads-prompting-role">0</span>
+                                    <span class="download-label">téléchargements</span>
+                                </td>
+                                <td class="article-rating">
+                                    <div class="star-rating" data-article-id="prompting-role">
+                                        <span class="star" data-value="1">☆</span>
+                                        <span class="star" data-value="2">☆</span>
+                                        <span class="star" data-value="3">☆</span>
+                                        <span class="star" data-value="4">☆</span>
+                                        <span class="star" data-value="5">☆</span>
+                                    </div>
+                                    <span class="rating-value" id="rating-prompting-role">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="window-footer">
+            <div class="status-text">📁 1 document(s) disponible(s)</div>
+        </div>
+        <div class="window-resize-handle" aria-hidden="true"></div>
+    </div>
+
+    <!-- Download Confirmation Popup -->
+    <div class="download-popup" id="downloadPopup">
+        <div class="download-popup-content">
+            <div class="download-popup-header">
+                <img src="img/pdf.png" alt="PDF" style="width: 32px; height: 32px;">
+                <span>Téléchargement</span>
+            </div>
+            <p class="download-popup-message">Voulez-vous télécharger ce document ?</p>
+            <p class="download-popup-filename" id="downloadFilename"></p>
+            <div class="download-popup-buttons">
+                <button class="action-button primary" id="downloadYes">Oui</button>
+                <button class="action-button secondary" id="downloadNo">Non</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Me A Coffee Button -->
+    <a href="https://buymeacoffee.com/maincitizen" target="_blank" rel="noopener noreferrer" class="buymeacoffee-btn" title="Buy me a coffee">
+        <img src="img/buymeacoffee.png" alt="Buy me a coffee">
+    </a>
+
+    <!-- Load modules in dependency order -->
+    <script defer src="assets/js/core/variables.js"></script>
+    <script defer src="assets/js/features/sounds.js"></script>
+    <script defer src="assets/js/ui/taskbar.js"></script>
+    <script defer src="assets/js/ui/modals.js"></script>
+    <script defer src="assets/js/ui/scrollArea.js"></script>
+    <script defer src="components/calendar/calendar.js"></script>
+    <script defer src="assets/js/features/contact.js"></script>
+    <script defer src="assets/js/features/accordion.js"></script>
+    <script defer src="assets/js/features/folderNavigation.js"></script>
+    <script defer src="assets/js/features/typewriter.js"></script>
+    <script defer src="assets/js/features/radio.js"></script>
+    <script defer src="assets/js/features/articles.js"></script>
+    <script defer src="assets/js/app.js"></script>
+
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'989db105940e6989',t:'MTc1OTY3NTQwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

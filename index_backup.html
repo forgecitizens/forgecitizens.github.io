@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Agile Toolkit - Page d'Accueil</title>
+<body>
+    <div class="desktop">
+        <!-- Icônes du bureau -->
+        <div class="desktop-icon icon-about">
+            <svg viewBox="0 0 32 32">
+                <rect x="4" y="4" width="24" height="24" fill="#c0c0c0" stroke="#808080" stroke-width="1"/>
+                <rect x="6" y="6" width="20" height="20" fill="#ffffff"/>
+                <circle cx="16" cy="12" r="3" fill="#000080"/>
+                <rect x="13" y="18" width="6" height="8" fill="#000080"/>
+            </svg>
+            <span>À Propos</span>
+        </div>
+
+        <div class="desktop-icon icon-portfolio">
+            <svg viewBox="0 0 32 32">
+                <rect x="4" y="8" width="24" height="16" fill="#c0c0c0" stroke="#808080" stroke-width="1"/>
+                <rect x="6" y="10" width="20" height="12" fill="#ffffff"/>
+                <rect x="8" y="12" width="16" height="2" fill="#000080"/>
+                <rect x="8" y="16" width="12" height="2" fill="#000080"/>
+                <rect x="8" y="20" width="8" height="2" fill="#000080"/>
+            </svg>
+            <span>Mon Portfolio</span>
+        </div>
+
+        <div class="desktop-icon icon-projects" id="icon-projects">
+            <svg viewBox="0 0 32 32">
+                <rect x="6" y="6" width="20" height="20" fill="#ffff00" stroke="#808080" stroke-width="1"/>
+                <rect x="8" y="8" width="16" height="16" fill="#ffffff"/>
+                <rect x="10" y="10" width="12" height="2" fill="#000080"/>
+                <rect x="10" y="14" width="8" height="2" fill="#000080"/>
+                <rect x="10" y="18" width="10" height="2" fill="#000080"/>
+            </svg>
+            <span>Mes Projets</span>
+        </div>
+
+        <div class="desktop-icon icon-contact">
+            <svg viewBox="0 0 32 32">
+                <rect x="4" y="8" width="24" height="16" fill="#c0c0c0" stroke="#808080" stroke-width="1"/>
+                <polygon points="4,8 16,16 28,8" fill="#ffffff" stroke="#808080"/>
+                <line x1="4" y1="24" x2="12" y2="16" stroke="#808080" stroke-width="1"/>
+                <line x1="28" y1="24" x2="20" y2="16" stroke="#808080" stroke-width="1"/>
+            </svg>
+            <span>Contact</span>
+        </div>
+
+        <div class="desktop-icon icon-trash">
+            <svg viewBox="0 0 32 32">
+                <rect x="8" y="10" width="16" height="18" fill="#c0c0c0" stroke="#808080" stroke-width="1"/>
+                <rect x="6" y="8" width="20" height="4" fill="#808080"/>
+                <rect x="12" y="4" width="8" height="4" fill="#808080"/>
+                <rect x="10" y="14" width="2" height="10" fill="#ff0000"/>
+                <rect x="15" y="14" width="2" height="10" fill="#ff0000"/>
+                <rect x="20" y="14" width="2" height="10" fill="#ff0000"/>
+            </svg>
+            <span>Corbeille (Pleine)</span>
+        </div>
+    </div>
+
+    <!-- Barre des tâches -->
+    <div class="taskbar">
+        <div class="start-button" id="start-button">
+            <img src="img/portrait.jpeg" alt="Portrait" style="width:8px; height:8px; margin-right:4px; object-fit:cover; border-radius:2px;">
+            Démarrer
+        </div>
+
+        <div class="taskbar-center">
+            <div class="window-button">
+                <span>Navigateur - Accueil</span>
+            </div>
+        </div>
+
+        <div class="system-tray">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <rect x="2" y="6" width="12" height="8" fill="#c0c0c0" stroke="#808080"/>
+                <rect x="4" y="8" width="8" height="4" fill="#000080"/>
+            </svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" style="margin-left: 4px;">
+                <circle cx="8" cy="8" r="6" fill="#c0c0c0" stroke="#808080"/>
+                <rect x="7" y="4" width="2" height="4" fill="#000000"/>
+                <rect x="7" y="8" width="4" height="2" fill="#000000"/>
+            </svg>
+            <span class="time" id="current-time">14:35</span>
+        </div>
+    </div>
+
+    <!-- Menu Démarrer -->
+    <div class="start-menu hidden" id="start-menu">
+        <div class="start-menu-header">My Agile Toolkit</div>
+        <div class="start-menu-separator"></div>
+        
+        <div class="start-menu-item" onclick="navigateToPage(1)">
+            Andrei Eleodor Sirbu
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(2)">
+            Photographie
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(3)">
+            Jeux-vidéos
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(4)">
+            Musique
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(5)">
+            Ecriture
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(6)">
+            Voyages
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(7)">
+            Paramètres
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(8)">
+            Essais
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(9)">
+            Illustrations
+        </div>
+        <div class="start-menu-item" onclick="navigateToPage(10)">
+            Dernières nouvelles
+        </div>
+        <div class="start-menu-separator"></div>
+        <div class="start-menu-item" onclick="shutdown()">
+            Arrêter...
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal hidden">
+        <div class="window" id="about-window">
+            <div class="title-bar" id="about-title-bar">
+                <div class="window-icon">�</div>
+                <div class="window-title">À Propos - Andrei Eleodor Sirbu</div>
+                <div class="window-controls">
+                    <div class="control-button minimize-button"></div>
+                    <div class="control-button maximize-button"></div>
+                    <div class="control-button close-button"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="content-area">
+                    <div class="scrollable-content" id="about-scrollable-content">
+                        <div class="sample-text">
+                            <h3>À Propos de Moi</h3>
+                            <p>Je suis Andrei Eleodor Sirbu, passionné par l'agilité et l'innovation digitale.</p>
+                            <p>Product Manager et Agile Coach, j'accompagne les équipes dans leur transformation vers plus d'efficacité et de collaboration.</p>
+                            <h3>Mon Expertise</h3>
+                            <p>• Product Management</p>
+                            <p>• Scrum Master Certifié</p>
+                            <p>• Agile Coaching</p>
+                            <p>• Lean Startup</p>
+                            <p>• Design Thinking</p>
+                            <h3>Ma Mission</h3>
+                            <p>Aider les organisations à créer des produits qui répondent vraiment aux besoins des utilisateurs, tout en optimisant les processus de développement.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="scrollbar-vertical">
+                    <div class="scrollbar-button scroll-up"></div>
+                    <div class="scrollbar-track">
+                        <div class="scroll-thumb" id="about-scroll-thumb"></div>
+                    </div>
+                    <div class="scrollbar-button scroll-down"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Modal -->
+    <div id="portfolio-modal" class="modal hidden">
+        <div class="window" id="portfolio-window">
+            <div class="title-bar" id="portfolio-title-bar">
+                <div class="window-icon">💼</div>
+                <div class="window-title">Mon Portfolio</div>
+                <div class="window-controls">
+                    <div class="control-button minimize-button"></div>
+                    <div class="control-button maximize-button"></div>
+                    <div class="control-button close-button"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="content-area">
+                    <div class="scrollable-content" id="portfolio-scrollable-content">
+                        <div class="sample-text">
+                            <h3>Mon Portfolio</h3>
+                            <p>Découvrez mes réalisations et projets dans le domaine de l'agilité et du management produit.</p>
+                            <h3>Projets Récents</h3>
+                            <p>• Transformation agile d'une équipe de 20 développeurs</p>
+                            <p>• Mise en place d'un process Scrum sur 3 équipes</p>
+                            <p>• Développement d'outils de suivi de performance</p>
+                            <h3>Outils Développés</h3>
+                            <p>• Générateur de graphiques burn-up</p>
+                            <p>• Tableau de compétences d'équipe</p>
+                            <p>• Jeu de mémoire Scrum pour formations</p>
+                            <h3>Formation et Coaching</h3>
+                            <p>Plus de 50 personnes accompagnées dans leur transition agile.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="scrollbar-vertical">
+                    <div class="scrollbar-button scroll-up"></div>
+                    <div class="scrollbar-track">
+                        <div class="scroll-thumb" id="portfolio-scroll-thumb"></div>
+                    </div>
+                    <div class="scrollbar-button scroll-down"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Modal -->
+    <div id="projects-modal" class="modal hidden">
+        <div class="window" id="projects-window">
+            <div class="title-bar" id="projects-title-bar">
+                <div class="window-icon">�</div>
+                <div class="window-title">Mes Projets - My Agile Toolkit</div>
+                <div class="window-controls">
+                    <div class="control-button minimize-button"></div>
+                    <div class="control-button maximize-button"></div>
+                    <div class="control-button close-button"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="content-area">
+                    <div class="scrollable-content" id="projects-scrollable-content">
+                        <div class="sample-text">
+                            <h3>🎯 Outils pour Product Managers</h3>
+                            <p><a href="burnup.html">Générateur de graphique burn-up</a></p>
+                            <p>Outil pour générer des graphiques burn-up pour une ou plusieurs équipes. Possibilité d'exporter/importer les résultats.</p>
+                            
+                            <h3>📋 Outils pour Product Owners</h3>
+                            <p><a href="Competences.html">Mon tableau de compétences</a></p>
+                            <p>Un générateur de tableau de suivi des compétences d'une équipe. Possibilité d'exporter/importer les résultats.</p>
+                            
+                            <h3>🏃‍♂️ Outils pour Scrum Masters</h3>
+                            <p><a href="Memory.html">Que savez-vous de Scrum ?</a></p>
+                            <p>Un jeu de mémoire sur la thématique Scrum. Peut servir d'ice breaker.</p>
+                            
+                            <h3>À Venir</h3>
+                            <p>• Calculateur de vélocité d'équipe</p>
+                            <p>• Générateur de user stories</p>
+                            <p>• Planning poker en ligne</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="scrollbar-vertical">
+                    <div class="scrollbar-button scroll-up"></div>
+                    <div class="scrollbar-track">
+                        <div class="scroll-thumb" id="projects-scroll-thumb"></div>
+                    </div>
+                    <div class="scrollbar-button scroll-down"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal hidden">
+        <div class="window" id="contact-window">
+            <div class="title-bar" id="contact-title-bar">
+                <div class="window-icon">�</div>
+                <div class="window-title">Contact - Andrei Eleodor Sirbu</div>
+                <div class="window-controls">
+                    <div class="control-button minimize-button"></div>
+                    <div class="control-button maximize-button"></div>
+                    <div class="control-button close-button"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="content-area">
+                    <div class="scrollable-content" id="contact-scrollable-content">
+                        <div class="sample-text">
+                            <h3>📞 Me Contacter</h3>
+                            <p><strong>Email:</strong> <a href="mailto:eleodorandrei@gmail.com">eleodorandrei@gmail.com</a></p>
+                            <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/andrei-eleodor-sirbu/" target="_blank">linkedin.com/in/andrei-eleodor-sirbu</a></p>
+                            
+                            <h3>💬 Envoyer un Message</h3>
+                            <form id="email-form">
+                                <p><label>Prénom: <input type="text" id="sender-firstname" required></label></p>
+                                <p><label>Nom: <input type="text" id="sender-lastname" required></label></p>
+                                <p><label>Email: <input type="email" id="sender-email" required></label></p>
+                                <p><label>Message:</label></p>
+                                <p><textarea id="email-message" rows="6" required placeholder="Votre message..."></textarea></p>
+                                <p><button type="submit">📤 Envoyer</button></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="scrollbar-vertical">
+                    <div class="scrollbar-button scroll-up"></div>
+                    <div class="scrollbar-track">
+                        <div class="scroll-thumb" id="contact-scroll-thumb"></div>
+                    </div>
+                    <div class="scrollbar-button scroll-down"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
