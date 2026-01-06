@@ -1,0 +1,14 @@
+{
+  "id": "fault-lines",
+  "title": "Fault Lines",
+  "subtitle": "Visual essays on belief, power, and inherited worlds",
+  "intro": "Ces images se situent sur des lignes de fracture invisibles : entre foi et doute, héritage et liberté, nature et industrie. Chaque scène assemble des symboles familiers pour les faire entrer en collision.",
+  "images": [
+    { "id": "fl-01", "caption": "" },
+    { "id": "fl-02", "caption": "" },
+    { "id": "fl-03", "caption": "" },
+    { "id": "fl-04", "caption": "" },
+    { "id": "fl-05", "caption": "" },
+    { "id": "fl-06", "caption": "" }
+  ]
+}

@@ -27,17 +27,22 @@
             <div class="icon-label">Drafter</div>
         </div>
 
-        <div class="desktop-icon" style="top: 320px; left: 20px;" data-modal="ia-articles">
+
+        <div class="desktop-icon" style="top: 320px; left: 20px;" data-modal="ia-gallery">
+            <img class="icon-image" src="img/photo-gallery.png" alt="Gallerie IA">
+            <div class="icon-label">Gallerie IA</div>
+        </div>
+        <div class="desktop-icon" style="top: 420px; left: 20px;" data-modal="ia-articles">
             <img class="icon-image" src="img/ia.png" alt="Vulgarisation IA générative">
             <div class="icon-label">Vulgarisation IA générative</div>
         </div>
 
-        <div class="desktop-icon" style="top: 420px; left: 20px;" data-modal="contact">
+        <div class="desktop-icon" style="top: 520px; left: 20px;" data-modal="contact">
             <img class="icon-image" src="img/email.png" alt="Contact">
             <div class="icon-label">Contact</div>
         </div>
 
-        <div class="desktop-icon" style="top: 520px; left: 20px;" onclick="openRadio()">
+        <div class="desktop-icon" style="top: 620px; left: 20px;" onclick="openRadio()">
             <div class="icon-wrapper">
                 <img class="icon-image" src="img/cassette.png" alt="Radio">
                 <img class="shortcut-arrow" src="img/shortcut.png" alt="">
@@ -590,6 +595,27 @@
     </div>
 
     <!-- IA Articles Modal -->
+    <!-- IA Gallery Modal -->
+    <div class="window" id="ia-gallery-modal" role="dialog" aria-modal="true" aria-labelledby="ia-gallery-title">
+        <div class="window-titlebar">
+            <div class="window-title" id="ia-gallery-title">??? Gallerie IA</div>
+            <div class="window-controls">
+                <div class="window-button" onclick="minimizeModal('ia-gallery-modal')" aria-label="R�duire">_</div>
+                <div class="window-button" onclick="maximizeModal('ia-gallery-modal')" aria-label="Agrandir">?</div>
+                <div class="window-button" onclick="closeModal('ia-gallery-modal')" aria-label="Fermer">�</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="window-content" id="gallery-content">
+                <!-- Gallery content will be loaded dynamically -->
+            </div>
+        </div>
+        <div class="window-footer">
+            <div class="status-text">?? Chargement des collections...</div>
+        </div>
+        <div class="window-resize-handle" aria-hidden="true"></div>
+    </div>
+
     <div class="window" id="ia-articles-modal" role="dialog" aria-modal="true" aria-labelledby="ia-articles-title">
         <div class="window-titlebar">
             <div class="window-title" id="ia-articles-title">📚 Vulgarisation IA générative</div>
@@ -688,6 +714,7 @@
     <script defer src="assets/js/features/typewriter.js"></script>
     <script defer src="assets/js/features/radio.js"></script>
     <script defer src="assets/js/features/articles.js"></script>
+    <script defer src="assets/js/features/gallery.js"></script>
     <script defer src="assets/js/app.js"></script>
 
 

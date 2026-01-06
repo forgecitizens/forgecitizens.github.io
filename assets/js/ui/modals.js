@@ -46,6 +46,13 @@ function openModal(modalId, htmlFile = null, title = null, width = null, height 
         }, 200);
         
         console.log('Modal opened successfully');
+        
+        // Initialiser la galerie si c'est la modale gallery
+        if (modalId === 'ia-gallery-modal' && typeof GalleryModule !== 'undefined') {
+            setTimeout(() => {
+                GalleryModule.init('gallery-content', ['fault-lines']);
+            }, 100);
+        }
     } else {
         console.error('Modal not found:', modalId);
     }
