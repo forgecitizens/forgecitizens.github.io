@@ -177,7 +177,8 @@ const GalleryModule = (function() {
                     <div class="viewer-main">
                         <button class="viewer-nav viewer-prev" title="Précédent (←)">‹</button>
                         <div class="viewer-image-container">
-                            <img class="viewer-image" src="" alt="">
+                            <img class="viewer-image viewer-image-back" src="" alt="">
+                            <img class="viewer-image viewer-image-front" src="" alt="">
                             <div class="viewer-loading">Chargement...</div>
                         </div>
                         <button class="viewer-nav viewer-next" title="Suivant (→)">›</button>
@@ -220,7 +221,8 @@ const GalleryModule = (function() {
         if (!viewer || !state.images[index]) return;
 
         const image = state.images[index];
-        const imgElement = viewer.querySelector('.viewer-image');
+        const imgBack = viewer.querySelector('.viewer-image-back');
+        const imgFront = viewer.querySelector('.viewer-image-front');
         const loading = viewer.querySelector('.viewer-loading');
         const counter = viewer.querySelector('.viewer-counter');
         const caption = viewer.querySelector('.viewer-caption');
@@ -229,17 +231,28 @@ const GalleryModule = (function() {
         const size = window.innerWidth > config.breakpoints.useFullSize ? 'full' : 'medium';
         const imageUrl = getImageUrl(state.currentGallery, image.id, size);
 
-        // Afficher le loading
-        loading.style.display = 'block';
-        imgElement.style.opacity = '0';
+        // Crossfade: copier l'image actuelle en arrière-plan
+        if (imgFront.src && imgFront.style.opacity === '1') {
+            imgBack.src = imgFront.src;
+            imgBack.style.opacity = '1';
+        }
 
-        // Charger l'image
-        imgElement.onload = () => {
+        // Afficher le loading et masquer la nouvelle image
+        loading.style.display = 'block';
+        imgFront.style.opacity = '0';
+
+        // Charger la nouvelle image
+        imgFront.onload = () => {
             loading.style.display = 'none';
-            imgElement.style.opacity = '1';
+            // Fade in de la nouvelle image (crossfade avec l'ancienne)
+            imgFront.style.opacity = '1';
+            // Après la transition, masquer l'image arrière
+            setTimeout(() => {
+                imgBack.style.opacity = '0';
+            }, 300);
         };
-        imgElement.src = imageUrl;
-        imgElement.alt = image.caption || `Image ${index + 1}`;
+        imgFront.src = imageUrl;
+        imgFront.alt = image.caption || `Image ${index + 1}`;
 
         // Mettre à jour le compteur et la légende
         counter.textContent = `${index + 1} / ${state.images.length}`;

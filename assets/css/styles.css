@@ -2440,7 +2440,17 @@
             object-fit: contain;
             border: 2px outset #c0c0c0;
             background: #c0c0c0;
-            transition: opacity 175ms ease-out;
+            transition: opacity 300ms ease-in-out;
+        }
+
+        .viewer-image-back {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .viewer-image-front {
+            position: relative;
+            z-index: 1;
         }
 
         .viewer-loading {
