@@ -231,8 +231,8 @@ const GalleryModule = (function() {
         const size = window.innerWidth > config.breakpoints.useFullSize ? 'full' : 'medium';
         const imageUrl = getImageUrl(state.currentGallery, image.id, size);
 
-        // Crossfade: copier l'image actuelle en arrière-plan
-        if (imgFront.src && imgFront.style.opacity === '1') {
+        // Crossfade: copier l'image actuelle en arrière-plan si elle existe
+        if (imgFront.src && imgFront.src !== '' && imgFront.complete) {
             imgBack.src = imgFront.src;
             imgBack.style.opacity = '1';
         }
