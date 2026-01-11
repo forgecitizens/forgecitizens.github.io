@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGI - Indice Global d'Instabilité</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .igi-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .igi-value {
+            font-size: clamp(80px, 25vw, 300px);
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 0.05em;
+            line-height: 1;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .igi-date {
+            font-size: clamp(11px, 1.5vw, 14px);
+            color: #666666;
+            margin-top: 12px;
+            letter-spacing: 0.05em;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .igi-label {
+            font-size: clamp(12px, 2vw, 18px);
+            color: #808080;
+            margin-top: 20px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .igi-translations {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .igi-translation {
+            font-size: clamp(10px, 1.5vw, 14px);
+            color: #555555;
+            letter-spacing: 0.1em;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .igi-error {
+            font-size: 12px;
+            color: #666666;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        }
+
+        .igi-loading {
+            font-size: clamp(40px, 10vw, 100px);
+            color: #404040;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Lien retour discret */
+        .back-link {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 11px;
+            color: #555555;
+            text-decoration: none;
+            padding: 4px 8px;
+            border: 1px solid #333333;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #888888;
+            border-color: #555555;
+        }
+
+        /* Échelle d'information */
+        .igi-scale {
+            margin-top: 30px;
+            padding: 12px 20px;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .igi-scale-item {
+            font-size: clamp(9px, 1.2vw, 12px);
+            color: #666666;
+            margin: 4px 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .igi-scale-item .peace {
+            color: hsl(120, 65%, 45%);
+        }
+
+        .igi-scale-item .chaos {
+            color: hsl(0, 90%, 40%);
+        }
+
+        .igi-scale-item .arrow {
+            color: #444444;
+        }
+
+        /* Conteneur des boutons à droite */
+        .info-buttons-container {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Bouton info à droite */
+        .info-button {
+            background: #222222;
+            border: 1px solid #444444;
+            border-right: none;
+            color: #888888;
+            padding: 15px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px 0 0 8px;
+            transition: all 0.2s ease;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            letter-spacing: 0.1em;
+        }
+
+        .info-button:hover {
+            background: #333333;
+            color: #cccccc;
+            padding-right: 15px;
+        }
+
+        .credits-button {
+            font-size: 12px;
+        }
+
+        /* Modale info */
+        .info-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .info-modal-overlay.show {
+            display: flex;
+        }
+
+        .info-modal {
+            background: #1a1a1a;
+            border: 1px solid #444444;
+            border-radius: 8px;
+            max-width: 700px;
+            max-height: 85vh;
+            width: 90%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-modal-header {
+            background: #222222;
+            padding: 12px 16px;
+            border-bottom: 1px solid #333333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-modal-title {
+            color: #cccccc;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .info-modal-close {
+            background: none;
+            border: 1px solid #555555;
+            color: #888888;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .info-modal-close:hover {
+            background: #333333;
+            color: #ffffff;
+        }
+
+        .info-modal-content {
+            padding: 20px;
+            overflow-y: auto;
+            color: #aaaaaa;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .info-modal-content h3 {
+            color: #cccccc;
+            font-size: 13px;
+            margin: 16px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .info-modal-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .info-modal-content p {
+            margin: 8px 0;
+        }
+
+        .info-modal-content ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .info-modal-content li {
+            margin: 4px 0;
+        }
+
+        .info-modal-content code {
+            background: #2a2a2a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #88cc88;
+        }
+
+        .info-modal-content .formula {
+            background: #252525;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 12px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #88aacc;
+        }
+
+        /* Icône en haut à droite */
+        .igi-icon {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .igi-icon:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Retour</a>
+    <img src="/img/igi.png" alt="IGI" class="igi-icon">
+
+    <div class="igi-container">
+        <div class="igi-value" id="igi-value">
+            <span class="igi-loading">...</span>
+        </div>
+        <div class="igi-date" id="igi-date"></div>
+        <div class="igi-label">Indice Global d'Instabilité</div>
+        <div class="igi-translations">
+            <span class="igi-translation">Global Instability Index</span>
+            <span class="igi-translation">全球不稳定指数</span>
+            <span class="igi-translation">Глобальный индекс нестабильности</span>
+            <span class="igi-translation" dir="rtl">مؤشر عدم الاستقرار العالمي</span>
+        </div>
+
+        <!-- Échelle multilingue -->
+        <div class="igi-scale">
+            <div class="igi-scale-item"><span class="peace">0 = Paix mondiale</span> <span class="arrow">→</span> <span class="chaos">1000 = Chaos absolu</span></div>
+            <div class="igi-scale-item"><span class="peace">0 = World peace</span> <span class="arrow">→</span> <span class="chaos">1000 = Absolute chaos</span></div>
+            <div class="igi-scale-item"><span class="peace">0 = 世界和平</span> <span class="arrow">→</span> <span class="chaos">1000 = 绝对混乱</span></div>
+            <div class="igi-scale-item"><span class="peace">0 = Мировой мир</span> <span class="arrow">→</span> <span class="chaos">1000 = Абсолютный хаос</span></div>
+            <div class="igi-scale-item" dir="rtl"><span class="peace">٠ = سلام عالمي</span> <span class="arrow">←</span> <span class="chaos">١٠٠٠ = فوضى مطلقة</span></div>
+        </div>
+    </div>
+
+    <!-- Boutons info -->
+    <div class="info-buttons-container">
+        <button class="info-button" id="info-button" title="En savoir plus">ℹ Méthodologie</button>
+        <button class="info-button credits-button" id="credits-button" title="Crédits">© Crédits</button>
+    </div>
+
+    <!-- Modale info -->
+    <div class="info-modal-overlay" id="info-modal-overlay">
+        <div class="info-modal">
+            <div class="info-modal-header">
+                <span class="info-modal-title">Indice Global d'Instabilité (IGI) — Méthodologie</span>
+                <button class="info-modal-close" id="info-modal-close">×</button>
+            </div>
+            <div class="info-modal-content">
+                <h3>Qu'est-ce que l'IGI ?</h3>
+                <p>
+                    L'Indice Global d'Instabilité (IGI) est un indicateur synthétique expérimental, 
+                    mis à jour quotidiennement. Il vise à fournir une lecture instantanée du niveau 
+                    d'instabilité mondiale à partir d'un ensemble de signaux agrégés.
+                </p>
+                <p>
+                    <strong>Échelle :</strong> <code>0</code> = paix mondiale → <code>1000</code> = chaos absolu.
+                </p>
+
+                <h3>Méthode de calcul</h3>
+                <p>
+                    L'indice est calculé à partir des contributions pondérées de plusieurs pays ou régions 
+                    selon leur niveau d'instabilité quotidien.
+                </p>
+                <div class="formula">
+                    IGI = (Σ contribution_pondérée / 15) × 1000
+                </div>
+                <p>Où chaque contribution pondérée est :</p>
+                <div class="formula">
+                    contribution = poids_fragilité × score_instabilité_quotidien
+                </div>
+
+                <h3>Composantes du calcul</h3>
+                <ul>
+                    <li><strong>Poids de fragilité (FIG)</strong> : basé sur le Fragile States Index et le poids géopolitique du pays/région</li>
+                    <li><strong>Score d'instabilité quotidien</strong> : évaluation basée sur les événements du jour (échelle Fibonacci : 1, 2, 3, 5, 8, 13...)</li>
+                    <li><strong>Bonus de chronicité</strong> : les crises prolongées reçoivent un facteur supplémentaire</li>
+                </ul>
+
+                <h3>Sources de données</h3>
+                <ul>
+                    <li>International Crisis Group — 10 Conflicts to Watch</li>
+                    <li>IRC Emergency Watchlist</li>
+                    <li>ACLED Conflict Watchlist</li>
+                    <li>CFR Conflicts to Watch</li>
+                    <li>Fragile States Index & OECD States of Fragility</li>
+                    <li>Couverture médiatique internationale (Reuters, Al Jazeera, BBC, etc.)</li>
+                </ul>
+
+                <h3>Limites et avertissements</h3>
+                <p>
+                    Cet indice est fourni <strong>à titre informatif et expérimental</strong>. 
+                    Il ne constitue pas une mesure scientifique validée et ne doit pas être utilisé 
+                    comme base pour des décisions critiques. Les pondérations et méthodes peuvent évoluer.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale crédits -->
+    <div class="info-modal-overlay" id="credits-modal-overlay">
+        <div class="info-modal">
+            <div class="info-modal-header">
+                <span class="info-modal-title">Crédits</span>
+                <button class="info-modal-close" id="credits-modal-close">×</button>
+            </div>
+            <div class="info-modal-content">
+                <h3>Icônes</h3>
+                <p>
+                    <a href="https://www.flaticon.com/fr/icones-gratuites/presentation" title="presentation icônes" target="_blank" rel="noopener noreferrer" style="color: #88aacc;">Presentation icônes créées par Sumitsaengtong - Flaticon</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="igi-error" id="igi-error" style="display: none;"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const IGI_JSON_PATH = '/assets/data/igi.json';
+            const valueEl = document.getElementById('igi-value');
+            const errorEl = document.getElementById('igi-error');
+            const dateEl = document.getElementById('igi-date');
+
+            /**
+             * Affiche la date du jour formatée
+             */
+            function displayCurrentDate() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                // Format en français
+                const dateFr = now.toLocaleDateString('fr-FR', options);
+                // Première lettre en majuscule
+                dateEl.textContent = dateFr.charAt(0).toUpperCase() + dateFr.slice(1);
+            }
+
+            // Afficher la date immédiatement
+            displayCurrentDate();
+
+            /**
+             * Affiche une erreur discrète en bas de page
+             */
+            function showError(message) {
+                valueEl.innerHTML = '<span class="igi-loading">—</span>';
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            }
+
+            /**
+             * Formate le nombre selon les règles :
+             * - Entier : pas de décimales
+             * - Décimal : max 2 décimales
+             */
+            function formatValue(num) {
+                if (Number.isInteger(num)) {
+                    return num.toString();
+                }
+                // Arrondi à 2 décimales max, supprime les zéros inutiles
+                return parseFloat(num.toFixed(2)).toString();
+            }
+
+            /**
+             * Extrait la valeur IGI du JSON avec stratégie tolérante
+             * Gère les structures imbriquées et plates
+             */
+            function extractValue(data) {
+                if (data === null || typeof data !== 'object') {
+                    return null;
+                }
+
+                // 1. Structure imbriquée : global_instability_index.value
+                if (data.global_instability_index && typeof data.global_instability_index === 'object') {
+                    const gii = data.global_instability_index;
+                    if (typeof gii.value === 'number' && !isNaN(gii.value)) {
+                        return gii.value;
+                    }
+                }
+
+                // 2. Stratégie tolérante pour structure plate : clés dans l'ordre de priorité
+                const keys = ['value', 'igi', 'index'];
+                
+                for (const key of keys) {
+                    if (key in data && typeof data[key] === 'number' && !isNaN(data[key])) {
+                        return data[key];
+                    }
+                }
+
+                return null;
+            }
+
+            /**
+             * Charge et affiche l'IGI
+             */
+            async function loadIGI() {
+                try {
+                    const response = await fetch(IGI_JSON_PATH);
+
+                    if (!response.ok) {
+                        throw new Error('network');
+                    }
+
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        throw new Error('json');
+                    }
+
+                    const value = extractValue(data);
+
+                    if (value === null) {
+                        throw new Error('missing');
+                    }
+
+                    // Affichage du nombre avec couleur selon le niveau
+                    valueEl.textContent = formatValue(value);
+                    valueEl.style.color = getColorForValue(value);
+                    valueEl.style.textShadow = `0 0 30px ${getColorForValue(value, 0.4)}`;
+
+                } catch (error) {
+                    console.error('Erreur IGI:', error);
+                    showError('IGI indisponible');
+                }
+            }
+
+            /**
+             * Retourne une couleur en fonction de la valeur IGI (0-1000)
+             * Dégradé: Vert (0) → Jaune (250-400) → Orange (500-650) → Rouge (1000)
+             * Utilise HSL pour un dégradé naturel
+             */
+            function getColorForValue(value, alpha = 1) {
+                // Clamp entre 0 et 1000
+                const v = Math.max(0, Math.min(1000, value));
+                
+                // Palette de couleurs par paliers de ~50 points
+                // Format: [seuil, hue, saturation%, lightness%]
+                const colorStops = [
+                    [0,    120, 65, 45],   // Vert foncé
+                    [50,   115, 60, 48],   // Vert
+                    [100,  110, 55, 50],   // Vert clair
+                    [150,  100, 55, 52],   // Vert pâle
+                    [200,  90,  58, 52],   // Vert-jaune
+                    [250,  75,  62, 52],   // Jaune-vert
+                    [300,  60,  70, 52],   // Jaune pâle
+                    [350,  54,  80, 52],   // Jaune
+                    [400,  48,  90, 50],   // Jaune soleil
+                    [450,  42,  92, 50],   // Jaune-orange
+                    [500,  36,  92, 50],   // Orange clair
+                    [550,  30,  90, 48],   // Orange
+                    [600,  24,  88, 46],   // Orange foncé
+                    [650,  18,  85, 45],   // Orange-rouge
+                    [700,  12,  82, 44],   // Rouge-orange
+                    [750,  8,   80, 43],   // Rouge clair
+                    [800,  4,   78, 42],   // Rouge
+                    [850,  2,   80, 40],   // Rouge foncé
+                    [900,  0,   85, 38],   // Rouge écarlate
+                    [950,  0,   90, 35],   // Rouge écarlate intense
+                    [1000, 0,   95, 30]    // Rouge écarlate profond
+                ];
+
+                // Trouver les deux paliers encadrant la valeur
+                let lower = colorStops[0];
+                let upper = colorStops[colorStops.length - 1];
+
+                for (let i = 0; i < colorStops.length - 1; i++) {
+                    if (v >= colorStops[i][0] && v < colorStops[i + 1][0]) {
+                        lower = colorStops[i];
+                        upper = colorStops[i + 1];
+                        break;
+                    }
+                }
+
+                // Interpolation linéaire entre les deux paliers
+                const range = upper[0] - lower[0];
+                const t = range > 0 ? (v - lower[0]) / range : 0;
+
+                const h = Math.round(lower[1] + (upper[1] - lower[1]) * t);
+                const s = Math.round(lower[2] + (upper[2] - lower[2]) * t);
+                const l = Math.round(lower[3] + (upper[3] - lower[3]) * t);
+
+                if (alpha < 1) {
+                    return `hsla(${h}, ${s}%, ${l}%, ${alpha})`;
+                }
+                return `hsl(${h}, ${s}%, ${l}%)`;
+            }
+
+            // Chargement au démarrage
+            loadIGI();
+
+            // Gestion de la modale info
+            const infoButton = document.getElementById('info-button');
+            const infoModalOverlay = document.getElementById('info-modal-overlay');
+            const infoModalClose = document.getElementById('info-modal-close');
+
+            infoButton.addEventListener('click', function() {
+                infoModalOverlay.classList.add('show');
+            });
+
+            infoModalClose.addEventListener('click', function() {
+                infoModalOverlay.classList.remove('show');
+            });
+
+            // Fermer en cliquant sur l'overlay (hors modale)
+            infoModalOverlay.addEventListener('click', function(e) {
+                if (e.target === infoModalOverlay) {
+                    infoModalOverlay.classList.remove('show');
+                }
+            });
+
+            // Gestion de la modale crédits
+            const creditsButton = document.getElementById('credits-button');
+            const creditsModalOverlay = document.getElementById('credits-modal-overlay');
+            const creditsModalClose = document.getElementById('credits-modal-close');
+
+            creditsButton.addEventListener('click', function() {
+                creditsModalOverlay.classList.add('show');
+            });
+
+            creditsModalClose.addEventListener('click', function() {
+                creditsModalOverlay.classList.remove('show');
+            });
+
+            creditsModalOverlay.addEventListener('click', function(e) {
+                if (e.target === creditsModalOverlay) {
+                    creditsModalOverlay.classList.remove('show');
+                }
+            });
+
+            // Fermer avec Escape (toutes les modales)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (infoModalOverlay.classList.contains('show')) {
+                        infoModalOverlay.classList.remove('show');
+                    }
+                    if (creditsModalOverlay.classList.contains('show')) {
+                        creditsModalOverlay.classList.remove('show');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

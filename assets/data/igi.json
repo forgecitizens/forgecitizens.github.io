@@ -1,0 +1,104 @@
+{
+  "global_instability_index": {
+    "value": 385,
+    "scale": "0 = paix mondiale → 1000 = chaos absolu",
+    "calculation_date": "2026-01-11",
+    "last_updated": "2026-01-11T18:00:00Z",
+    "version": "1.2",
+    "note": "Mise à jour majeure : Iran domine avec protestations massives + répression + menaces internationales ; ajout tensions Groenland/Trump + réponses européennes. Pondération fragilité renforcée."
+  },
+
+  "major_contributors": [
+    {
+      "country_or_region": "Iran",
+      "fig_weight": 0.055,
+      "daily_instability_score": 13,
+      "weighted_contribution": 0.715,
+      "events": "Protestations nationales massives (plusieurs semaines, escalade violente), >500 morts (dont >490 manifestants), répression brutale (tirs, arrestations >10k), blackout internet total, menaces contre USA/Israël si intervention, discussions US sur options militaires",
+      "gravity": "Très élevé (Fibonacci 13 : violences massives + risque intervention étrangère + instabilité régime/nucleaire)"
+    },
+    {
+      "country_or_region": "Sudan",
+      "fig_weight": 0.050,
+      "daily_instability_score": 13,
+      "weighted_contribution": 0.650,
+      "events": "Escalade guerre civile (SAF vs RSF), massacres Darfour/Kordofan, crise humanitaire catastrophique",
+      "gravity": "Très élevé (Fibonacci 8 + 5 chronicité)"
+    },
+    {
+      "country_or_region": "Greenland / Danemark / Tensions transatlantiques",
+      "fig_weight": 0.045,
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.360,
+      "events": "Trump réitère annexion Groenland ('hard way' non exclu), rhétorique agressive post-Venezuela, réactions européennes (soutien Danemark, craintes fin OTAN, déclarations communes Macron/Starmer/Merz/etc.)",
+      "gravity": "Élevé (Fibonacci 5 + 3 : menace régionale + fracture diplomatique OTAN)"
+    },
+    {
+      "country_or_region": "Democratic Republic of Congo (Est)",
+      "fig_weight": 0.044,
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.352,
+      "events": "Progression M23, violences intercommunautaires, déplacements massifs",
+      "gravity": "Élevé (Fibonacci 8)"
+    },
+    {
+      "country_or_region": "Sahel (Burkina Faso / Mali / Niger)",
+      "fig_weight": 0.030,
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.240,
+      "events": "Pression jihadiste accrue, violences civiles persistantes",
+      "gravity": "Élevé (Fibonacci 5 + 3)"
+    },
+    {
+      "country_or_region": "Haiti",
+      "fig_weight": 0.022,
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.176,
+      "events": "Guerre des gangs persistante, effondrement humanitaire",
+      "gravity": "Élevé (Fibonacci 5 + 3)"
+    },
+    {
+      "country_or_region": "Ukraine / Russie",
+      "fig_weight": 0.070,
+      "daily_instability_score": 7,
+      "weighted_contribution": 0.490,
+      "events": "Combats intenses Donetsk, tensions persistantes",
+      "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
+    },
+    {
+      "country_or_region": "China / Taiwan",
+      "fig_weight": 0.110,
+      "daily_instability_score": 5,
+      "weighted_contribution": 0.550,
+      "events": "Activités militaires continues, menace régionale",
+      "gravity": "Modéré (Fibonacci 5)"
+    },
+    {
+      "country_or_region": "South Sudan",
+      "fig_weight": 0.025,
+      "daily_instability_score": 5,
+      "weighted_contribution": 0.125,
+      "events": "Hausse violences ethniques/abductions",
+      "gravity": "Modéré (Fibonacci 5)"
+    }
+  ],
+
+  "summary": {
+    "total_weighted_sum": 5.78,
+    "normalization_max": 15,
+    "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
+    "interpretation": "Instabilité très élevée – dominée par la crise explosive en Iran (risque de dérapage international), crises chroniques africaines, et nouvelle fracture transatlantique sur Groenland. Risque majeur d'escalade si répression ou rhétorique Trump s'aggrave."
+  },
+
+  "metadata": {
+    "sources": [
+      "Al Jazeera, Reuters, NYT, Washington Post, NPR, BBC, HRANA, ISW (Iran protests & death toll)",
+      "Reuters, Al Jazeera, Guardian, Foreign Policy, The Atlantic (Trump Greenland threats & Europe responses)",
+      "International Crisis Group, IRC, ACLED, CFR (crises chroniques & watchlists 2026)",
+      "Fragile States Index & OECD States of Fragility"
+    ],
+    "fragility_bonus_applied": true,
+    "countries_included": "~50 (focus top fragiles + puissances + événements du jour)",
+    "next_update_planned": "2026-01-12"
+  }
+}

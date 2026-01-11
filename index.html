@@ -49,6 +49,11 @@
             </div>
             <div class="icon-label">Radio</div>
         </div>
+
+        <div class="desktop-icon" style="top: 20px; left: 120px;" data-modal="igi-popup">
+            <img class="icon-image" src="img/igi.png" alt="IGI">
+            <div class="icon-label">Indice Global d'Instabilité</div>
+        </div>
     </div>
 
     <!-- Taskbar -->
@@ -678,6 +683,32 @@
             <div class="status-text">📁 1 document(s) disponible(s)</div>
         </div>
         <div class="window-resize-handle" aria-hidden="true"></div>
+    </div>
+
+    <!-- IGI Popup Modal -->
+    <div class="window" id="igi-popup-modal" role="dialog" aria-modal="true" aria-labelledby="igi-popup-title" style="width: 400px; height: auto; min-height: 200px;">
+        <div class="window-titlebar">
+            <div class="window-title" id="igi-popup-title">Indice Global d'Instabilité (IGI)</div>
+            <div class="window-controls">
+                <div class="window-button" onclick="closeModal('igi-popup-modal')" aria-label="Fermer">×</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="window-content" style="padding: 16px;">
+                <p style="margin: 0 0 16px 0; font-size: 12px; line-height: 1.5; color: #333;">
+                    L'IGI est un indicateur synthétique mis à jour quotidiennement. 
+                    Il offre une lecture instantanée du niveau d'instabilité global 
+                    à partir d'un ensemble de signaux agrégés.
+                </p>
+                <p style="margin: 0 0 20px 0; font-size: 11px; color: #666; font-style: italic;">
+                    Cet indice est fourni à titre informatif et expérimental.
+                </p>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="action-button primary" onclick="window.location.href='/igi/'">Afficher l'indice</button>
+                    <button class="action-button secondary" onclick="closeModal('igi-popup-modal')">Fermer</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Download Confirmation Popup -->
