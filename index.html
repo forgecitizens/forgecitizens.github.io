@@ -55,12 +55,6 @@
         </div>
 
         <div class="system-tray">
-            <div class="tray-icon" id="trayRadio" onclick="openRadio()" title="Radio">
-                <img src="img/cassette.png" alt="Radio">
-            </div>
-            <div class="tray-icon" id="trayContact" data-modal="contact" title="Contact">
-                <img src="img/email.png" alt="Contact">
-            </div>
             <div id="datetime" style="cursor: pointer;" title="Cliquez pour ouvrir le calendrier"></div>
         </div>
     </div>
@@ -70,6 +64,8 @@
     <div class="start-menu" id="startMenu">
         <div class="start-menu-item" data-folder-path="Programmes"><img src="img/3d-computer.png" alt="" class="start-menu-icon">Programmes</div>
         <div class="start-menu-item" data-modal="calendar">📅 Calendrier</div>
+        <div class="start-menu-item" id="radioMenuItem" onclick="openRadio()"><img src="img/cassette.png" alt="" class="start-menu-icon">Radio</div>
+        <div class="start-menu-item" data-modal="contact"><img src="img/email.png" alt="" class="start-menu-icon">Contact</div>
         <div class="start-menu-separator"></div>
         <div class="start-menu-item" id="aboutMenuItem">👤 Qui suis-je ?</div>
     </div>
