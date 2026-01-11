@@ -509,6 +509,109 @@ Styles complets pour le composant calendrier autonome avec :
 }
 
 /* ========================================================================
+   MODALE D'ÉVÉNEMENT (LECTURE SEULE)
+   ======================================================================== */
+
+.event-modal {
+    min-width: 360px;
+    max-width: 480px;
+}
+
+.event-modal-header {
+    background: linear-gradient(to right, #008000 0%, #40a040 100%) !important;
+}
+
+.event-date {
+    background: #f0f0f0;
+    border: 1px inset #c0c0c0;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
+    color: #000080;
+    font-size: 12px;
+}
+
+.event-content {
+    background: #ffffff;
+    border: 1px inset #c0c0c0;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.event-content p {
+    margin: 0;
+}
+
+.event-link {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.event-link-btn {
+    display: inline-block;
+    background: #0000ff;
+    color: #ffffff !important;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px outset #0000ff;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.event-link-btn:hover {
+    background: #4040ff;
+}
+
+.event-link-btn:active {
+    border: 1px inset #0000ff;
+    background: #000080;
+}
+
+.event-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.close-event-btn {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 6px 20px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #000000;
+    font-family: inherit;
+}
+
+.close-event-btn:active {
+    border: 1px inset #c0c0c0;
+    background: #a0a0a0;
+}
+
+.close-event-btn:hover {
+    background: #d0d0d0;
+}
+
+/* Style spécial pour les jours avec événements */
+.calendar-day.has-event {
+    background: #80ff80 !important;
+    border: 1px solid #008000;
+}
+
+.calendar-day.has-event::after {
+    content: '★';
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    color: #006000;
+    font-size: 8px;
+}
+
+/* ========================================================================
    RESPONSIVE - ADAPTATION MOBILE
    ======================================================================== */
 

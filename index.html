@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>maincitizen - Page d'Accueil</title>
+    <title>maincitizen</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -75,17 +75,30 @@
 
     <!-- Start Menu -->
     <div class="start-menu" id="startMenu">
-        <div class="start-menu-item" data-folder-path="Programmes">Programmes</div>
-        <div class="start-menu-item" data-modal="documents">Documents</div>
-        <div class="start-menu-item" data-modal="settings">Paramètres</div>
-        <div class="start-menu-item" data-modal="search">Rechercher</div>
-        <div class="start-menu-item" data-modal="help">Aide</div>
-        <div class="start-menu-item" data-modal="run">Exécuter</div>
-        <div class="start-menu-item" data-modal="logoff">Fermer la session</div>
-        <div class="start-menu-item" data-modal="shutdown">Arrêter</div>
-        <div class="start-menu-item" data-modal="calculator">Calculatrice</div>
-        <div class="start-menu-item" data-modal="notepad">Bloc-notes</div>
+        <div class="start-menu-item" data-folder-path="Programmes"><img src="img/3d-computer.png" alt="" class="start-menu-icon">Programmes</div>
         <div class="start-menu-item" data-modal="calendar">📅 Calendrier</div>
+        <div class="start-menu-separator"></div>
+        <div class="start-menu-item" id="aboutMenuItem">👤 Qui suis-je ?</div>
+    </div>
+
+    <!-- About Popup Overlay -->
+    <div class="about-overlay" id="aboutOverlay"></div>
+
+    <!-- About Popup -->
+    <div class="about-popup" id="aboutPopup">
+        <div class="about-popup-header">
+            <span class="about-popup-title">👤 Qui suis-je ?</span>
+            <button class="about-popup-close" id="aboutCloseBtn" aria-label="Fermer">×</button>
+        </div>
+        <div class="about-popup-content">
+            <p><strong>Je m'appelle Andrei, j'ai 35 ans et je suis consultant dans l'IT.</strong></p>
+            <p>J'ai créé ce site pour résister à l'inertie intellectuelle.</p>
+            <p>À l'heure des dashboards omniscients, des opinions prêtes à l'emploi et de l'automatisation de la pensée, je préfère le minimal, le doute, l'effort de compréhension. Cosmologie, intelligence artificielle, philosophie, littérature, cinéma : tout ici sert une seule obsession, celle de reprendre la main sur notre capacité à penser le monde.</p>
+            <p>Ce site n'est ni une vitrine ni une plateforme.<br>
+            C'est un poste d'observation, un atelier de friction, un espace où j'expérimente des idées, des formes et des chiffres pour raviver la curiosité plutôt que la calmer.</p>
+            <p><em>Comprendre n'est pas confortable.<br>
+            Mais c'est encore ce que nous avons de plus libre.</em></p>
+        </div>
     </div>
 
     <!-- Contact Modal - PILOTE nouvelle structure -->

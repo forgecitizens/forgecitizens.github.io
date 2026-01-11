@@ -112,10 +112,90 @@ function initializeTaskbar() {
     initializeStartMenu();
     initializeGlobalHandlers();
     initializeDateTimeClick(); // Ajouter l'événement de clic sur la date/heure
+    initializeAboutPopup(); // Initialiser la popup "Qui suis-je ?"
     updateDateTime();
     
     // Set up periodic updates
     setInterval(updateDateTime, 1000);
+}
+
+// ===== ABOUT POPUP ("Qui suis-je ?") =====
+function initializeAboutPopup() {
+    const aboutMenuItem = document.getElementById('aboutMenuItem');
+    const aboutPopup = document.getElementById('aboutPopup');
+    const aboutOverlay = document.getElementById('aboutOverlay');
+    const aboutCloseBtn = document.getElementById('aboutCloseBtn');
+    
+    if (!aboutMenuItem || !aboutPopup || !aboutOverlay) {
+        console.warn('⚠️ Éléments About popup introuvables');
+        return;
+    }
+    
+    // Ouvrir la popup au clic sur le menu
+    aboutMenuItem.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openAboutPopup();
+        
+        // Fermer le menu démarrer
+        const startMenu = document.getElementById('startMenu');
+        const startButton = document.getElementById('startButton');
+        startMenu.classList.remove('show');
+        startButton.classList.remove('active');
+    });
+    
+    // Fermer via le bouton ×
+    aboutCloseBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeAboutPopup();
+    });
+    
+    // Fermer au clic sur l'overlay (hors popup)
+    aboutOverlay.addEventListener('click', function(e) {
+        closeAboutPopup();
+    });
+    
+    // Empêcher la propagation du clic sur la popup
+    aboutPopup.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Fermer avec la touche Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && aboutPopup.classList.contains('show')) {
+            closeAboutPopup();
+        }
+    });
+    
+    console.log('✅ About popup initialisée');
+}
+
+function openAboutPopup() {
+    const aboutPopup = document.getElementById('aboutPopup');
+    const aboutOverlay = document.getElementById('aboutOverlay');
+    
+    if (aboutPopup && aboutOverlay) {
+        aboutOverlay.classList.add('show');
+        aboutPopup.classList.add('show');
+        
+        // Play sound if available
+        if (typeof playClickSound === 'function') {
+            playClickSound();
+        }
+        
+        console.log('🔓 About popup ouverte');
+    }
+}
+
+function closeAboutPopup() {
+    const aboutPopup = document.getElementById('aboutPopup');
+    const aboutOverlay = document.getElementById('aboutOverlay');
+    
+    if (aboutPopup && aboutOverlay) {
+        aboutPopup.classList.remove('show');
+        aboutOverlay.classList.remove('show');
+        
+        console.log('🔒 About popup fermée');
+    }
 }
 
 // Initialize click event on datetime to open calendar

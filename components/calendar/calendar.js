@@ -25,6 +25,40 @@ class RetroCalendar {
         this.clockInterval = null;
         this.activeNotes = this.loadNotes();
         
+        // Événements prédéfinis (non modifiables)
+        this.predefinedEvents = {
+            '2025-11-13': {
+                title: 'Lancement de Foozool',
+                text: 'Lancement de Foozool : une chaîne YouTube avec des shorts générés grâce à Grok Imagine + ChatGPT. Le principe ? De fausses interviews sur des mesures gouvernementales absurdes.',
+                link: 'https://www.youtube.com/@FoozoolMedia/shorts',
+                linkText: 'Voir la chaîne YouTube'
+            },
+            '2025-12-25': {
+                title: 'Publication scientifique',
+                text: 'Publication de "Vers un modèle cosmologique unifié" dans ViXra.',
+                link: 'https://ai.vixra.org/abs/2512.0089',
+                linkText: 'Lire la publication'
+            },
+            '2026-01-04': {
+                title: 'Release Drafter v.1',
+                text: 'Release v.1 de Drafter, la machine à écrire numérique inspirée du Hemingwrite.',
+                link: null,
+                linkText: null
+            },
+            '2026-01-05': {
+                title: 'Collection "Fault Lines"',
+                text: 'Publication du premier set d\'images de la collection "Fault Lines".',
+                link: null,
+                linkText: null
+            },
+            '2026-01-11': {
+                title: 'Release IGI v.1',
+                text: 'Release v.1 de l\'Indice d\'Instabilité Globale (IGI). L\'IGI c\'est un nombre qui agrège les situations financières, politiques, culturelles, climatiques, épidémiques mondiales pour déterminer sur une échelle allant de 0 à 1000 si le monde tend vers la paix universelle ou le chaos total.',
+                link: null,
+                linkText: null
+            }
+        };
+        
         this.months = [
             'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
             'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
@@ -261,12 +295,14 @@ class RetroCalendar {
                     const dateKey = this.formatDateKey(year, month, dayCounter);
                     const isToday = isCurrentMonth && dayCounter === todayDate;
                     const hasNote = this.activeNotes[dateKey] && this.activeNotes[dateKey].text.trim().length > 0;
+                    const hasEvent = this.predefinedEvents[dateKey] !== undefined;
                     
                     let classes = 'calendar-day';
                     if (isToday) classes += ' today';
-                    if (hasNote) classes += ' has-note';
+                    if (hasNote || hasEvent) classes += ' has-note';
+                    if (hasEvent) classes += ' has-event';
                     
-                    html += `<td class="${classes}" data-date="${dateKey}" data-day="${dayCounter}">
+                    html += `<td class="${classes}" data-date="${dateKey}" data-day="${dayCounter}" ${hasEvent ? 'data-event="true"' : ''}>
                         <span class="day-number">${dayCounter}</span>
                     </td>`;
                     
@@ -306,13 +342,111 @@ class RetroCalendar {
         const dayElement = event.currentTarget;
         const dateKey = dayElement.dataset.date;
         const hasNote = dayElement.classList.contains('has-note');
+        const hasEvent = dayElement.dataset.event === 'true';
         
-        // Seules les dates avec notes sont cliquables
-        if (hasNote) {
+        // Priorité aux événements prédéfinis
+        if (hasEvent) {
+            this.playClickSound();
+            this.showEventModal(dateKey);
+        } else if (hasNote) {
             this.playClickSound();
             this.showNoteModal(dateKey);
         }
         // Sinon, pas de réaction (pas cliquable)
+    }
+
+    /**
+     * Affiche la modale d'affichage d'un événement prédéfini (lecture seule)
+     */
+    showEventModal(dateKey) {
+        const event = this.predefinedEvents[dateKey];
+        if (!event) return;
+        
+        // Formater la date pour affichage
+        const date = new Date(dateKey);
+        const formattedDate = date.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // Construire le lien si présent
+        let linkHTML = '';
+        if (event.link) {
+            linkHTML = `
+                <div class="event-link">
+                    <a href="${event.link}" target="_blank" rel="noopener noreferrer" class="event-link-btn">
+                        🔗 ${event.linkText || 'Voir plus'}
+                    </a>
+                </div>
+            `;
+        }
+        
+        const modalHTML = `
+            <div class="note-modal-overlay" id="event-modal-overlay">
+                <div class="note-modal event-modal">
+                    <div class="note-modal-header event-modal-header">
+                        <span class="modal-title">📅 ${event.title}</span>
+                        <button class="close-btn" id="close-event-modal">✕</button>
+                    </div>
+                    <div class="note-modal-content">
+                        <div class="event-date">
+                            ${formattedDate}
+                        </div>
+                        <div class="event-content">
+                            <p>${event.text}</p>
+                        </div>
+                        ${linkHTML}
+                        <div class="event-actions">
+                            <button class="close-event-btn" id="close-event-btn">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Ajouter au DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Event listeners
+        document.getElementById('close-event-modal').addEventListener('click', () => {
+            this.closeEventModal();
+        });
+        
+        document.getElementById('close-event-btn').addEventListener('click', () => {
+            this.closeEventModal();
+        });
+        
+        // Fermeture par overlay
+        document.getElementById('event-modal-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'event-modal-overlay') {
+                this.closeEventModal();
+            }
+        });
+        
+        // ESC pour fermer
+        document.addEventListener('keydown', this.handleEventEscKey = (e) => {
+            if (e.key === 'Escape') {
+                this.closeEventModal();
+            }
+        });
+    }
+
+    /**
+     * Ferme la modale d'événement
+     */
+    closeEventModal() {
+        const modal = document.getElementById('event-modal-overlay');
+        if (modal) {
+            modal.remove();
+        }
+        
+        // Retirer le listener ESC
+        if (this.handleEventEscKey) {
+            document.removeEventListener('keydown', this.handleEventEscKey);
+            this.handleEventEscKey = null;
+        }
     }
 
     /**
