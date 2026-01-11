@@ -113,10 +113,38 @@ function initializeTaskbar() {
     initializeGlobalHandlers();
     initializeDateTimeClick(); // Ajouter l'événement de clic sur la date/heure
     initializeAboutPopup(); // Initialiser la popup "Qui suis-je ?"
+    initializeTrayIcons(); // Initialiser les icônes du system tray
     updateDateTime();
     
     // Set up periodic updates
     setInterval(updateDateTime, 1000);
+}
+
+// ===== SYSTEM TRAY ICONS =====
+function initializeTrayIcons() {
+    // Contact icon in tray
+    const trayContact = document.getElementById('trayContact');
+    if (trayContact) {
+        trayContact.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            if (typeof playClickSound === 'function') {
+                playClickSound();
+            }
+            
+            const modalId = this.getAttribute('data-modal');
+            if (modalId) {
+                openModal(modalId + '-modal');
+            }
+        });
+        console.log('✅ Tray Contact initialisé');
+    }
+    
+    // Radio icon already has onclick="openRadio()" in HTML
+    const trayRadio = document.getElementById('trayRadio');
+    if (trayRadio) {
+        console.log('✅ Tray Radio initialisé');
+    }
 }
 
 // ===== ABOUT POPUP ("Qui suis-je ?") =====

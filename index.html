@@ -37,20 +37,7 @@
             <div class="icon-label">Vulgarisation IA générative</div>
         </div>
 
-        <div class="desktop-icon" style="top: 520px; left: 20px;" data-modal="contact">
-            <img class="icon-image" src="img/email.png" alt="Contact">
-            <div class="icon-label">Contact</div>
-        </div>
-
-        <div class="desktop-icon" style="top: 620px; left: 20px;" onclick="openRadio()">
-            <div class="icon-wrapper">
-                <img class="icon-image" src="img/cassette.png" alt="Radio">
-                <img class="shortcut-arrow" src="img/shortcut.png" alt="">
-            </div>
-            <div class="icon-label">Radio</div>
-        </div>
-
-        <div class="desktop-icon" style="top: 20px; left: 120px;" data-modal="igi-popup">
+        <div class="desktop-icon" style="top: 520px; left: 20px;" data-modal="igi-popup">
             <img class="icon-image" src="img/igi.png" alt="IGI">
             <div class="icon-label">Indice Global d'Instabilité</div>
         </div>
@@ -68,6 +55,12 @@
         </div>
 
         <div class="system-tray">
+            <div class="tray-icon" id="trayRadio" onclick="openRadio()" title="Radio">
+                <img src="img/cassette.png" alt="Radio">
+            </div>
+            <div class="tray-icon" id="trayContact" data-modal="contact" title="Contact">
+                <img src="img/email.png" alt="Contact">
+            </div>
             <div id="datetime" style="cursor: pointer;" title="Cliquez pour ouvrir le calendrier"></div>
         </div>
     </div>

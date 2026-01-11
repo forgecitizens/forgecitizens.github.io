@@ -411,6 +411,10 @@
             height: calc(100vh - 28px);
             padding: 20px;
             box-sizing: border-box;
+            background-image: url('../../img/background_09.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .desktop-icon {
@@ -559,9 +563,36 @@
         .system-tray {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 8px;
             font-size: 10px;
             color: #000;
+        }
+
+        .tray-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 2px;
+            border: 1px solid transparent;
+        }
+
+        .tray-icon:hover {
+            border: 1px outset #c0c0c0;
+            background: #d0d0d0;
+        }
+
+        .tray-icon:active {
+            border: 1px inset #c0c0c0;
+            background: #a0a0a0;
+        }
+
+        .tray-icon img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
 
         .start-menu {
