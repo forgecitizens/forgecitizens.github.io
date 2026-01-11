@@ -35,6 +35,13 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .igi-container * {
+            pointer-events: auto;
         }
 
         .igi-value {
@@ -110,6 +117,7 @@
             padding: 4px 8px;
             border: 1px solid #333333;
             transition: all 0.2s ease;
+            z-index: 10;
         }
 
         .back-link:hover {
@@ -156,6 +164,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            z-index: 10;
         }
 
         /* Bouton info à droite */
@@ -306,14 +315,131 @@
             height: 32px;
             opacity: 0.7;
             transition: opacity 0.2s ease;
+            z-index: 10;
         }
 
         .igi-icon:hover {
             opacity: 1;
         }
+
+        /* Graphique en arrière-plan */
+        .igi-background-chart {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            pointer-events: none;
+            padding: 60px 80px 60px 40px; /* marges: top, right (pour boutons), bottom, left */
+            box-sizing: border-box;
+        }
+
+        .igi-background-chart svg {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .igi-background-chart svg circle {
+            pointer-events: all;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: rgba(120, 120, 120, 0.6);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .chart-area {
+            fill: url(#chartGradient);
+            opacity: 0.2;
+        }
+
+        .chart-grid-line {
+            stroke: rgba(70, 70, 70, 0.4);
+            stroke-width: 1;
+            stroke-dasharray: 4, 4;
+        }
+
+        .chart-axis-label {
+            fill: rgba(120, 120, 120, 0.6);
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+
+        .chart-dot {
+            fill: rgba(140, 140, 140, 0.7);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.15s ease;
+        }
+
+        .chart-dot:hover {
+            fill: rgba(200, 200, 200, 1);
+            r: 6;
+        }
+
+        .chart-dot-current {
+            fill: rgba(180, 180, 180, 0.85);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.15s ease;
+        }
+
+        .chart-dot-current:hover {
+            fill: rgba(230, 230, 230, 1);
+        }
+
+        /* Tooltip pour le graphique */
+        .chart-tooltip {
+            position: fixed;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid #555555;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #cccccc;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chart-tooltip-day {
+            color: #888888;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .chart-tooltip-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
+    <!-- Graphique en arrière-plan -->
+    <div class="igi-background-chart" id="background-chart"></div>
+
+    <!-- Tooltip pour le graphique -->
+    <div class="chart-tooltip" id="chart-tooltip">
+        <div class="chart-tooltip-day"></div>
+        <div class="chart-tooltip-value"></div>
+    </div>
+
     <a href="/" class="back-link">← Retour</a>
     <img src="/img/igi.png" alt="IGI" class="igi-icon">
 
@@ -600,6 +726,208 @@
 
             // Chargement au démarrage
             loadIGI();
+
+            // ========== GRAPHIQUE EN ARRIÈRE-PLAN ==========
+            function renderBackgroundChart() {
+                const chartContainer = document.getElementById('background-chart');
+                if (!chartContainer) return;
+
+                // Données IGI de janvier 2026
+                const igiData = [
+                    { day: 1, value: 365 },
+                    { day: 2, value: 363 },
+                    { day: 3, value: 366 },
+                    { day: 4, value: 369 },
+                    { day: 5, value: 375 },
+                    { day: 6, value: 377 },
+                    { day: 7, value: 381 },
+                    { day: 8, value: 380 },
+                    { day: 9, value: 382 },
+                    { day: 10, value: 383 },
+                    { day: 11, value: 386 }
+                ];
+
+                // Jours du mois en cours (janvier = 31 jours)
+                const daysInMonth = 31;
+                const currentDay = new Date().getDate();
+
+                // Dimensions du graphique
+                const padding = { top: 30, right: 30, bottom: 40, left: 50 };
+                
+                // Valeurs min/max pour l'axe Y (avec marge)
+                const minValue = Math.min(...igiData.map(d => d.value)) - 10;
+                const maxValue = Math.max(...igiData.map(d => d.value)) + 20;
+
+                // Création du SVG
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('viewBox', '0 0 1000 600');
+                svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+                // Dégradé pour l'aire sous la courbe
+                const defs = document.createElementNS(svgNS, 'defs');
+                const gradient = document.createElementNS(svgNS, 'linearGradient');
+                gradient.setAttribute('id', 'chartGradient');
+                gradient.setAttribute('x1', '0%');
+                gradient.setAttribute('y1', '0%');
+                gradient.setAttribute('x2', '0%');
+                gradient.setAttribute('y2', '100%');
+                
+                const stop1 = document.createElementNS(svgNS, 'stop');
+                stop1.setAttribute('offset', '0%');
+                stop1.setAttribute('stop-color', 'rgba(100, 100, 100, 0.3)');
+                
+                const stop2 = document.createElementNS(svgNS, 'stop');
+                stop2.setAttribute('offset', '100%');
+                stop2.setAttribute('stop-color', 'rgba(50, 50, 50, 0)');
+                
+                gradient.appendChild(stop1);
+                gradient.appendChild(stop2);
+                defs.appendChild(gradient);
+                svg.appendChild(defs);
+
+                // Dimensions utiles
+                const chartWidth = 1000 - padding.left - padding.right;
+                const chartHeight = 600 - padding.top - padding.bottom;
+
+                // Fonctions de mise à l'échelle
+                const xScale = (day) => padding.left + ((day - 1) / (daysInMonth - 1)) * chartWidth;
+                const yScale = (value) => padding.top + ((maxValue - value) / (maxValue - minValue)) * chartHeight;
+
+                // Lignes de grille horizontales
+                const yTicks = [350, 360, 370, 380, 390, 400];
+                yTicks.forEach(tick => {
+                    const y = yScale(tick);
+                    if (y > padding.top && y < 600 - padding.bottom) {
+                        const line = document.createElementNS(svgNS, 'line');
+                        line.setAttribute('x1', padding.left);
+                        line.setAttribute('y1', y);
+                        line.setAttribute('x2', 1000 - padding.right);
+                        line.setAttribute('y2', y);
+                        line.setAttribute('class', 'chart-grid-line');
+                        svg.appendChild(line);
+
+                        // Labels Y
+                        const label = document.createElementNS(svgNS, 'text');
+                        label.setAttribute('x', padding.left - 10);
+                        label.setAttribute('y', y + 4);
+                        label.setAttribute('text-anchor', 'end');
+                        label.setAttribute('class', 'chart-axis-label');
+                        label.textContent = tick;
+                        svg.appendChild(label);
+                    }
+                });
+
+                // Labels X (jours) - afficher quelques jours
+                const xTickDays = [1, 5, 10, 15, 20, 25, 31];
+                xTickDays.forEach(day => {
+                    const x = xScale(day);
+                    const label = document.createElementNS(svgNS, 'text');
+                    label.setAttribute('x', x);
+                    label.setAttribute('y', 600 - padding.bottom + 20);
+                    label.setAttribute('text-anchor', 'middle');
+                    label.setAttribute('class', 'chart-axis-label');
+                    label.textContent = day;
+                    svg.appendChild(label);
+                });
+
+                // Créer le chemin de la courbe
+                let pathD = '';
+                let areaD = '';
+                
+                igiData.forEach((point, index) => {
+                    const x = xScale(point.day);
+                    const y = yScale(point.value);
+                    
+                    if (index === 0) {
+                        pathD += `M ${x} ${y}`;
+                        areaD += `M ${x} ${600 - padding.bottom} L ${x} ${y}`;
+                    } else {
+                        pathD += ` L ${x} ${y}`;
+                        areaD += ` L ${x} ${y}`;
+                    }
+                });
+
+                // Fermer l'aire
+                const lastPoint = igiData[igiData.length - 1];
+                areaD += ` L ${xScale(lastPoint.day)} ${600 - padding.bottom} Z`;
+
+                // Aire sous la courbe
+                const area = document.createElementNS(svgNS, 'path');
+                area.setAttribute('d', areaD);
+                area.setAttribute('class', 'chart-area');
+                svg.appendChild(area);
+
+                // Ligne de la courbe
+                const path = document.createElementNS(svgNS, 'path');
+                path.setAttribute('d', pathD);
+                path.setAttribute('class', 'chart-line');
+                svg.appendChild(path);
+
+                // Tooltip
+                const tooltip = document.getElementById('chart-tooltip');
+                const tooltipDay = tooltip.querySelector('.chart-tooltip-day');
+                const tooltipValue = tooltip.querySelector('.chart-tooltip-value');
+
+                // Points sur la courbe
+                igiData.forEach((point, index) => {
+                    const x = xScale(point.day);
+                    const y = yScale(point.value);
+                    const circle = document.createElementNS(svgNS, 'circle');
+                    circle.setAttribute('cx', x);
+                    circle.setAttribute('cy', y);
+                    circle.setAttribute('r', index === igiData.length - 1 ? 5 : 3);
+                    circle.setAttribute('class', index === igiData.length - 1 ? 'chart-dot-current' : 'chart-dot');
+                    
+                    // Stocker les données sur l'élément
+                    circle.dataset.day = point.day;
+                    circle.dataset.value = point.value;
+
+                    // Événements de survol
+                    circle.addEventListener('mouseenter', function(e) {
+                        const day = this.dataset.day;
+                        const value = this.dataset.value;
+                        
+                        // Formater la date
+                        const dayNum = parseInt(day);
+                        const suffix = dayNum === 1 ? 'er' : '';
+                        tooltipDay.textContent = `${dayNum}${suffix} janvier 2026`;
+                        tooltipValue.textContent = value;
+                        
+                        // Positionner la tooltip
+                        const rect = this.getBoundingClientRect();
+                        tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+                        tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+                        
+                        // Afficher
+                        tooltip.classList.add('visible');
+                        
+                        // Agrandir le point
+                        this.setAttribute('r', index === igiData.length - 1 ? 7 : 5);
+                    });
+
+                    circle.addEventListener('mouseleave', function() {
+                        tooltip.classList.remove('visible');
+                        this.setAttribute('r', index === igiData.length - 1 ? 5 : 3);
+                    });
+
+                    svg.appendChild(circle);
+                });
+
+                // Label "Janvier 2026"
+                const monthLabel = document.createElementNS(svgNS, 'text');
+                monthLabel.setAttribute('x', 1000 - padding.right);
+                monthLabel.setAttribute('y', 600 - padding.bottom + 35);
+                monthLabel.setAttribute('text-anchor', 'end');
+                monthLabel.setAttribute('class', 'chart-axis-label');
+                monthLabel.textContent = 'Janvier 2026';
+                svg.appendChild(monthLabel);
+
+                chartContainer.appendChild(svg);
+            }
+
+            // Rendre le graphique
+            renderBackgroundChart();
 
             // Gestion de la modale info
             const infoButton = document.getElementById('info-button');
