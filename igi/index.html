@@ -345,7 +345,7 @@
 
         .chart-line {
             fill: none;
-            stroke: rgba(120, 120, 120, 0.6);
+            stroke: rgba(147, 112, 219, 0.7);
             stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -369,26 +369,26 @@
         }
 
         .chart-dot {
-            fill: rgba(140, 140, 140, 0.7);
+            fill: rgba(147, 112, 219, 0.8);
             cursor: pointer;
             pointer-events: all;
             transition: all 0.15s ease;
         }
 
         .chart-dot:hover {
-            fill: rgba(200, 200, 200, 1);
+            fill: rgba(180, 150, 240, 1);
             r: 6;
         }
 
         .chart-dot-current {
-            fill: rgba(180, 180, 180, 0.85);
+            fill: rgba(180, 150, 240, 0.95);
             cursor: pointer;
             pointer-events: all;
             transition: all 0.15s ease;
         }
 
         .chart-dot-current:hover {
-            fill: rgba(230, 230, 230, 1);
+            fill: rgba(200, 170, 255, 1);
         }
 
         /* Tooltip pour le graphique */
@@ -846,11 +846,11 @@
                 
                 const stop1 = document.createElementNS(svgNS, 'stop');
                 stop1.setAttribute('offset', '0%');
-                stop1.setAttribute('stop-color', 'rgba(100, 100, 100, 0.3)');
+                stop1.setAttribute('stop-color', 'rgba(147, 112, 219, 0.4)');
                 
                 const stop2 = document.createElementNS(svgNS, 'stop');
                 stop2.setAttribute('offset', '100%');
-                stop2.setAttribute('stop-color', 'rgba(50, 50, 50, 0)');
+                stop2.setAttribute('stop-color', 'rgba(147, 112, 219, 0)');
                 
                 gradient.appendChild(stop1);
                 gradient.appendChild(stop2);
