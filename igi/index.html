@@ -35,13 +35,6 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
-            position: relative;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .igi-container * {
-            pointer-events: auto;
         }
 
         .igi-value {
@@ -117,7 +110,6 @@
             padding: 4px 8px;
             border: 1px solid #333333;
             transition: all 0.2s ease;
-            z-index: 10;
         }
 
         .back-link:hover {
@@ -164,7 +156,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            z-index: 10;
         }
 
         /* Bouton info à droite */
@@ -315,131 +306,14 @@
             height: 32px;
             opacity: 0.7;
             transition: opacity 0.2s ease;
-            z-index: 10;
         }
 
         .igi-icon:hover {
             opacity: 1;
         }
-
-        /* Graphique en arrière-plan */
-        .igi-background-chart {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            pointer-events: none;
-            padding: 60px 80px 60px 40px; /* marges: top, right (pour boutons), bottom, left */
-            box-sizing: border-box;
-        }
-
-        .igi-background-chart svg {
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .igi-background-chart svg circle {
-            pointer-events: all;
-        }
-
-        .chart-line {
-            fill: none;
-            stroke: rgba(120, 120, 120, 0.6);
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .chart-area {
-            fill: url(#chartGradient);
-            opacity: 0.2;
-        }
-
-        .chart-grid-line {
-            stroke: rgba(70, 70, 70, 0.4);
-            stroke-width: 1;
-            stroke-dasharray: 4, 4;
-        }
-
-        .chart-axis-label {
-            fill: rgba(120, 120, 120, 0.6);
-            font-family: 'Courier New', monospace;
-            font-size: 10px;
-        }
-
-        .chart-dot {
-            fill: rgba(140, 140, 140, 0.7);
-            cursor: pointer;
-            pointer-events: all;
-            transition: all 0.15s ease;
-        }
-
-        .chart-dot:hover {
-            fill: rgba(200, 200, 200, 1);
-            r: 6;
-        }
-
-        .chart-dot-current {
-            fill: rgba(180, 180, 180, 0.85);
-            cursor: pointer;
-            pointer-events: all;
-            transition: all 0.15s ease;
-        }
-
-        .chart-dot-current:hover {
-            fill: rgba(230, 230, 230, 1);
-        }
-
-        /* Tooltip pour le graphique */
-        .chart-tooltip {
-            position: fixed;
-            background: rgba(30, 30, 30, 0.95);
-            border: 1px solid #555555;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #cccccc;
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0;
-            transform: translateY(5px);
-            transition: opacity 0.15s ease, transform 0.15s ease;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        }
-
-        .chart-tooltip.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .chart-tooltip-day {
-            color: #888888;
-            font-size: 10px;
-            margin-bottom: 4px;
-        }
-
-        .chart-tooltip-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ffffff;
-        }
     </style>
 </head>
 <body>
-    <!-- Graphique en arrière-plan -->
-    <div class="igi-background-chart" id="background-chart"></div>
-
-    <!-- Tooltip pour le graphique -->
-    <div class="chart-tooltip" id="chart-tooltip">
-        <div class="chart-tooltip-day"></div>
-        <div class="chart-tooltip-value"></div>
-    </div>
-
     <a href="/" class="back-link">← Retour</a>
     <img src="/img/igi.png" alt="IGI" class="igi-icon">
 
@@ -468,8 +342,22 @@
 
     <!-- Boutons info -->
     <div class="info-buttons-container">
+        <button class="info-button today-button" id="today-button" title="Contexte du jour">📋 Aujourd'hui</button>
         <button class="info-button" id="info-button" title="En savoir plus">ℹ Méthodologie</button>
         <button class="info-button credits-button" id="credits-button" title="Crédits">© Crédits</button>
+    </div>
+
+    <!-- Modale Aujourd'hui -->
+    <div class="info-modal-overlay" id="today-modal-overlay">
+        <div class="info-modal">
+            <div class="info-modal-header">
+                <span class="info-modal-title">📋 Contexte du jour</span>
+                <button class="info-modal-close" id="today-modal-close">×</button>
+            </div>
+            <div class="info-modal-content">
+                <p id="today-note-content" style="font-size: 1.1em; line-height: 1.6;">Chargement...</p>
+            </div>
+        </div>
     </div>
 
     <!-- Modale info -->
@@ -631,6 +519,8 @@
             /**
              * Charge et affiche l'IGI
              */
+            let igiJsonData = null; // Stockage des données pour le graphique
+            
             async function loadIGI() {
                 try {
                     const response = await fetch(IGI_JSON_PATH);
@@ -646,6 +536,17 @@
                         throw new Error('json');
                     }
 
+                    // Stocker les données pour le graphique
+                    igiJsonData = data;
+                    
+                    // Mettre à jour la note "Aujourd'hui"
+                    const noteEl = document.getElementById('today-note-content');
+                    if (noteEl && data.global_instability_index && data.global_instability_index.note) {
+                        noteEl.textContent = data.global_instability_index.note;
+                    } else if (noteEl) {
+                        noteEl.textContent = 'Aucune note disponible pour aujourd\'hui.';
+                    }
+
                     const value = extractValue(data);
 
                     if (value === null) {
@@ -656,6 +557,9 @@
                     valueEl.textContent = formatValue(value);
                     valueEl.style.color = getColorForValue(value);
                     valueEl.style.textShadow = `0 0 30px ${getColorForValue(value, 0.4)}`;
+                    
+                    // Rendre le graphique après chargement des données
+                    renderBackgroundChart();
 
                 } catch (error) {
                     console.error('Erreur IGI:', error);
@@ -727,25 +631,31 @@
             // Chargement au démarrage
             loadIGI();
 
+<<<<<<< Updated upstream
+=======
             // ========== GRAPHIQUE EN ARRIÈRE-PLAN ==========
             function renderBackgroundChart() {
                 const chartContainer = document.getElementById('background-chart');
                 if (!chartContainer) return;
 
-                // Données IGI de janvier 2026
-                const igiData = [
-                    { day: 1, value: 365 },
-                    { day: 2, value: 363 },
-                    { day: 3, value: 366 },
-                    { day: 4, value: 369 },
-                    { day: 5, value: 375 },
-                    { day: 6, value: 377 },
-                    { day: 7, value: 381 },
-                    { day: 8, value: 380 },
-                    { day: 9, value: 382 },
-                    { day: 10, value: 383 },
-                    { day: 11, value: 386 }
-                ];
+                // Récupérer l'historique depuis le JSON chargé
+                let igiData = [];
+                if (igiJsonData && igiJsonData.history && Array.isArray(igiJsonData.history)) {
+                    // Convertir le format { date: "2026-01-01", value: 365 } en { day: 1, value: 365 }
+                    igiData = igiJsonData.history.map(entry => {
+                        const date = new Date(entry.date);
+                        return {
+                            day: date.getDate(),
+                            value: entry.value
+                        };
+                    });
+                }
+                
+                // Si pas de données, ne pas afficher le graphique
+                if (igiData.length === 0) {
+                    console.warn('Aucune donnée historique IGI disponible');
+                    return;
+                }
 
                 // Jours du mois en cours (janvier = 31 jours)
                 const daysInMonth = 31;
@@ -755,8 +665,47 @@
                 const padding = { top: 30, right: 30, bottom: 40, left: 50 };
                 
                 // Valeurs min/max pour l'axe Y (avec marge)
-                const minValue = Math.min(...igiData.map(d => d.value)) - 10;
-                const maxValue = Math.max(...igiData.map(d => d.value)) + 20;
+                const dataMin = Math.min(...igiData.map(d => d.value));
+                const dataMax = Math.max(...igiData.map(d => d.value));
+                
+                // Fonction pour calculer les paliers dynamiques
+                function calculateTicks(min, max) {
+                    const range = max - min;
+                    
+                    // Déterminer l'intervalle approprié selon la plage
+                    let interval;
+                    if (range <= 30) {
+                        interval = 5;
+                    } else if (range <= 60) {
+                        interval = 10;
+                    } else if (range <= 150) {
+                        interval = 25;
+                    } else if (range <= 300) {
+                        interval = 50;
+                    } else if (range <= 600) {
+                        interval = 100;
+                    } else {
+                        interval = 200;
+                    }
+                    
+                    // Arrondir min vers le bas et max vers le haut au multiple de l'intervalle
+                    const tickMin = Math.floor(min / interval) * interval;
+                    const tickMax = Math.ceil(max / interval) * interval;
+                    
+                    // Générer les ticks
+                    const ticks = [];
+                    for (let tick = tickMin; tick <= tickMax; tick += interval) {
+                        ticks.push(tick);
+                    }
+                    
+                    return { ticks, tickMin, tickMax };
+                }
+                
+                const { ticks: yTicks, tickMin, tickMax } = calculateTicks(dataMin, dataMax);
+                
+                // Utiliser les bornes arrondies pour l'axe Y (avec petite marge)
+                const minValue = tickMin - (yTicks[1] - yTicks[0]) * 0.2;
+                const maxValue = tickMax + (yTicks[1] - yTicks[0]) * 0.5;
 
                 // Création du SVG
                 const svgNS = 'http://www.w3.org/2000/svg';
@@ -794,8 +743,7 @@
                 const xScale = (day) => padding.left + ((day - 1) / (daysInMonth - 1)) * chartWidth;
                 const yScale = (value) => padding.top + ((maxValue - value) / (maxValue - minValue)) * chartHeight;
 
-                // Lignes de grille horizontales
-                const yTicks = [350, 360, 370, 380, 390, 400];
+                // Lignes de grille horizontales (paliers calculés dynamiquement)
                 yTicks.forEach(tick => {
                     const y = yScale(tick);
                     if (y > padding.top && y < 600 - padding.bottom) {
@@ -926,9 +874,26 @@
                 chartContainer.appendChild(svg);
             }
 
-            // Rendre le graphique
-            renderBackgroundChart();
+            // Gestion de la modale Aujourd'hui
+            const todayButton = document.getElementById('today-button');
+            const todayModalOverlay = document.getElementById('today-modal-overlay');
+            const todayModalClose = document.getElementById('today-modal-close');
 
+            todayButton.addEventListener('click', function() {
+                todayModalOverlay.classList.add('show');
+            });
+
+            todayModalClose.addEventListener('click', function() {
+                todayModalOverlay.classList.remove('show');
+            });
+
+            todayModalOverlay.addEventListener('click', function(e) {
+                if (e.target === todayModalOverlay) {
+                    todayModalOverlay.classList.remove('show');
+                }
+            });
+
+>>>>>>> Stashed changes
             // Gestion de la modale info
             const infoButton = document.getElementById('info-button');
             const infoModalOverlay = document.getElementById('info-modal-overlay');
@@ -971,6 +936,9 @@
             // Fermer avec Escape (toutes les modales)
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
+                    if (todayModalOverlay.classList.contains('show')) {
+                        todayModalOverlay.classList.remove('show');
+                    }
                     if (infoModalOverlay.classList.contains('show')) {
                         infoModalOverlay.classList.remove('show');
                     }
