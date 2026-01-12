@@ -313,87 +313,116 @@
         }
 
         /* Graphique en arrière-plan */
-        #background-chart {
+        .igi-background-chart {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 50;
             pointer-events: none;
-            opacity: 0.4;
+            padding: 60px 80px 60px 40px; /* marges: top, right (pour boutons), bottom, left */
+            box-sizing: border-box;
         }
 
-        #background-chart svg {
+        .igi-background-chart svg {
             width: 100%;
             height: 100%;
+            pointer-events: none;
+        }
+
+        .igi-background-chart svg circle {
+            pointer-events: all;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: rgba(120, 120, 120, 0.6);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .chart-area {
+            fill: url(#chartGradient);
+            opacity: 0.2;
         }
 
         .chart-grid-line {
-            stroke: #333333;
+            stroke: rgba(70, 70, 70, 0.4);
             stroke-width: 1;
             stroke-dasharray: 4, 4;
         }
 
         .chart-axis-label {
-            fill: #555555;
-            font-size: 12px;
+            fill: rgba(120, 120, 120, 0.6);
             font-family: 'Courier New', monospace;
+            font-size: 10px;
         }
 
-        .chart-line {
-            fill: none;
-            stroke: #666666;
-            stroke-width: 2;
-        }
-
-        .chart-area {
-            fill: url(#chartGradient);
-        }
-
-        .chart-point {
-            fill: #888888;
+        .chart-dot {
+            fill: rgba(140, 140, 140, 0.7);
             cursor: pointer;
-            pointer-events: auto;
+            pointer-events: all;
+            transition: all 0.15s ease;
         }
 
-        .chart-point:hover {
-            fill: #ffffff;
+        .chart-dot:hover {
+            fill: rgba(200, 200, 200, 1);
+            r: 6;
         }
 
+        .chart-dot-current {
+            fill: rgba(180, 180, 180, 0.85);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.15s ease;
+        }
+
+        .chart-dot-current:hover {
+            fill: rgba(230, 230, 230, 1);
+        }
+
+        /* Tooltip pour le graphique */
         .chart-tooltip {
             position: fixed;
             background: rgba(30, 30, 30, 0.95);
-            border: 1px solid #444;
+            border: 1px solid #555555;
             border-radius: 4px;
             padding: 8px 12px;
-            font-size: 12px;
             font-family: 'Courier New', monospace;
-            color: #ffffff;
+            font-size: 12px;
+            color: #cccccc;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 100;
             opacity: 0;
-            transition: opacity 0.15s ease;
+            transform: translateY(5px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
         .chart-tooltip.visible {
             opacity: 1;
+            transform: translateY(0);
         }
 
         .chart-tooltip-day {
             color: #888888;
+            font-size: 10px;
             margin-bottom: 4px;
         }
 
         .chart-tooltip-value {
+            font-size: 16px;
             font-weight: bold;
-            font-size: 14px;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
     <!-- Graphique en arrière-plan -->
-    <div id="background-chart"></div>
+    <div class="igi-background-chart" id="background-chart"></div>
     
     <!-- Tooltip pour le graphique -->
     <div class="chart-tooltip" id="chart-tooltip">
