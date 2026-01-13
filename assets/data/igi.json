@@ -1,11 +1,11 @@
 {
   "global_instability_index": {
-    "value": 399,
+    "value": 428,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-01-12",
-    "last_updated": "2026-01-12T21:00:00Z",
-    "version": "1.3",
-    "note": "Hausse due à l'escalade en Iran (estimations à 500-600+ dont certaines à +2000, sentences exécution & répression accrue. Difficulté pour les pays occidentaux à intervenir.). Crises chroniques stables (Soudan 1000 jours). Tensions Groenland persistent sans nouveau pic."
+    "calculation_date": "2026-01-13",
+    "last_updated": "2026-01-13T17:00:00Z",
+    "version": "1.4",
+    "note": "Hausse due à l'escalade dramatique en Iran (death toll 648+ confirmés, estimations jusqu'à 6,000-12,000+, exécution imminente Erfan Soltani le 14/01, répression brutale persistante, blackout total, menaces intervention US/Israël, sanctions UE supplémentaires). Crises chroniques stables (Soudan post-1000 jours). Tensions Groenland persistent sans pic majeur."
   },
 
   "history": [
@@ -20,24 +20,25 @@
     { "date": "2026-01-09", "value": 382 },
     { "date": "2026-01-10", "value": 383 },
     { "date": "2026-01-11", "value": 385 },
-    { "date": "2026-01-12", "value": 399 }
+    { "date": "2026-01-12", "value": 399 },
+    { "date": "2026-01-13", "value": 428 }
   ],
 
   "major_contributors": [
     {
       "country_or_region": "Iran",
-      "fig_weight": 0.060,
+      "fig_weight": 0.065,
       "daily_instability_score": 13,
-      "weighted_contribution": 0.780,
-      "events": "Protests nationales >2 semaines, death toll 500-600+ (ONG : 572-599 confirmés, +579 sous investigation), répression brutale (exécutions imminentes, >10k arrestés), blackout internet total, menaces US/Israël, Iran ouvert à négociations nucléaires sous pression",
-      "gravity": "Très élevé (Fibonacci 13 : violences + risque intervention + instabilité régime)"
+      "weighted_contribution": 0.845,
+      "events": "Protests >2 semaines, death toll explosif (648+ confirmés par HRANA/Iran Human Rights, estimations ONG 6,000-12,000+), répression brutale (exécutions imminentes dont Erfan Soltani le 14/01, >10k arrestés), blackout internet total, menaces intervention US/Israël ('help is on the way'), sanctions UE supplémentaires sur responsables répression",
+      "gravity": "Très élevé (Fibonacci 13 : violences massives + risque intervention internationale + instabilité régime/nucleaire)"
     },
     {
       "country_or_region": "Sudan",
       "fig_weight": 0.052,
       "daily_instability_score": 13,
       "weighted_contribution": 0.676,
-      "events": "1000 jours de guerre marqués, famine/hunger crisis world's worst, attaques civils/enfants (ex. Al Obeid), 34M en besoin humanitaire, millions déplacés",
+      "events": "Post-1000 jours de guerre, famine world's worst confirmée (21M+ en insécurité alimentaire aiguë, famine déclarée zones Darfur/Kordofan), attaques civils/enfants persistantes, 34M en besoin humanitaire, millions déplacés",
       "gravity": "Très élevé (Fibonacci 8 + 5 chronicité extrême)"
     },
     {
@@ -45,7 +46,7 @@
       "fig_weight": 0.045,
       "daily_instability_score": 8,
       "weighted_contribution": 0.360,
-      "events": "Trump répète menaces ('one way or the other'), bill GOP pour annexion/statehood, sénateur US : 'fin de l'OTAN' si force, Europe/Danemark en alerte",
+      "events": "Menaces Trump persistantes ('one way or the other'), bill GOP annexion, Europe/NATO en alerte (risque 'end of NATO' si force), soutien renforcé à Danemark/Groenland",
       "gravity": "Élevé (Fibonacci 5 + 3 : menace + fracture OTAN)"
     },
     {
@@ -53,7 +54,7 @@
       "fig_weight": 0.044,
       "daily_instability_score": 8,
       "weighted_contribution": 0.352,
-      "events": "Progression M23 persistante, violences, déplacements",
+      "events": "Progression M23 persistante, violences intercommunautaires, déplacements massifs (crise chronique sans pic majeur aujourd'hui)",
       "gravity": "Élevé (Fibonacci 8)"
     },
     {
@@ -61,7 +62,7 @@
       "fig_weight": 0.030,
       "daily_instability_score": 8,
       "weighted_contribution": 0.240,
-      "events": "Pression jihadiste continue (JNIM/ISSP), attaques persistantes sans pic majeur aujourd'hui",
+      "events": "Pression jihadiste continue (JNIM/ISSP), attaques persistantes sans escalade spectaculaire du jour",
       "gravity": "Élevé (Fibonacci 5 + 3)"
     },
     {
@@ -69,7 +70,7 @@
       "fig_weight": 0.022,
       "daily_instability_score": 8,
       "weighted_contribution": 0.176,
-      "events": "Guerre gangs persistante, effondrement humanitaire",
+      "events": "Guerre gangs persistante, effondrement humanitaire chronique",
       "gravity": "Élevé (Fibonacci 5 + 3)"
     },
     {
@@ -77,7 +78,7 @@
       "fig_weight": 0.070,
       "daily_instability_score": 7,
       "weighted_contribution": 0.490,
-      "events": "Combats intenses persistants",
+      "events": "Combats intenses persistants (focus Donetsk), tensions stables",
       "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
     },
     {
@@ -85,7 +86,7 @@
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Menace régionale continue",
+      "events": "Menace régionale continue sans nouveau développement majeur",
       "gravity": "Modéré (Fibonacci 5)"
     },
     {
@@ -93,27 +94,27 @@
       "fig_weight": 0.025,
       "daily_instability_score": 5,
       "weighted_contribution": 0.125,
-      "events": "Violences ethniques/abductions en hausse",
+      "events": "Violences ethniques/abductions en hausse chronique",
       "gravity": "Modéré (Fibonacci 5)"
     }
   ],
 
   "summary": {
-    "total_weighted_sum": 6.18,
+    "total_weighted_sum": 6.42,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée et en légère hausse – Iran domine avec risque croissant de dérapage international, crises africaines chroniques (Soudan symbolique 1000 jours), tensions transatlantiques persistantes. Potentiel d'escalade rapide."
+    "interpretation": "Instabilité très élevée et en hausse marquée – Iran domine massivement (death toll explosif, risque d'escalade internationale et exécutions imminentes), crises africaines chroniques stables, tensions transatlantiques persistantes. Potentiel d'explosion rapide si répression ou intervention s'aggrave."
   },
 
   "metadata": {
     "sources": [
-      "HRANA, AP, NYT, CNN, Wikipedia updates (Iran protests/death toll)",
-      "UN OCHA, Al Jazeera, Semafor (Sudan 1000 days)",
-      "Guardian, Fox News, Al Jazeera (Greenland/Trump threats)",
+      "Iran International, HRANA, Amnesty International, Time, NYT, Bloomberg (Iran death toll, exécutions, répression)",
+      "UN OCHA, Al Jazeera, IRC, WHO (Sudan post-1000 jours, famine)",
+      "Guardian, Al Jazeera, Reuters (Greenland/Trump menaces, Europe response)",
       "Crisis Group, CFR, ACLED (crises chroniques)"
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus top fragiles + événements du jour)",
-    "next_update_planned": "2026-01-13"
+    "next_update_planned": "2026-01-14"
   }
 }
