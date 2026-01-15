@@ -5,8 +5,10 @@
     "calculation_date": "2026-01-15",
     "last_updated": "2026-01-15T09:32:00Z",
     "version": "1.5",
-    "note": "Hausse continue due à l'escalade en Iran (death toll >3,000 confirmés/estimés par HRANA/IHRNGO, exécutions imminentes dont Erfan Soltani, répression brutale, blackout total, fermeture airspace, menaces intervention US 'help is on the way', sanctions UE). Crises chroniques stables au Soudan (famine world's worst, 21M+ en insécurité alimentaire). Tensions Groenland/Trump s'intensifient (menaces 'hard way', réunions US-Danemark en cours, risques fin OTAN). Justification du score : L'Iran domine avec un death toll en explosion (+800-1,000 depuis le 13/01) et risques internationaux accrus ; Soudan chronicité extrême post-1000 jours ; Groenland rhétorique agressive sans action militaire mais tensions diplomatiques hautes."
-  },  "history": [
+    "note": "Hausse continue due à l'escalade en Iran (death toll >3,000 confirmés/estimés par HRANA/IHRNGO, exécutions imminentes dont Erfan Soltani, répression brutale, blackout total, fermeture airspace, menaces intervention US 'help is on the way', sanctions UE). Crises chroniques stables au Soudan (famine world's worst, 21M+ en insécurité alimentaire). Tensions Groenland s'intensifient (menaces 'hard way', réunions US-Danemark en cours, déploiement militaire européen : Allemagne, France, Norvège, etc. envoient troupes/exercices conjoints avec Danemark pour contrer menaces US et renforcer présence OTAN-like). Justification du score : L'Iran domine avec death toll en explosion et risques internationaux accrus ; Soudan chronicité extrême ; Groenland rhétorique agressive + déploiement européen ; Ukraine : attaques russes massives sur énergie (état d'urgence, millions sans chauffage) ; Chine/Taïwan : exercices récents simulant blocus (condamnations US) sans nouveau pic majeur."
+  },
+
+  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -22,7 +24,9 @@
     { "date": "2026-01-13", "value": 428 },
     { "date": "2026-01-14", "value": 440 },
     { "date": "2026-01-15", "value": 455 }
-  ],  "major_contributors": [
+  ],
+
+  "major_contributors": [
     {
       "country_or_region": "Iran",
       "fig_weight": 0.070,
@@ -44,8 +48,8 @@
       "fig_weight": 0.045,
       "daily_instability_score": 8,
       "weighted_contribution": 0.360,
-      "events": "Menaces Trump persistantes ('hard way', 'whether they like it or not', 'own Greenland' vs Russie/Chine), bill GOP annexion, réunions US-Danemark/Groenland (VP Vance/Sec Rubio), Europe/NATO boost Arctic security, risque 'end of NATO' si force",
-      "gravity": "Élevé (Fibonacci 5 + 3 : menace + fracture OTAN)"
+      "events": "Menaces Trump persistantes ('hard way', 'whether they like it or not', 'own Greenland' vs Russie/Chine), bill GOP annexion, réunions US-Danemark/Groenland (VP Vance/Sec Rubio), déploiement militaire européen (Allemagne, France, Norvège, etc. envoient troupes/exercices conjoints avec Danemark pour renforcer présence et contrer menaces US, risque 'end of NATO' si force), soutien OTAN-like accru",
+      "gravity": "Élevé (Fibonacci 5 + 3 : menace + fracture OTAN + déploiement européen)"
     },
     {
       "country_or_region": "Democratic Republic of Congo (Est)",
@@ -76,7 +80,7 @@
       "fig_weight": 0.070,
       "daily_instability_score": 7,
       "weighted_contribution": 0.490,
-      "events": "Combats intenses persistants (focus Donetsk), tensions stables sans cessation imminente",
+      "events": "Attaques russes massives sur infrastructure énergétique (état d'urgence déclaré, millions sans chauffage/électricité en hiver extrême, -19°C à Kyiv), avancées russes ralenties mais persistantes (gains territoriaux, assauts continus), combats intenses Donetsk, tensions stables sans cessation imminente",
       "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
     },
     {
@@ -84,7 +88,7 @@
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Menace régionale continue sans nouveau développement majeur",
+      "events": "Tensions persistantes avec exercices militaires récents (Justice Mission 2025 simulant blocus, dizaines d'avions/navires, missiles), condamnations US ('unnecessarily raise tensions'), rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 15/01",
       "gravity": "Modéré (Fibonacci 5)"
     },
     {
@@ -95,16 +99,22 @@
       "events": "Violences ethniques/abductions en hausse chronique",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],  "summary": {
+  ],
+
+  "summary": {
     "total_weighted_sum": 6.825,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée et en hausse soutenue – Iran domine avec death toll en explosion et risques d'intervention internationale ; crises africaines chroniques stables mais aggravées (Soudan famine extrême) ; tensions transatlantiques persistantes sur Groenland. Potentiel d'explosion rapide si escalade en Iran ou action US sur Groenland."
-  },  "metadata": {
+    "interpretation": "Instabilité très élevée et en hausse soutenue – Iran domine avec death toll en explosion et risques d'intervention internationale ; crises africaines chroniques stables mais aggravées (Soudan famine extrême) ; Groenland : déploiement militaire européen (Allemagne/France/Norvège/etc.) face aux menaces Trump ; Ukraine : attaques russes sur énergie (état d'urgence, hiver sans chauffage) ; Chine/Taïwan : exercices blocus récents et tensions persistantes. Potentiel d'explosion rapide si escalade en Iran, action US sur Groenland ou nouvelle offensive en Ukraine."
+  },
+
+  "metadata": {
     "sources": [
       "NYT, ISW, BBC, Wikipedia, CNN, WUSF, AP News (Iran protests/death toll, exécutions)",
       "UN News, WHO, ReliefWeb, UNICEF, Vatican News, DW (Sudan war/famine, 1000 days)",
-      "Al Jazeera, Time, BBC, High North News, Euronews, NYT, Foreign Policy, The US Sun, Reuters (Trump/Greenland threats, meetings)",
+      "CNN, Bloomberg, POLITICO, Guardian, Reuters, France24 (Greenland/Europe troops deployment, Trump threats)",
+      "Al Jazeera, UN News, Guardian, ISW (Ukraine energy attacks, state of emergency)",
+      "US State Dept, Reuters, NPR, Al Jazeera (China/Taiwan drills, tensions)",
       "International Crisis Group, CFR, POLITICO, Janes, IRC (global conflicts 2026)"
     ],
     "fragility_bonus_applied": true,
@@ -112,4 +122,3 @@
     "next_update_planned": "2026-01-16"
   }
 }
-
