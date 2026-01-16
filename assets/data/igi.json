@@ -1,11 +1,11 @@
 {
   "global_instability_index": {
-    "value": 455,
+    "value": 463,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-01-15",
-    "last_updated": "2026-01-15T09:32:00Z",
-    "version": "1.5",
-    "note": "Hausse continue due à l'escalade en Iran (death toll >3,000 confirmés/estimés par HRANA/IHRNGO, exécutions imminentes dont Erfan Soltani, répression brutale, blackout total, fermeture airspace, menaces intervention US 'help is on the way', sanctions UE). Crises chroniques stables au Soudan (famine world's worst, 21M+ en insécurité alimentaire). Tensions Groenland s'intensifient (menaces 'hard way', réunions US-Danemark en cours, déploiement militaire européen : Allemagne, France, Norvège, etc. envoient troupes/exercices conjoints avec Danemark pour contrer menaces US et renforcer présence OTAN-like). Justification du score : L'Iran domine avec death toll en explosion et risques internationaux accrus ; Soudan chronicité extrême ; Groenland rhétorique agressive + déploiement européen ; Ukraine : attaques russes massives sur énergie (état d'urgence, millions sans chauffage) ; Chine/Taïwan : exercices récents simulant blocus (condamnations US) sans nouveau pic majeur."
+    "calculation_date": "2026-01-16",
+    "last_updated": "2026-01-16T20:00:00Z",
+    "version": "1.6",
+    "note": "Hausse due à l'escalade persistante en Iran (bilan des morts dépassant 3 000 confirmés selon HRANA/NCRI, estimations jusqu'à 12 000+, répression brutale intensifiée, exécutions imminentes maintenues, blackout internet total prolongé, fermeture de l'espace aérien, menaces d'intervention américaine et sanctions européennes supplémentaires). Crises chroniques stables au Soudan (famine la plus grave au monde, aide alimentaire menacée d'épuisement dans les prochains mois). Tensions au Groenland s'intensifient (déploiement militaire européen accru par l'Allemagne, la France, la Norvège pour contrer les menaces américaines). Justification du score : L'Iran domine avec un bilan humain en forte augmentation et risques internationaux accrus ; Soudan reste en chronicité extrême avec famine confirmée ; Groenland voit une rhétorique agressive américaine et un renforcement européen ; Ukraine subit des attaques continues sur l'énergie (système à 60 % de capacité, état d'urgence prolongé) ; Chine/Taïwan maintient des tensions régionales sans nouveau développement explosif."
   },
 
   "history": [
@@ -23,40 +23,41 @@
     { "date": "2026-01-12", "value": 399 },
     { "date": "2026-01-13", "value": 428 },
     { "date": "2026-01-14", "value": 440 },
-    { "date": "2026-01-15", "value": 455 }
+    { "date": "2026-01-15", "value": 455 },
+    { "date": "2026-01-16", "value": 463 }
   ],
 
   "major_contributors": [
     {
       "country_or_region": "Iran",
-      "fig_weight": 0.070,
+      "fig_weight": 0.072,
       "daily_instability_score": 13,
-      "weighted_contribution": 0.910,
-      "events": "Protests >3 semaines, death toll explosif (>3,000 confirmés/estimés par HRANA/IHRNGO/Iran Human Rights, jusqu'à 12,000+), répression brutale (exécutions imminentes dont Erfan Soltani, >10k arrestés), blackout internet total, fermeture airspace, menaces intervention US/Israël ('help is on the way'), sanctions UE supplémentaires",
-      "gravity": "Très élevé (Fibonacci 13 : violences massives + risque intervention internationale + instabilité régime/nucleaire)"
+      "weighted_contribution": 0.936,
+      "events": "Manifestations depuis plus de trois semaines, bilan des morts explosif (plus de 3 000 confirmés par HRANA/NCRI, estimations jusqu'à 12 000+), répression brutale intensifiée (exécutions imminentes maintenues dont Erfan Soltani, plus de 10 000 arrestations), blackout internet total prolongé, fermeture de l'espace aérien, menaces d'intervention américaine et sanctions européennes supplémentaires",
+      "gravity": "Très élevé (Fibonacci 13 : violences massives + risque d'intervention internationale + instabilité du régime/nucléaire)"
     },
     {
-      "country_or_region": "Sudan",
+      "country_or_region": "Soudan",
       "fig_weight": 0.052,
       "daily_instability_score": 13,
       "weighted_contribution": 0.676,
-      "events": "Post-1000 jours de guerre (marqués le 9/01), famine world's worst (21M+ en insécurité alimentaire aiguë, famines déclarées El Fasher/Kadugli, 20 zones à risque), attaques civils/enfants persistantes, 34M en besoin humanitaire, 13.6M déplacés, outbreaks (cholera, dengue, malaria)",
+      "events": "Après plus de 1000 jours de guerre, famine la plus grave au monde (21 millions+ en insécurité alimentaire aiguë, famines confirmées à El Fasher/Kadugli, 20 zones à risque), attaques persistantes contre civils/enfants, 34 millions en besoin humanitaire, aide alimentaire menacée d'épuisement dans les prochains mois",
       "gravity": "Très élevé (Fibonacci 8 + 5 chronicité extrême)"
     },
     {
-      "country_or_region": "Greenland / Danemark / Tensions transatlantiques",
+      "country_or_region": "Groenland / Danemark / Tensions transatlantiques",
       "fig_weight": 0.045,
       "daily_instability_score": 8,
       "weighted_contribution": 0.360,
-      "events": "Menaces Trump persistantes ('hard way', 'whether they like it or not', 'own Greenland' vs Russie/Chine), bill GOP annexion, réunions US-Danemark/Groenland (VP Vance/Sec Rubio), déploiement militaire européen (Allemagne, France, Norvège, etc. envoient troupes/exercices conjoints avec Danemark pour renforcer présence et contrer menaces US, risque 'end of NATO' si force), soutien OTAN-like accru",
+      "events": "Menaces américaines persistantes ('hard way', 'whether they like it or not'), projet de loi républicain pour annexion, déploiement militaire européen accru (Allemagne, France, Norvège et autres envoient troupes et organisent exercices conjoints avec le Danemark pour renforcer la présence et contrer les menaces, risque de fin de l'OTAN si usage de la force)",
       "gravity": "Élevé (Fibonacci 5 + 3 : menace + fracture OTAN + déploiement européen)"
     },
     {
-      "country_or_region": "Democratic Republic of Congo (Est)",
+      "country_or_region": "République démocratique du Congo (Est)",
       "fig_weight": 0.044,
       "daily_instability_score": 8,
       "weighted_contribution": 0.352,
-      "events": "Progression M23 persistante, violences intercommunautaires, déplacements massifs (crise chronique sans pic majeur récent)",
+      "events": "Progression persistante du M23, violences intercommunautaires, déplacements massifs (crise chronique sans pic majeur récent)",
       "gravity": "Élevé (Fibonacci 8)"
     },
     {
@@ -68,11 +69,11 @@
       "gravity": "Élevé (Fibonacci 5 + 3)"
     },
     {
-      "country_or_region": "Haiti",
+      "country_or_region": "Haïti",
       "fig_weight": 0.022,
       "daily_instability_score": 8,
       "weighted_contribution": 0.176,
-      "events": "Guerre gangs persistante, effondrement humanitaire chronique",
+      "events": "Guerre des gangs persistante, effondrement humanitaire chronique",
       "gravity": "Élevé (Fibonacci 5 + 3)"
     },
     {
@@ -80,45 +81,45 @@
       "fig_weight": 0.070,
       "daily_instability_score": 7,
       "weighted_contribution": 0.490,
-      "events": "Attaques russes massives sur infrastructure énergétique (état d'urgence déclaré, millions sans chauffage/électricité en hiver extrême, -19°C à Kyiv), avancées russes ralenties mais persistantes (gains territoriaux, assauts continus), combats intenses Donetsk, tensions stables sans cessation imminente",
+      "events": "Attaques russes massives sur les infrastructures énergétiques (système à seulement 60 % de capacité, état d'urgence prolongé, millions sans chauffage/électricité en hiver extrême), avancées russes ralenties mais persistantes, combats intenses dans le Donetsk",
       "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
     },
     {
-      "country_or_region": "China / Taiwan",
+      "country_or_region": "Chine / Taïwan",
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Tensions persistantes avec exercices militaires récents (Justice Mission 2025 simulant blocus, dizaines d'avions/navires, missiles), condamnations US ('unnecessarily raise tensions'), rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 15/01",
+      "events": "Tensions persistantes avec exercices militaires récents simulant un blocus (Justice Mission 2025), condamnations américaines, rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 16 janvier",
       "gravity": "Modéré (Fibonacci 5)"
     },
     {
-      "country_or_region": "South Sudan",
+      "country_or_region": "Soudan du Sud",
       "fig_weight": 0.025,
       "daily_instability_score": 5,
       "weighted_contribution": 0.125,
-      "events": "Violences ethniques/abductions en hausse chronique",
+      "events": "Violences ethniques et enlèvements en hausse chronique",
       "gravity": "Modéré (Fibonacci 5)"
     }
   ],
 
   "summary": {
-    "total_weighted_sum": 6.825,
+    "total_weighted_sum": 7.08,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée et en hausse soutenue – Iran domine avec death toll en explosion et risques d'intervention internationale ; crises africaines chroniques stables mais aggravées (Soudan famine extrême) ; Groenland : déploiement militaire européen (Allemagne/France/Norvège/etc.) face aux menaces Trump ; Ukraine : attaques russes sur énergie (état d'urgence, hiver sans chauffage) ; Chine/Taïwan : exercices blocus récents et tensions persistantes. Potentiel d'explosion rapide si escalade en Iran, action US sur Groenland ou nouvelle offensive en Ukraine."
+    "interpretation": "Instabilité très élevée et en hausse continue – l'Iran domine avec un bilan humain en forte augmentation et risques d'intervention internationale accrus ; crises africaines chroniques stables mais graves (Soudan avec famine extrême et aide menacée) ; Groenland voit un déploiement militaire européen face aux menaces américaines ; Ukraine subit des attaques continues sur l'énergie (état d'urgence prolongé) ; Chine/Taïwan maintient des tensions régionales persistantes. Potentiel d'explosion rapide si escalade en Iran ou aggravation ailleurs."
   },
 
   "metadata": {
     "sources": [
-      "NYT, ISW, BBC, Wikipedia, CNN, WUSF, AP News (Iran protests/death toll, exécutions)",
-      "UN News, WHO, ReliefWeb, UNICEF, Vatican News, DW (Sudan war/famine, 1000 days)",
-      "CNN, Bloomberg, POLITICO, Guardian, Reuters, France24 (Greenland/Europe troops deployment, Trump threats)",
-      "Al Jazeera, UN News, Guardian, ISW (Ukraine energy attacks, state of emergency)",
-      "US State Dept, Reuters, NPR, Al Jazeera (China/Taiwan drills, tensions)",
-      "International Crisis Group, CFR, POLITICO, Janes, IRC (global conflicts 2026)"
+      "HRANA, NCRI, Reuters, Amnesty International, Wikipedia (Iran : bilan des morts, répression, exécutions)",
+      "Programme alimentaire mondial, Al Jazeera, UN OCHA (Soudan : famine, aide menacée)",
+      "Reuters, POLITICO, BBC, France24 (Groenland : menaces américaines, déploiement européen)",
+      "Reuters, Al Jazeera, The Guardian (Ukraine : attaques énergétiques, état d'urgence)",
+      "US State Dept, Reuters, Al Jazeera (Chine/Taïwan : exercices, tensions)",
+      "International Crisis Group, CFR (conflits mondiaux 2026)"
     ],
     "fragility_bonus_applied": true,
-    "countries_included": "~50 (focus top fragiles + événements du jour)",
-    "next_update_planned": "2026-01-16"
+    "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
+    "next_update_planned": "2026-01-17"
   }
 }
