@@ -126,6 +126,18 @@
                 resize: none;
             }
             
+            /* Windows with auto height - fit content */
+            .window.window-auto-height {
+                height: auto !important;
+                min-height: auto !important;
+                max-height: 90vh !important;
+                width: 92vw !important;
+                max-width: 400px !important;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%);
+            }
+            
             .window-content {
                 padding: 12px;
             }
@@ -133,6 +145,13 @@
             .window-resize-handle {
                 display: none;
             }
+        }
+
+        /* Auto-height windows - desktop */
+        .window.window-auto-height {
+            height: auto;
+            min-height: auto;
+            max-height: 80vh;
         }
 
         /* ===== COMPOSANTS FORMULAIRE DANS FENÊTRES ===== */
