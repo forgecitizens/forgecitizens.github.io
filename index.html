@@ -734,6 +734,31 @@
         <img src="img/buymeacoffee.png" alt="Buy me a coffee">
     </a>
 
+    <!-- Visitor Counter -->
+    <div class="visitor-counter" id="visitor-counter"></div>
+
+    <!-- GoatCounter Analytics -->
+    <script data-goatcounter="https://forgecitizens.goatcounter.com/count"
+            src="//gc.zgo.at/count.js"></script>
+    <script>
+        // Wait for GoatCounter to load then display visitor count
+        var counterInterval = setInterval(function() {
+            if (window.goatcounter && window.goatcounter.visit_count) {
+                clearInterval(counterInterval);
+                window.goatcounter.visit_count({
+                    append: '#visitor-counter',
+                    path: 'TOTAL',
+                    no_branding: true,
+                    style: `
+                        div { border: none; background: transparent; color: #666666; font-size: 10px; font-family: 'MS Sans Serif', Tahoma, sans-serif; padding: 0; }
+                        #gcvc-for { display: none; }
+                        #gcvc-views { color: #000080; font-weight: bold; }
+                    `
+                });
+            }
+        }, 100);
+    </script>
+
     <!-- Load modules in dependency order -->
     <script defer src="assets/js/core/variables.js"></script>
     <script defer src="assets/js/features/sounds.js"></script>
