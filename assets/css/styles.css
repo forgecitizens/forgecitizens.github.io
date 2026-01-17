@@ -1502,6 +1502,47 @@
             background: #c0c0c0;
         }
         
+        /* Mobile responsive for typewriter intro */
+        @media (max-width: 768px) {
+            .typewriter-intro-window {
+                width: 92vw !important;
+                max-width: 92vw !important;
+                max-height: 85vh;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) !important;
+            }
+            
+            .typewriter-intro-content {
+                padding: 16px;
+                font-size: 13px;
+                max-height: calc(85vh - 30px);
+                overflow-y: auto;
+            }
+            
+            .typewriter-intro-text p {
+                margin: 0 0 10px 0;
+                text-align: left;
+            }
+            
+            .typewriter-intro-footer {
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 16px;
+                padding-top: 12px;
+            }
+            
+            .typewriter-intro-btn {
+                width: 100%;
+                padding: 10px 16px;
+            }
+            
+            .typewriter-intro-name {
+                margin-top: 12px;
+                padding-top: 12px;
+            }
+        }
+        
         .typewriter-intro-content {
             padding: 20px;
             background: #fffef0;
