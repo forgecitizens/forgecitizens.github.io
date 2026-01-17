@@ -67,6 +67,7 @@
         <div class="start-menu-item" id="radioMenuItem" onclick="openRadio()"><img src="img/cassette.png" alt="" class="start-menu-icon">Radio</div>
         <div class="start-menu-item" data-modal="contact"><img src="img/email.png" alt="" class="start-menu-icon">Contact</div>
         <div class="start-menu-separator"></div>
+        <div class="start-menu-item" id="visitorsMenuItem">👥 Visiteurs</div>
         <div class="start-menu-item" id="aboutMenuItem">👤 Qui suis-je ?</div>
     </div>
 
@@ -87,6 +88,21 @@
             C'est un poste d'observation, un atelier de friction, un espace où j'expérimente des idées, des formes et des chiffres pour raviver la curiosité plutôt que la calmer.</p>
             <p><em>Comprendre n'est pas confortable.<br>
             Mais c'est encore ce que nous avons de plus libre.</em></p>
+        </div>
+    </div>
+
+    <!-- Visitors Popup Overlay -->
+    <div class="about-overlay" id="visitorsOverlay"></div>
+
+    <!-- Visitors Popup -->
+    <div class="about-popup" id="visitorsPopup">
+        <div class="about-popup-header">
+            <span class="about-popup-title">👥 Visiteurs</span>
+            <button class="about-popup-close" id="visitorsCloseBtn" aria-label="Fermer">×</button>
+        </div>
+        <div class="about-popup-content" style="text-align: center; padding: 30px 24px;">
+            <p style="font-size: 14px; margin-bottom: 16px;">Vous avez été <strong id="visitor-count-number">...</strong> à venir sur mon site.</p>
+            <p style="font-size: 13px; color: #666;">Merci de votre passage ! 🙏</p>
         </div>
     </div>
 
@@ -734,29 +750,63 @@
         <img src="img/buymeacoffee.png" alt="Buy me a coffee">
     </a>
 
-    <!-- Visitor Counter -->
-    <div class="visitor-counter" id="visitor-counter"></div>
+    <!-- Visitors Popup Overlay -->
+    <div class="about-overlay" id="visitorsOverlay"></div>
+
+    <!-- Visitors Popup -->
+    <div class="about-popup" id="visitorsPopup">
+        <div class="about-popup-header">
+            <span class="about-popup-title">👥 Visiteurs</span>
+            <button class="about-popup-close" id="visitorsCloseBtn" aria-label="Fermer">×</button>
+        </div>
+        <div class="about-popup-content" style="text-align: center; padding: 30px 24px;">
+            <p style="font-size: 14px; margin-bottom: 16px;">Vous avez été <strong id="visitor-count-number">...</strong> à venir sur mon site.</p>
+            <p style="font-size: 13px; color: #666;">Merci de votre passage ! 🙏</p>
+        </div>
+    </div>
 
     <!-- GoatCounter Analytics -->
     <script data-goatcounter="https://forgecitizens.goatcounter.com/count"
             src="//gc.zgo.at/count.js"></script>
     <script>
-        // Wait for GoatCounter to load then display visitor count
-        var counterInterval = setInterval(function() {
-            if (window.goatcounter && window.goatcounter.visit_count) {
-                clearInterval(counterInterval);
-                window.goatcounter.visit_count({
-                    append: '#visitor-counter',
-                    path: 'TOTAL',
-                    no_branding: true,
-                    style: `
-                        div { border: none; background: transparent; color: #666666; font-size: 10px; font-family: 'MS Sans Serif', Tahoma, sans-serif; padding: 0; }
-                        #gcvc-for { display: none; }
-                        #gcvc-views { color: #000080; font-weight: bold; }
-                    `
-                });
+        // Visitors popup functionality
+        (function() {
+            const visitorsMenuItem = document.getElementById('visitorsMenuItem');
+            const visitorsOverlay = document.getElementById('visitorsOverlay');
+            const visitorsPopup = document.getElementById('visitorsPopup');
+            const visitorsCloseBtn = document.getElementById('visitorsCloseBtn');
+            const visitorCountNumber = document.getElementById('visitor-count-number');
+            let visitorCountLoaded = false;
+
+            function loadVisitorCount() {
+                if (visitorCountLoaded) return;
+                fetch('https://forgecitizens.goatcounter.com/counter/TOTAL.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        visitorCountNumber.textContent = data.count;
+                        visitorCountLoaded = true;
+                    })
+                    .catch(() => {
+                        visitorCountNumber.textContent = 'nombreux';
+                    });
             }
-        }, 100);
+
+            function openVisitorsPopup() {
+                loadVisitorCount();
+                visitorsOverlay.classList.add('show');
+                visitorsPopup.classList.add('show');
+                document.getElementById('startMenu').style.display = 'none';
+            }
+
+            function closeVisitorsPopup() {
+                visitorsOverlay.classList.remove('show');
+                visitorsPopup.classList.remove('show');
+            }
+
+            visitorsMenuItem.addEventListener('click', openVisitorsPopup);
+            visitorsCloseBtn.addEventListener('click', closeVisitorsPopup);
+            visitorsOverlay.addEventListener('click', closeVisitorsPopup);
+        })();
     </script>
 
     <!-- Load modules in dependency order -->

@@ -448,21 +448,6 @@
             font-weight: bold;
             color: #ffffff;
         }
-
-        /* Compteur de visiteurs GoatCounter */
-        .visitor-counter {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            font-size: 11px;
-            color: #444444;
-            font-family: 'Courier New', Courier, monospace;
-            z-index: 10;
-        }
-
-        .visitor-counter span {
-            color: #555555;
-        }
     </style>
 </head>
 <body>
@@ -1108,29 +1093,8 @@
         })();
     </script>
 
-    <!-- Visitor Counter -->
-    <div class="visitor-counter" id="visitor-counter"></div>
-
     <!-- GoatCounter Analytics -->
     <script data-goatcounter="https://forgecitizens.goatcounter.com/count"
-            src="//gc.zgo.at/count.js"></script>
-    <script>
-        // Wait for GoatCounter to load then display visitor count
-        var counterInterval = setInterval(function() {
-            if (window.goatcounter && window.goatcounter.visit_count) {
-                clearInterval(counterInterval);
-                window.goatcounter.visit_count({
-                    append: '#visitor-counter',
-                    path: 'TOTAL',
-                    no_branding: true,
-                    style: `
-                        div { border: none; background: transparent; color: #444444; font-size: 11px; font-family: 'Courier New', monospace; padding: 0; }
-                        #gcvc-for { display: none; }
-                        #gcvc-views { color: #555555; }
-                    `
-                });
-            }
-        }, 100);
-    </script>
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
