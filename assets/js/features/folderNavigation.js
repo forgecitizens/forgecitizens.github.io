@@ -16,7 +16,11 @@ const fileSystem = {
                 type: 'folder',
                 icon: '🎮',
                 children: {
-                    // Games will be added here later
+                    'Mapper': {
+                        type: 'file',
+                        icon: '/assets/mapper-game/mapper_icon.png',
+                        action: 'openMapper'
+                    }
                 }
             },
             'Outils': {
@@ -409,6 +413,14 @@ function addFile(path, name, icon = '📄', data = {}) {
     current[name] = { type: 'file', icon, ...data };
 }
 
+/**
+ * Open the Mapper game in a new page
+ */
+function openMapper() {
+    console.log('🗺️ Opening Mapper game...');
+    window.location.href = '/mapper/';
+}
+
 // Expose functions globally for cross-module access IMMEDIATELY
 // This runs at script load time, before DOMContentLoaded
 console.log('📁 FolderNavigation: Exposing functions to window...');
@@ -421,6 +433,7 @@ window.addFolder = addFolder;
 window.addFile = addFile;
 window.handleFileOpen = handleFileOpen;
 window.openFile = openFile;
+window.openMapper = openMapper;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
 
 // Initialize on DOM ready

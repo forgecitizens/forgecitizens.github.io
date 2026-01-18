@@ -1,0 +1,1107 @@
+/**
+ * ========================================================================
+ * MAPPER GAME - Stylesheet
+ * ========================================================================
+ * Jeu de géographie où le joueur doit replacer les noms des pays
+ * sur une carte du monde.
+ * 
+ * Structure:
+ * 1. Variables CSS
+ * 2. Reset & Base
+ * 3. Layout principal
+ * 4. Fenêtre Windows 98
+ * 5. Zone de jeu
+ * 6. Carte SVG
+ * 7. Labels des pays
+ * 8. Interface utilisateur
+ * 9. États du jeu
+ * 10. Responsive
+ */
+
+/* ========================================================================
+   1. VARIABLES CSS
+   ======================================================================== */
+:root {
+    /* Couleurs Windows 98 */
+    --win98-bg: #c0c0c0;
+    --win98-border-light: #dfdfdf;
+    --win98-border-dark: #808080;
+    --win98-titlebar: linear-gradient(90deg, #000080, #1084d0);
+    --win98-titlebar-inactive: #808080;
+    --win98-white: #ffffff;
+    --win98-black: #000000;
+    
+    /* Couleurs du jeu */
+    --mapper-bg: #008080;
+    --mapper-ocean: #a4c8e1;
+    --mapper-land: #d4e6c3;
+    --mapper-land-hover: #b8d4a0;
+    --mapper-land-correct: #90ee90;
+    --mapper-land-wrong: #ffcccb;
+    --mapper-border: #666666;
+    
+    /* Labels */
+    --label-bg: #ffffcc;
+    --label-border: #cccc00;
+    --label-text: #333333;
+    --label-dragging: #ffff99;
+    
+    /* Typographie */
+    --font-system: 'MS Sans Serif', Tahoma, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+/* ========================================================================
+   2. RESET & BASE
+   ======================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-system);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: var(--mapper-bg);
+}
+
+/* ========================================================================
+   3. LAYOUT PRINCIPAL
+   ======================================================================== */
+.window-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    box-shadow: 
+        inset 1px 1px 0 var(--win98-white),
+        inset -1px -1px 0 var(--win98-border-dark),
+        2px 2px 8px rgba(0, 0, 0, 0.3);
+    min-height: 0; /* Important pour flex */
+}
+
+/* ========================================================================
+   4. FENÊTRE WINDOWS 98
+   ======================================================================== */
+
+/* Barre de titre */
+.titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px;
+    background: var(--win98-titlebar);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.titlebar-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.titlebar-text {
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.titlebar-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.titlebar-btn {
+    width: 16px;
+    height: 14px;
+    background: var(--win98-bg);
+    border: 1px outset var(--win98-border-light);
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--font-system);
+    color: var(--win98-black);
+}
+
+.titlebar-btn:hover {
+    background: #d4d4d4;
+}
+
+.titlebar-btn:active {
+    border-style: inset;
+}
+
+/* Barre de menu */
+.menubar {
+    display: flex;
+    padding: 2px 4px;
+    background: var(--win98-bg);
+    border-bottom: 1px solid var(--win98-border-dark);
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.menu-item {
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: #000080;
+    color: white;
+}
+
+/* Barre d'outils */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--win98-bg);
+    border-bottom: 1px solid var(--win98-border-dark);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.toolbar-btn {
+    padding: 4px 12px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--font-system);
+    white-space: nowrap;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+    background: #d4d4d4;
+}
+
+.toolbar-btn:active:not(:disabled) {
+    border-style: inset;
+}
+
+.toolbar-btn:disabled {
+    color: var(--win98-border-dark);
+    cursor: not-allowed;
+}
+
+.toolbar-btn.active {
+    border-style: inset;
+    background: #a0a0a0;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--win98-border-dark);
+    margin: 0 4px;
+}
+
+/* Barre de statut */
+.statusbar {
+    display: flex;
+    align-items: center;
+    padding: 2px 4px;
+    background: var(--win98-bg);
+    border-top: 1px solid var(--win98-border-light);
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.status-section {
+    padding: 2px 8px;
+    border: 1px inset var(--win98-border-dark);
+    background: var(--win98-bg);
+}
+
+.status-section:not(:last-child) {
+    margin-right: 4px;
+}
+
+/* ========================================================================
+   5. ZONE DE JEU
+   ======================================================================== */
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--win98-white);
+    border: 2px inset var(--win98-border-dark);
+    margin: 4px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0; /* Important pour flex */
+}
+
+.game-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Zone de la carte */
+.map-container {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    background: var(--mapper-ocean);
+    min-height: 0;
+    cursor: default;
+}
+
+/* Curseur pour le pan quand zoomé */
+.map-container.zoomed {
+    cursor: grab;
+}
+
+.map-container.panning {
+    cursor: grabbing;
+}
+
+/* ========================================================================
+   6. CARTE SVG
+   ======================================================================== */
+.world-map {
+    display: block;
+    transform-origin: 0 0;
+    /* Les dimensions sont définies en JS basées sur le viewBox */
+    /* Pas de transition pour éviter le lag du zoom */
+    will-change: transform;
+}
+
+/* Style de base des pays */
+.world-map path.country-path {
+    fill: var(--mapper-land);
+    stroke: var(--mapper-border);
+    stroke-width: 0.5;
+    cursor: pointer;
+    transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+/* Survol des pays */
+.world-map path.country-path:hover,
+.world-map path.country-path.country-hover {
+    fill: var(--mapper-land-hover);
+    stroke: #444444;
+    stroke-width: 1;
+}
+
+/* Pays correct - Reste vert permanent */
+.world-map path.country-correct {
+    fill: #4caf50 !important;
+    stroke: #2e7d32;
+    stroke-width: 1;
+    animation: correctPulse 0.5s ease;
+}
+
+@keyframes correctPulse {
+    0% { fill: #81c784; }
+    50% { fill: #2e7d32; }
+    100% { fill: #4caf50; }
+}
+
+/* Pays incorrect (loin) - Rouge temporaire */
+.world-map path.country-wrong {
+    fill: #e53935 !important;
+    stroke: #b71c1c;
+    stroke-width: 1.5;
+    animation: wrongShake 0.4s ease;
+}
+
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+/* Pays voisin (proche) - Orange temporaire */
+.world-map path.country-neighbor {
+    fill: #ff9800 !important;
+    stroke: #e65100;
+    stroke-width: 1.5;
+    animation: neighborPulse 0.4s ease;
+}
+
+@keyframes neighborPulse {
+    0% { fill: #ffcc80; }
+    50% { fill: #e65100; }
+    100% { fill: #ff9800; }
+}
+
+/* Pays en surbrillance */
+.world-map path.country-highlight {
+    fill: #ffd700;
+    stroke: #ff8c00;
+    stroke-width: 2;
+}
+
+/* ========================================================================
+   6.1 LABELS SUR LA CARTE SVG
+   ======================================================================== */
+
+/* Groupe de labels */
+.country-labels-group {
+    pointer-events: none;
+}
+
+/* Labels texte SVG */
+.country-label-text {
+    font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    font-size: 8px;
+    font-weight: bold;
+    fill: #333333;
+    stroke: #ffffff;
+    stroke-width: 2px;
+    paint-order: stroke fill;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ========================================================================
+   6.2 LABELS VERROUILLÉS (placés correctement)
+   ======================================================================== */
+
+.locked-label {
+    pointer-events: none;
+    animation: labelLock 0.4s ease;
+}
+
+.locked-label .locked-bg {
+    fill: rgba(46, 125, 50, 0.95);
+    stroke: #1b5e20;
+    stroke-width: 1.5px;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.locked-label .locked-text {
+    fill: #ffffff;
+    font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    font-weight: bold;
+    stroke: none;
+    text-shadow: none;
+    /* Le font-size est défini dynamiquement dans le JS */
+}
+
+@keyframes labelLock {
+    0% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========================================================================
+   6.3 TOOLTIP POUR LES PETITS PAYS
+   ======================================================================== */
+
+.map-tooltip {
+    position: fixed;
+    z-index: 3000;
+    background: var(--label-bg);
+    border: 1px solid var(--label-border);
+    padding: 4px 10px;
+    font-family: var(--font-system);
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--label-text);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    white-space: nowrap;
+    border-radius: 2px;
+}
+
+/* Animation d'apparition du tooltip */
+.map-tooltip {
+    animation: tooltipFadeIn 0.15s ease;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================================================
+   7. LABELS DES PAYS (DRAGGABLES)
+   ======================================================================== */
+
+/* Conteneur des labels visible */
+.labels-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--win98-bg);
+    border-top: 2px outset var(--win98-border-light);
+    padding: 8px 12px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.labels-pool {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Wrapper pour les 3 labels visibles */
+.labels-visible-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    min-width: 300px;
+}
+
+/* Bouton refresh */
+.labels-refresh-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    margin-left: 8px;
+}
+
+.labels-refresh-btn:hover {
+    background: #d4d4d4;
+}
+
+.labels-refresh-btn:active {
+    border-style: inset;
+}
+
+.labels-refresh-btn.spinning {
+    animation: spin 0.3s ease;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Message quand tous les pays sont placés */
+.no-labels-message {
+    padding: 10px 20px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: #006400;
+    font-weight: bold;
+}
+
+/* Label de base */
+.country-label {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--label-bg);
+    border: 1px solid var(--label-border);
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: var(--font-system);
+    color: var(--label-text);
+    cursor: grab;
+    user-select: none;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    touch-action: none; /* Important pour le support tactile */
+}
+
+.country-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    background: #ffffaa;
+}
+
+/* Label en cours de drag */
+.country-label.dragging {
+    cursor: grabbing;
+    background: var(--label-dragging);
+    transform: scale(1.1);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+    opacity: 0.9;
+    z-index: 10000;
+}
+
+/* Clone pour le drag tactile */
+.country-label.touch-drag {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transform: scale(1.1);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Label placé correctement */
+.country-label.placed {
+    position: absolute;
+    background: var(--mapper-land-correct);
+    border-color: #228b22;
+    cursor: default;
+    animation: placeSuccess 0.3s ease;
+}
+
+@keyframes placeSuccess {
+    0% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Indicateur de drop valide sur la carte */
+.map-container.drag-over {
+    outline: 2px dashed #000080;
+    outline-offset: -2px;
+}
+
+/* Highlight du pays pendant le survol avec un label */
+.world-map path.country-path.drop-target {
+    fill: #ffd700 !important;
+    stroke: #ff8c00 !important;
+    stroke-width: 2px !important;
+}
+
+/* ========================================================================
+   8. INTERFACE UTILISATEUR
+   ======================================================================== */
+
+/* Message de chargement / placeholder */
+.placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--win98-border-dark);
+    z-index: 50;
+}
+
+.placeholder-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.placeholder-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000080;
+    margin-bottom: 8px;
+}
+
+.placeholder-text {
+    font-size: 14px;
+    color: #404040;
+}
+
+.placeholder-loading {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--win98-border-dark);
+}
+
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--win98-bg);
+    border-top-color: #000080;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Message de succès */
+.ready-message {
+    background: #90ee90;
+    border: 2px solid #228b22;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #006400;
+}
+
+/* Timer et score */
+.game-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+/* ========================================================================
+   9. ÉTATS DU JEU
+   ======================================================================== */
+
+/* État: en attente */
+.game-state-waiting .map-container {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* État: en jeu */
+.game-state-playing .placeholder {
+    display: none;
+}
+
+/* État: terminé */
+.game-state-finished .labels-container {
+    display: none;
+}
+
+.game-state-finished .map-container {
+    pointer-events: none;
+}
+
+/* ========================================================================
+   10. RESPONSIVE
+   ======================================================================== */
+@media (max-width: 768px) {
+    .window-frame {
+        margin: 4px;
+    }
+
+    .toolbar {
+        padding: 4px;
+        gap: 2px;
+    }
+
+    .toolbar-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .titlebar-text {
+        font-size: 11px;
+    }
+
+    .placeholder-icon {
+        font-size: 48px;
+    }
+
+    .placeholder-title {
+        font-size: 18px;
+    }
+
+    .labels-container {
+        padding: 6px 8px;
+    }
+    
+    .labels-visible-wrapper {
+        min-width: 200px;
+        gap: 6px;
+    }
+
+    .country-label {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+    
+    .labels-refresh-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .world-map {
+        min-width: 600px;
+        min-height: 300px;
+    }
+    
+    /* Labels verrouillés plus petits */
+    .locked-label .locked-text {
+        font-size: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .window-frame {
+        margin: 2px;
+    }
+    
+    .toolbar-separator {
+        display: none;
+    }
+    
+    .toolbar {
+        justify-content: center;
+    }
+    
+    .toolbar-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+
+    .statusbar {
+        flex-wrap: wrap;
+        font-size: 10px;
+    }
+
+    .status-section {
+        flex: 1;
+        text-align: center;
+        min-width: 70px;
+        padding: 2px 4px;
+    }
+    
+    .labels-visible-wrapper {
+        min-width: 150px;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .country-label {
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+    
+    .labels-refresh-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        margin-left: 4px;
+    }
+    
+    .world-map {
+        min-width: 500px;
+        min-height: 250px;
+    }
+    
+    /* Countdown plus petit */
+    .countdown-number {
+        font-size: 80px;
+    }
+    
+    .countdown-text {
+        font-size: 14px;
+    }
+}
+
+/* ========================================================================
+   11. LIEN RETOUR
+   ======================================================================== */
+.back-link {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 11px;
+    color: var(--win98-white);
+    text-decoration: none;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 1000;
+}
+
+.back-link:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================================================
+   12. SCROLLBARS WINDOWS 98
+   ======================================================================== */
+.map-container::-webkit-scrollbar,
+.labels-container::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+}
+
+.map-container::-webkit-scrollbar-track,
+.labels-container::-webkit-scrollbar-track {
+    background: var(--win98-bg);
+    border: 1px inset var(--win98-border-light);
+}
+
+.map-container::-webkit-scrollbar-thumb,
+.labels-container::-webkit-scrollbar-thumb {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+}
+
+.map-container::-webkit-scrollbar-button,
+.labels-container::-webkit-scrollbar-button {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    width: 16px;
+    height: 16px;
+}
+
+/* ========================================================================
+   13. MODALE DE SÉLECTION DE LANGUE
+   ======================================================================== */
+
+/* Overlay sombre */
+.language-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.language-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Fenêtre modale */
+.language-modal {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    box-shadow: 
+        inset 1px 1px 0 var(--win98-white),
+        inset -1px -1px 0 var(--win98-border-dark),
+        4px 4px 16px rgba(0, 0, 0, 0.5);
+    padding: 0;
+    min-width: 320px;
+    max-width: 90vw;
+    animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Barre de titre de la modale */
+.language-modal-title {
+    background: var(--win98-titlebar);
+    color: var(--win98-white);
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Sous-titre */
+.language-modal-subtitle {
+    padding: 16px 24px 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--win98-black);
+}
+
+/* Conteneur des drapeaux */
+.language-flags {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 32px 28px;
+}
+
+/* Boutons drapeaux */
+.flag-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    cursor: pointer;
+    font-family: var(--font-system);
+    transition: transform 0.1s ease;
+}
+
+.flag-button:hover {
+    background: #d4d4d4;
+    transform: translateY(-2px);
+}
+
+.flag-button:active {
+    border-style: inset;
+    transform: translateY(0);
+}
+
+.flag-button:focus {
+    outline: 2px dotted var(--win98-black);
+    outline-offset: 2px;
+}
+
+/* Emoji drapeau */
+.flag-emoji {
+    font-size: 48px;
+    line-height: 1;
+}
+
+/* Label sous le drapeau */
+.flag-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--win98-black);
+}
+
+/* État sélectionné */
+.flag-button.selected {
+    border-style: inset;
+    background: #a0a0a0;
+}
+
+/* Animation de fermeture */
+.language-modal-overlay.closing {
+    opacity: 0;
+}
+
+.language-modal-overlay.closing .language-modal {
+    animation: modalDisappear 0.2s ease forwards;
+}
+
+@keyframes modalDisappear {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+}
+
+/* ========================================================================
+   14. ÉCRAN DE COMPTE À REBOURS
+   ======================================================================== */
+
+.countdown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.countdown-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.countdown-number {
+    font-size: 120px;
+    font-weight: bold;
+    color: #000080;
+    font-family: var(--font-mono);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    animation: countdownPulse 1s ease infinite;
+}
+
+@keyframes countdownPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.countdown-text {
+    font-size: 18px;
+    color: #404040;
+    margin-top: 16px;
+}
+
+.countdown-go {
+    font-size: 80px;
+    color: #228b22;
+    animation: countdownGo 0.5s ease;
+}
+
+@keyframes countdownGo {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive pour la modale de langue */
+@media (max-width: 480px) {
+    .language-modal {
+        min-width: auto;
+        margin: 16px;
+    }
+    
+    .language-flags {
+        gap: 16px;
+        padding: 16px 20px 24px;
+    }
+    
+    .flag-button {
+        padding: 12px 16px;
+    }
+    
+    .flag-emoji {
+        font-size: 36px;
+    }
+    
+    .flag-label {
+        font-size: 11px;
+    }
+}

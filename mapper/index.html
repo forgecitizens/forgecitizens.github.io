@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Andrei Eleodor Sirbu">
+    <meta name="description" content="Mapper - Jeu de géographie où vous devez replacer les noms des pays sur la carte du monde.">
+    <title>Mapper</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
+    
+    <!-- Stylesheet externe -->
+    <link rel="stylesheet" href="/assets/mapper-game/mapper.css">
+</head>
+<body>
+    <!-- Lien retour vers le bureau -->
+    <a href="/" class="back-link">← Retour</a>
+
+    <!-- Fenêtre principale style Windows 98 -->
+    <div class="window-frame">
+        
+        <!-- Barre de titre -->
+        <div class="titlebar">
+            <div class="titlebar-left">
+                <img src="/assets/mapper-game/mapper_icon.png" alt="Mapper" class="titlebar-icon">
+                <span class="titlebar-text">Mapper</span>
+            </div>
+            <div class="titlebar-controls">
+                <button class="titlebar-btn" title="Réduire">_</button>
+                <button class="titlebar-btn" title="Agrandir">□</button>
+                <button class="titlebar-btn" title="Fermer" onclick="window.location.href='/'">×</button>
+            </div>
+        </div>
+
+        <!-- Barre de menu -->
+        <div class="menubar">
+            <div class="menu-item"><u>J</u>eu</div>
+            <div class="menu-item"><u>O</u>ptions</div>
+            <div class="menu-item"><u>A</u>ide</div>
+        </div>
+
+        <!-- Barre d'outils -->
+        <div class="toolbar">
+            <button class="toolbar-btn" id="btn-new-game" disabled>🎮 Nouvelle partie</button>
+            <div class="toolbar-separator"></div>
+            <button class="toolbar-btn" id="btn-region-world" disabled>🌍 Monde</button>
+            <button class="toolbar-btn" id="btn-region-europe" disabled>🇪🇺 Europe</button>
+            <div class="toolbar-separator"></div>
+            <button class="toolbar-btn" id="btn-lang-fr" disabled>🇫🇷 Français</button>
+            <button class="toolbar-btn" id="btn-lang-en" disabled>🇬🇧 English</button>
+        </div>
+
+        <!-- Zone de contenu principale -->
+        <div class="content-area">
+            <div class="game-container" id="game-container">
+                
+                <!-- Zone de la carte (sera remplie par le JS) -->
+                <div class="map-container" id="map-container">
+                    <!-- Le SVG de la carte sera injecté ici -->
+                </div>
+                
+                <!-- Zone des labels à placer -->
+                <div class="labels-container" id="labels-container" style="display: none;">
+                    <div class="labels-pool" id="labels-pool">
+                        <!-- Les labels des pays seront générés ici -->
+                    </div>
+                </div>
+                
+                <!-- Placeholder / Message de chargement -->
+                <div class="placeholder" id="placeholder">
+                    <div class="placeholder-icon">🗺️</div>
+                    <div class="placeholder-title">Mapper</div>
+                    <div class="placeholder-text">Replacez les noms des pays sur la carte du monde</div>
+                    <div class="placeholder-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Chargement...</span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Barre de statut -->
+        <div class="statusbar">
+            <div class="status-section" id="status-message" style="flex: 1;">Chargement...</div>
+            <div class="status-section" id="status-time">Temps: --:--</div>
+            <div class="status-section" id="status-score">Score: 0/0</div>
+        </div>
+        
+    </div>
+
+    <!-- Modale de sélection de langue -->
+    <div class="language-modal-overlay" id="language-modal-overlay">
+        <div class="language-modal">
+            <div class="language-modal-title">🗺️ Mapper</div>
+            <div class="language-modal-subtitle">Choisissez votre langue / Choose your language</div>
+            <div class="language-flags">
+                <button class="flag-button" id="flag-fr" data-lang="FR" title="Français">
+                    <span class="flag-emoji">🇫🇷</span>
+                    <span class="flag-label">Français</span>
+                </button>
+                <button class="flag-button" id="flag-en" data-lang="EN" title="English">
+                    <span class="flag-emoji">🇬🇧</span>
+                    <span class="flag-label">English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script principal du jeu -->
+    <script src="/assets/mapper-game/mapper.js"></script>
+</body>
+</html>
