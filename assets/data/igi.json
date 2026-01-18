@@ -1,12 +1,14 @@
 {
   "global_instability_index": {
-    "value": 469,
+    "value": 478,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-01-17",
-    "last_updated": "2026-01-17T19:36:00Z",
-    "version": "1.7",
-    "note": "Légère hausse due à l'escalade persistante en Iran (bilan des morts dépassant 3 090 confirmés par HRANA/NCRI, Khamenei évoque plusieurs milliers de morts, estimations ONG jusqu'à 12 000–30 000+, répression brutale intensifiée, exécutions imminentes maintenues, blackout internet prolongé, fermeture de l'espace aérien maintenue, menaces d'intervention américaine et sanctions européennes supplémentaires). Crises chroniques stables au Soudan (famine la plus grave au monde, aide alimentaire au bord de l'épuisement immédiat, épuisement prévu fin mars selon WFP). Tensions au Groenland persistantes (déploiement militaire européen accru avec troupes physiques arrivées et exercices conjoints confirmés par Allemagne, France, Norvège et autres). Justification du score : L'Iran domine avec un bilan humain en augmentation continue et risques internationaux persistants ; Soudan reste en chronicité extrême avec famine confirmée et aide menacée ; Groenland voit une rhétorique agressive américaine et un renforcement européen sans escalade militaire ; Ukraine subit des attaques continues sur l'énergie (système à 60 % de capacité, état d'urgence prolongé) ; Chine/Taïwan maintient des tensions régionales sans nouveau développement explosif. Nouvelle règle intégrée : les hausses de 20 ou 30 points (ou plus) sont réservées à des événements majeurs qui changent la donne sur le plan international, ou dans une région hautement productive en PIB mondial ou très militarisée ; progression graduelle à partir de 500 pour refléter des engrenages complexes menant potentiellement à un conflit continental généralisé, avec 900 comme seuil critique pour un risque nucléaire mondial."
-  },  "history": [
+    "calculation_date": "2026-01-18",
+    "last_updated": "2026-01-18T17:00:00Z",
+    "version": "1.8",
+    "note": "Hausse modérée et graduelle due à l'escalade persistante en Iran (bilan >5 000 morts confirmés par sources officielles et HRANA/NCRI, estimations ONG jusqu'à 20 000+, répression brutale intensifiée, exécutions imminentes maintenues, blackout internet prolongé, fermeture aérienne) et intervention américaine potentiellement imminente dans les prochains jours. Crises chroniques stables au Soudan (famine la plus grave au monde, aide au bord de l'épuisement immédiat). Tensions au Groenland persistantes (déploiement militaire européen accru sans confrontation directe). Justification du score : l'Iran domine avec bilan humain en augmentation continue et risques internationaux persistants ; Soudan en chronicité extrême avec famine confirmée ; Groenland voit rhétorique agressive US et renforcement européen ; Ukraine subit attaques continues sur énergie (état d'urgence prolongé) ; Chine/Taïwan tensions régionales stables sans nouveau pic. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs changeant la donne internationale ou dans zones hautement productives en PIB/militarisées ; progression graduelle à partir de 500 pour engrenages complexes continentaux, 900 seuil nucléaire critique."
+  },
+
+  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -23,14 +25,17 @@
     { "date": "2026-01-14", "value": 440 },
     { "date": "2026-01-15", "value": 455 },
     { "date": "2026-01-16", "value": 463 },
-    { "date": "2026-01-17", "value": 469 }
-  ],  "major_contributors": [
+    { "date": "2026-01-17", "value": 469 },
+    { "date": "2026-01-18", "value": 478 }
+  ],
+
+  "major_contributors": [
     {
       "country_or_region": "Iran",
       "fig_weight": 0.072,
       "daily_instability_score": 13,
       "weighted_contribution": 0.936,
-      "events": "Manifestations depuis plus de trois semaines, bilan des morts explosif (plus de 3 090 confirmés par HRANA/NCRI, Khamenei évoque plusieurs milliers de morts, estimations ONG jusqu'à 12 000–30 000+), répression brutale intensifiée (exécutions imminentes maintenues, plus de 10 000 arrestations), blackout internet total prolongé, fermeture de l'espace aérien maintenue, menaces d'intervention américaine et sanctions européennes supplémentaires",
+      "events": "Manifestations depuis plus de trois semaines, bilan des morts explosif (>5 000 confirmés par sources officielles et HRANA/NCRI, estimations ONG jusqu'à 20 000+), répression brutale intensifiée (exécutions imminentes maintenues, >10 000 arrestations), blackout internet prolongé, fermeture aérienne maintenue, menaces d'intervention américaine et sanctions européennes supplémentaires",
       "gravity": "Très élevé (Fibonacci 13 : violences massives + risque d'intervention internationale + instabilité du régime/nucléaire)"
     },
     {
@@ -86,7 +91,7 @@
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Tensions persistantes avec exercices militaires récents simulant un blocus (Justice Mission 2025), condamnations américaines, rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 17 janvier",
+      "events": "Tensions persistantes avec exercices militaires récents simulant un blocus (Justice Mission 2025), condamnations américaines, rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 18 janvier",
       "gravity": "Modéré (Fibonacci 5)"
     },
     {
@@ -97,23 +102,26 @@
       "events": "Violences ethniques et enlèvements en hausse chronique",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],  "summary": {
-    "total_weighted_sum": 7.035,
+  ],
+
+  "summary": {
+    "total_weighted_sum": 7.07,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée et en hausse modérée – l'Iran domine avec un bilan humain en forte augmentation et risques d'intervention internationale accrus ; crises africaines chroniques stables mais graves (Soudan avec famine extrême et aide menacée) ; Groenland voit un déploiement militaire européen face aux menaces américaines ; Ukraine subit des attaques continues sur l'énergie (état d'urgence prolongé) ; Chine/Taïwan maintient des tensions régionales persistantes. Potentiel d'explosion rapide si escalade en Iran ou aggravation ailleurs. Nouvelle règle appliquée : les hausses de 20 ou 30 points (ou plus) sont réservées à des événements majeurs qui changent la donne sur le plan international, ou dans une région hautement productive en PIB mondial ou très militarisée ; progression graduelle à partir de 500 pour refléter des dynamiques complexes continentales, avec 900 comme seuil nucléaire critique."
-  },  "metadata": {
+    "interpretation": "Instabilité très élevée et en hausse modérée – l'Iran domine avec bilan humain en forte augmentation et risques d'intervention internationale accrus ; crises africaines chroniques stables mais graves (Soudan avec famine extrême et aide menacée) ; Groenland voit déploiement militaire européen face aux menaces américaines ; Ukraine subit attaques continues sur l'énergie (état d'urgence prolongé) ; Chine/Taïwan maintient tensions régionales persistantes. Pas d'événement majeur changeant la donne aujourd'hui, donc hausse limitée. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs internationaux ou en zones hautement productives/militarisées ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },
+
+  "metadata": {
     "sources": [
-      "HRANA, NCRI, Reuters, Amnesty International (Iran : bilan des morts, répression, exécutions)",
+      "HRANA, NCRI, Reuters, Amnesty International (Iran : bilan des morts, répression)",
       "Programme alimentaire mondial, Al Jazeera, UN OCHA (Soudan : famine, aide menacée)",
-      "Reuters, POLITICO, BBC, France24 (Groenland : menaces américaines, déploiement européen)",
+      "Reuters, POLITICO, BBC, France24 (Groenland : menaces US, déploiement européen)",
       "Reuters, Al Jazeera, The Guardian (Ukraine : attaques énergétiques, état d'urgence)",
       "US State Dept, Reuters, Al Jazeera (Chine/Taïwan : exercices, tensions)",
       "International Crisis Group, CFR (conflits mondiaux 2026)"
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
-    "next_update_planned": "2026-01-18"
+    "next_update_planned": "2026-01-19"
   }
 }
-
