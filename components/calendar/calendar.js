@@ -56,6 +56,12 @@ class RetroCalendar {
                 text: 'Release v.1 de l\'Indice d\'Instabilité Globale (IGI). L\'IGI c\'est un nombre qui agrège les situations financières, politiques, culturelles, climatiques, épidémiques mondiales pour déterminer sur une échelle allant de 0 à 1000 si le monde tend vers la paix universelle ou le chaos total.',
                 link: null,
                 linkText: null
+            },
+            '2026-01-19': {
+                title: 'Release v1 de "Mapper"',
+                text: 'Mapper est un jeu pour vous aider à réviser de manière ludique les emplacements des pays du monde. La v1 contient un système de combos, un chrono, et support des langues FR et EN.',
+                link: null,
+                linkText: null
             }
         };
         
