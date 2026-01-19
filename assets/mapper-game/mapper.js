@@ -261,7 +261,20 @@
             startY: 0,
             scrollLeft: 0,
             scrollTop: 0
-        }
+        },
+        
+        // Sélection de labels (nouveau système clic)
+        selectedLabels: [], // Labels actuellement sélectionnés (max 3)
+        
+        // GEO-COMBO tracking
+        geoCombo: {
+            active: false,          // True si tous les 3 labels sont sélectionnés
+            consecutiveCorrect: 0,  // Nombre de placements corrects consécutifs
+            comboLabels: []         // Les codes des labels du combo en cours
+        },
+        
+        // Compteur d'erreurs consécutives (pour auto-shuffle)
+        consecutiveErrors: 0
     };
 
     /* ========================================================================
@@ -355,7 +368,75 @@
             elements.flagEN.addEventListener('click', () => selectLanguage('EN'));
         }
         
+        // Initialiser la modale des crédits
+        initCreditsModal();
+        
         console.log('✅ Mapper: UI initialisée');
+    }
+    
+    /**
+     * Initialise la modale des crédits
+     */
+    function initCreditsModal() {
+        const btnCredits = document.getElementById('btn-credits');
+        const creditsOverlay = document.getElementById('credits-modal-overlay');
+        const creditsCloseBtn = document.getElementById('credits-close-btn');
+        
+        if (btnCredits && creditsOverlay) {
+            // Ouvrir la modale au clic sur "Crédits"
+            btnCredits.addEventListener('click', () => {
+                showCreditsModal();
+            });
+            
+            // Fermer via le bouton X
+            if (creditsCloseBtn) {
+                creditsCloseBtn.addEventListener('click', () => {
+                    hideCreditsModal();
+                });
+            }
+            
+            // Fermer en cliquant sur l'overlay (en dehors de la modale)
+            creditsOverlay.addEventListener('click', (e) => {
+                if (e.target === creditsOverlay) {
+                    hideCreditsModal();
+                }
+            });
+            
+            // Fermer avec la touche Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && creditsOverlay.classList.contains('visible')) {
+                    hideCreditsModal();
+                }
+            });
+        }
+    }
+    
+    /**
+     * Affiche la modale des crédits
+     */
+    function showCreditsModal() {
+        const creditsOverlay = document.getElementById('credits-modal-overlay');
+        if (creditsOverlay) {
+            creditsOverlay.classList.add('visible');
+            // Arrêter le son GEO-COMBO si actif
+            if (GameState.geoCombo.active) {
+                stopComboReadySound();
+            }
+        }
+    }
+    
+    /**
+     * Cache la modale des crédits
+     */
+    function hideCreditsModal() {
+        const creditsOverlay = document.getElementById('credits-modal-overlay');
+        if (creditsOverlay) {
+            creditsOverlay.classList.remove('visible');
+            // Reprendre le son GEO-COMBO si le combo est actif
+            if (GameState.geoCombo.active) {
+                playComboReadySound();
+            }
+        }
     }
 
     /* ========================================================================
@@ -410,6 +491,10 @@
         };
         GameState.remainingLabels = [];
         GameState.placedLabels = [];
+        
+        // Réinitialiser la sélection et le GEO-COMBO
+        GameState.selectedLabels = [];
+        resetGeoCombo();
         
         // Réinitialiser le zoom
         resetZoom();
@@ -675,6 +760,12 @@
                 setTimeout(() => {
                     countdownOverlay.remove();
                     
+                    // Démarrer la partie (réinitialise les stats et démarre le timer)
+                    startNewGame();
+                    
+                    // Démarrer le timer
+                    startTimer();
+                    
                     // Afficher la carte
                     renderMap();
                     
@@ -685,10 +776,10 @@
                     enableButtons();
                     
                     // Mettre à jour le statut
-                    const readyText = GameState.currentLanguage === 'FR' ? 'Prêt' : 'Ready';
-                    updateStatus(readyText);
+                    const playingText = GameState.currentLanguage === 'FR' ? 'En jeu' : 'Playing';
+                    updateStatus(playingText);
                     
-                    console.log('✅ Mapper: Carte affichée !');
+                    console.log('✅ Mapper: Partie démarrée !');
                 }, 300);
             }
         }, 1000);
@@ -915,19 +1006,19 @@
             
         }, { passive: false });
         
-        // Pan avec clic gauche maintenu (bouton molette ou clic normal quand zoomé)
+        // Pan avec clic gauche maintenu (bouton molette ou clic normal)
         container.addEventListener('mousedown', (e) => {
-            // Ignorer si on drag un label
-            if (GameState.draggedLabel) return;
+            // Ignorer si on clique sur un label sélectionnable
+            if (e.target.closest('.country-label.selectable')) return;
             
-            // Ignorer si on clique sur un label draggable (pas les locked qui ont pointer-events: none)
-            if (e.target.closest('.country-label.draggable')) return;
+            // Ignorer si on clique sur un pays (pour le placement)
+            if (e.target.closest('path.country-path') && GameState.selectedLabels.length > 0) return;
             
-            // Activer le pan si on est zoomé (clic gauche) ou avec le bouton molette (toujours)
+            // Activer le pan avec clic gauche ou avec le bouton molette
             const isMiddleClick = e.button === 1;
-            const isLeftClickZoomed = e.button === 0 && zoomState.scale > 1;
+            const isLeftClick = e.button === 0;
             
-            if (isMiddleClick || isLeftClickZoomed) {
+            if (isMiddleClick || isLeftClick) {
                 zoomState.isPanning = true;
                 zoomState.startX = e.clientX;
                 zoomState.startY = e.clientY;
@@ -961,7 +1052,7 @@
         let touchStartX, touchStartY;
         
         container.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1 && zoomState.scale > 1) {
+            if (e.touches.length === 1) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
                 zoomState.scrollLeft = container.scrollLeft;
@@ -970,7 +1061,7 @@
         }, { passive: true });
         
         container.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1 && zoomState.scale > 1 && touchStartX !== undefined) {
+            if (e.touches.length === 1 && touchStartX !== undefined) {
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
                 
@@ -1177,9 +1268,11 @@
         const wrapper = GameState.elements?.labelsVisibleWrapper;
         if (!wrapper) return;
         
-        // Vider les labels actuels
+        // Vider les labels actuels et réinitialiser la sélection
         wrapper.innerHTML = '';
+        wrapper.classList.remove('geo-combo-active');
         GameState.currentDisplayedLabels = [];
+        GameState.selectedLabels = [];
         
         // Récupérer les labels restants (non placés)
         const remainingPairs = GameState.allLabels.filter(
@@ -1230,6 +1323,9 @@
             setTimeout(() => refreshBtn.classList.remove('spinning'), 300);
         }
         
+        // Réinitialiser le GEO-COMBO car on change les labels
+        resetGeoCombo(true); // Jouer too_bad si combo était actif
+        
         // Afficher de nouveaux labels
         displayNextLabels();
     }
@@ -1248,199 +1344,160 @@
     }
     
     /**
-     * Crée un label draggable
+     * Crée un label cliquable (nouveau système sans drag & drop)
      * @param {string} countryCode - Code ISO du pays
      * @param {string} countryName - Nom du pays
      * @returns {HTMLElement}
      */
     function createDraggableLabel(countryCode, countryName) {
         const label = document.createElement('div');
-        label.className = 'country-label draggable';
+        label.className = 'country-label selectable';
         label.textContent = countryName;
         label.dataset.countryCode = countryCode;
         label.dataset.countryName = countryName;
-        label.draggable = true;
         
-        // Événements de drag HTML5
-        label.addEventListener('dragstart', handleDragStart);
-        label.addEventListener('dragend', handleDragEnd);
-        
-        // Support tactile (pointer events)
-        label.addEventListener('pointerdown', handlePointerDown);
+        // Événement de clic pour sélectionner/désélectionner le label
+        label.addEventListener('click', handleLabelClick);
         
         return label;
     }
     
     /**
-     * Gère le début du drag (HTML5)
-     * @param {DragEvent} e
+     * Gère le clic sur un label pour le sélectionner/désélectionner
+     * @param {MouseEvent} e
      */
-    function handleDragStart(e) {
-        const label = e.target;
-        
-        // Stocker les données du label
-        e.dataTransfer.setData('text/plain', label.dataset.countryCode);
-        e.dataTransfer.setData('application/json', JSON.stringify({
-            code: label.dataset.countryCode,
-            name: label.dataset.countryName
-        }));
-        e.dataTransfer.effectAllowed = 'move';
-        
-        // Marquer comme en cours de drag
-        label.classList.add('dragging');
-        GameState.draggedLabel = label;
-        
-        console.log(`🎯 Drag start: ${label.dataset.countryName} (${label.dataset.countryCode})`);
-    }
-    
-    /**
-     * Gère la fin du drag (HTML5)
-     * @param {DragEvent} e
-     */
-    function handleDragEnd(e) {
-        const label = e.target;
-        label.classList.remove('dragging');
-        GameState.draggedLabel = null;
-    }
-    
-    /**
-     * Gère le pointer down pour le support tactile
-     * @param {PointerEvent} e
-     */
-    function handlePointerDown(e) {
-        // Ne pas interférer avec le drag HTML5 sur desktop
-        if (e.pointerType === 'mouse') return;
-        
+    function handleLabelClick(e) {
+        e.stopPropagation();
         const label = e.target.closest('.country-label');
         if (!label) return;
         
-        e.preventDefault();
+        const countryCode = label.dataset.countryCode;
+        const isSelected = GameState.selectedLabels.includes(countryCode);
         
-        // Créer un clone pour le drag tactile
-        const clone = label.cloneNode(true);
-        clone.classList.add('dragging', 'touch-drag');
-        clone.style.position = 'fixed';
-        clone.style.zIndex = '10000';
-        clone.style.pointerEvents = 'none';
-        clone.style.left = `${e.clientX - 50}px`;
-        clone.style.top = `${e.clientY - 15}px`;
-        document.body.appendChild(clone);
-        
-        GameState.touchDrag = {
-            label: label,
-            clone: clone,
-            startX: e.clientX,
-            startY: e.clientY
-        };
-        
-        // Écouter les mouvements
-        document.addEventListener('pointermove', handlePointerMove);
-        document.addEventListener('pointerup', handlePointerUp);
-        document.addEventListener('pointercancel', handlePointerCancel);
-    }
-    
-    /**
-     * Gère le mouvement du pointer (tactile)
-     * @param {PointerEvent} e
-     */
-    function handlePointerMove(e) {
-        if (!GameState.touchDrag) return;
-        
-        const clone = GameState.touchDrag.clone;
-        clone.style.left = `${e.clientX - 50}px`;
-        clone.style.top = `${e.clientY - 15}px`;
-    }
-    
-    /**
-     * Gère le relâchement du pointer (tactile)
-     * @param {PointerEvent} e
-     */
-    function handlePointerUp(e) {
-        if (!GameState.touchDrag) return;
-        
-        const { label, clone } = GameState.touchDrag;
-        
-        // Trouver le pays sous le curseur
-        clone.style.display = 'none';
-        const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
-        clone.remove();
-        
-        // Vérifier si c'est un pays
-        const countryPath = elementBelow?.closest('path.country-path');
-        if (countryPath) {
-            const targetCountryId = countryPath.dataset.countryId;
-            const labelCountryCode = label.dataset.countryCode;
-            
-            handleDrop(labelCountryCode, targetCountryId, label);
+        if (isSelected) {
+            // Désélectionner le label
+            GameState.selectedLabels = GameState.selectedLabels.filter(code => code !== countryCode);
+            label.classList.remove('selected');
+            console.log(`🔘 Label désélectionné: ${label.dataset.countryName}`);
+        } else {
+            // Sélectionner le label
+            GameState.selectedLabels.push(countryCode);
+            label.classList.add('selected');
+            console.log(`✅ Label sélectionné: ${label.dataset.countryName}`);
         }
         
-        // Nettoyer
-        cleanupTouchDrag();
+        // Vérifier si les 3 labels sont sélectionnés pour activer le mode GEO-COMBO
+        checkGeoComboActivation();
     }
     
     /**
-     * Gère l'annulation du pointer (tactile)
+     * Vérifie si le GEO-COMBO doit être activé (3 labels sélectionnés)
      */
-    function handlePointerCancel() {
-        cleanupTouchDrag();
-    }
-    
-    /**
-     * Nettoie l'état du drag tactile
-     */
-    function cleanupTouchDrag() {
-        if (GameState.touchDrag?.clone) {
-            GameState.touchDrag.clone.remove();
-        }
-        GameState.touchDrag = null;
+    function checkGeoComboActivation() {
+        const displayedLabels = GameState.currentDisplayedLabels;
+        const selectedLabels = GameState.selectedLabels;
         
-        document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
-        document.removeEventListener('pointercancel', handlePointerCancel);
+        // Vérifier si tous les labels affichés sont sélectionnés
+        const allSelected = displayedLabels.length > 0 && 
+                           displayedLabels.every(code => selectedLabels.includes(code));
+        
+        if (allSelected && displayedLabels.length === LABELS_DISPLAY_COUNT) {
+            if (!GameState.geoCombo.active) {
+                GameState.geoCombo.active = true;
+                GameState.geoCombo.consecutiveCorrect = 0;
+                GameState.geoCombo.comboLabels = [...displayedLabels];
+                console.log('🔥 GEO-COMBO activé! Placez les 3 pays correctement!');
+                
+                // Jouer le son GEO-COMBO ready en boucle
+                playComboReadySound();
+                
+                // Ajouter une indication visuelle
+                const wrapper = GameState.elements?.labelsVisibleWrapper;
+                if (wrapper) {
+                    wrapper.classList.add('geo-combo-active');
+                }
+            }
+        } else {
+            // Désactiver le combo si on désélectionne un label
+            if (GameState.geoCombo.active) {
+                resetGeoCombo(true); // Jouer too_bad car désélection
+            }
+        }
     }
     
     /**
-     * Configure les événements de drop sur la carte
+     * Réinitialise le GEO-COMBO
+     * @param {boolean} playTooBad - Si true, joue le son too_bad (interruption par l'utilisateur)
+     */
+    function resetGeoCombo(playTooBad = false) {
+        // Jouer le son too_bad si le combo était actif et qu'on doit le jouer
+        if (playTooBad && GameState.geoCombo.active) {
+            playTooBadSound();
+        }
+        
+        GameState.geoCombo.active = false;
+        GameState.geoCombo.consecutiveCorrect = 0;
+        GameState.geoCombo.comboLabels = [];
+        
+        // Arrêter le son GEO-COMBO ready
+        stopComboReadySound();
+        
+        const wrapper = GameState.elements?.labelsVisibleWrapper;
+        if (wrapper) {
+            wrapper.classList.remove('geo-combo-active');
+        }
+    }
+    
+
+    
+    /**
+     * Configure les événements de clic sur les pays de la carte
      * @param {SVGElement} svg
      */
     function setupDropZones(svg) {
         const mapContainer = GameState.elements?.mapContainer;
         if (!mapContainer) return;
         
-        // Permettre le drop sur le conteneur de la carte
-        mapContainer.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        });
+        // Gérer les clics sur les pays
+        svg.addEventListener('click', handleCountryClick);
         
-        mapContainer.addEventListener('drop', (e) => {
-            e.preventDefault();
-            
-            // Récupérer les données du label
-            const countryCode = e.dataTransfer.getData('text/plain');
-            if (!countryCode) return;
-            
-            // Trouver le pays sous le curseur
-            const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
-            const countryPath = elementBelow?.closest('path.country-path');
-            
-            if (countryPath) {
-                const targetCountryId = countryPath.dataset.countryId;
-                handleDrop(countryCode, targetCountryId, GameState.draggedLabel);
-            }
-        });
-        
-        console.log('✅ Mapper: Drop zones configurées');
+        console.log('✅ Mapper: Zones de clic configurées');
     }
     
     /**
-     * Gère le dépôt d'un label sur un pays
+     * Gère le clic sur un pays de la carte
+     * @param {MouseEvent} e
+     */
+    function handleCountryClick(e) {
+        const countryPath = e.target.closest('path.country-path');
+        if (!countryPath) return;
+        
+        // Vérifier qu'au moins un label est sélectionné
+        if (GameState.selectedLabels.length === 0) {
+            console.log('ℹ️ Sélectionnez d\'abord un pays dans la liste');
+            return;
+        }
+        
+        const targetCountryId = countryPath.dataset.countryId;
+        
+        // Prendre le premier label sélectionné
+        const labelCountryCode = GameState.selectedLabels[0];
+        
+        // Trouver l'élément label correspondant
+        const labelElement = document.querySelector(`.country-label[data-country-code="${labelCountryCode}"]`);
+        
+        // Effectuer le placement
+        handleDrop(labelCountryCode, targetCountryId, labelElement);
+    }
+    
+    /**
+     * Gère le placement d'un label sur un pays
      * @param {string} labelCountryCode - Code du pays du label
      * @param {string} targetCountryId - ID du pays ciblé
      * @param {HTMLElement} labelElement - Élément du label
      */
     function handleDrop(labelCountryCode, targetCountryId, labelElement) {
-        console.log(`📍 Drop: Label "${labelCountryCode}" sur pays "${targetCountryId}"`);
+        console.log(`📍 Placement: Label "${labelCountryCode}" sur pays "${targetCountryId}"`);
         
         // Normaliser l'ID cible (convertir nom de classe en code ISO si nécessaire)
         const normalizedTargetId = normalizeCountryId(targetCountryId);
@@ -1462,6 +1519,11 @@
                 labelElement.remove();
             }
             
+            // Retirer de la liste des labels sélectionnés
+            GameState.selectedLabels = GameState.selectedLabels.filter(
+                code => code !== labelCountryCode
+            );
+            
             // Retirer de la liste des labels affichés
             GameState.currentDisplayedLabels = GameState.currentDisplayedLabels.filter(
                 code => code !== labelCountryCode
@@ -1474,12 +1536,30 @@
             );
             GameState.placedLabels.push(labelCountryCode);
             
+            // Réinitialiser le compteur d'erreurs consécutives
+            GameState.consecutiveErrors = 0;
+            
+            // Gérer le GEO-COMBO
+            if (GameState.geoCombo.active) {
+                GameState.geoCombo.consecutiveCorrect++;
+                console.log(`🔥 GEO-COMBO: ${GameState.geoCombo.consecutiveCorrect}/${LABELS_DISPLAY_COUNT}`);
+                
+                // Jouer le son de succès correspondant
+                playComboSuccessSound(GameState.geoCombo.consecutiveCorrect);
+                
+                // Vérifier si le GEO-COMBO est complété
+                if (GameState.geoCombo.consecutiveCorrect === LABELS_DISPLAY_COUNT) {
+                    triggerGeoCombo();
+                }
+            }
+            
             // Mettre à jour l'affichage du score
             updateScoreDisplay();
             
             // Si tous les labels visibles ont été placés, en afficher de nouveaux
             if (GameState.currentDisplayedLabels.length === 0 && GameState.remainingLabels.length > 0) {
                 console.log('📋 Affichage de nouveaux labels...');
+                resetGeoCombo(); // Reset pour le prochain groupe
                 displayNextLabels();
             }
             
@@ -1502,10 +1582,292 @@
                 ? `🟠 Proche! ${normalizedTargetId} est voisin de ${labelCountryCode}` 
                 : `🔴 Loin! ${normalizedTargetId} n'est pas voisin de ${labelCountryCode}`);
             
+            // Casser le GEO-COMBO en cas d'erreur
+            if (GameState.geoCombo.active) {
+                console.log('💔 GEO-COMBO cassé!');
+                resetGeoCombo(true); // Jouer too_bad car erreur
+            }
+            
+            // Incrémenter le compteur d'erreurs consécutives
+            GameState.consecutiveErrors++;
+            console.log(`⚠️ Erreurs consécutives: ${GameState.consecutiveErrors}/10`);
+            
+            // Auto-shuffle après 10 erreurs consécutives
+            if (GameState.consecutiveErrors >= 10) {
+                console.log('🔄 Auto-shuffle déclenché après 10 erreurs consécutives!');
+                GameState.consecutiveErrors = 0;
+                showAutoShuffleNotification();
+                
+                // Attendre un peu avant le shuffle pour que la notification soit visible
+                setTimeout(() => {
+                    handleRefreshLabels();
+                }, 500);
+            }
+            
             // Mettre à jour les statistiques
             GameState.stats.wrongCount++;
             updateScoreDisplay();
         }
+    }
+    
+    /**
+     * Affiche la notification d'auto-shuffle
+     */
+    function showAutoShuffleNotification() {
+        const container = GameState.elements?.gameContainer;
+        if (!container) return;
+        
+        // Jouer le son d'erreur
+        playErrorSound();
+        
+        const notification = document.createElement('div');
+        notification.className = 'auto-shuffle-notification';
+        
+        const isFR = GameState.currentLanguage === 'FR';
+        notification.innerHTML = `
+            <div class="auto-shuffle-icon">🔄</div>
+            <div class="auto-shuffle-text">${isFR ? 'Trop d\'erreurs consécutives ! On mélange les étiquettes.' : 'Too many consecutive mistakes! Labels are reshuffled.'}</div>
+        `;
+        
+        container.appendChild(notification);
+        
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+        
+        setTimeout(() => {
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 500);
+        }, 2500);
+    }
+    
+    /**
+     * Cache pour les sons du jeu
+     */
+    const SoundCache = {
+        error: null,
+        comboReady: null,
+        comboSuccess1: null,
+        comboSuccess2: null,
+        comboSuccess3: null,
+        comboComplete: null,
+        tooBad: null
+    };
+    
+    /**
+     * Initialise les sons du GEO-COMBO
+     */
+    function initComboSounds() {
+        // Son en boucle quand les 3 labels sont sélectionnés
+        SoundCache.comboReady = new Audio('/sounds/mapper%20sounds/mapper_geocombo_ready.mp3');
+        SoundCache.comboReady.loop = true;
+        SoundCache.comboReady.volume = 0.5;
+        
+        // Sons de succès progressifs
+        SoundCache.comboSuccess1 = new Audio('/sounds/mapper%20sounds/171671__leszek_szary__success-1.wav');
+        SoundCache.comboSuccess1.volume = 0.3;
+        
+        SoundCache.comboSuccess2 = new Audio('/sounds/mapper%20sounds/171670__leszek_szary__success-2.wav');
+        SoundCache.comboSuccess2.volume = 0.4;
+        
+        SoundCache.comboSuccess3 = new Audio('/sounds/mapper%20sounds/109662__grunz__success.wav');
+        SoundCache.comboSuccess3.volume = 0.5;
+        
+        SoundCache.comboComplete = new Audio('/sounds/mapper%20sounds/341985__unadamlar__goodresult.wav');
+        SoundCache.comboComplete.volume = 0.6;
+        
+        // Son quand le GEO-COMBO est interrompu
+        SoundCache.tooBad = new Audio('/sounds/mapper%20sounds/too_bad.wav');
+        SoundCache.tooBad.volume = 0.5;
+    }
+    
+    /**
+     * Joue le son "too bad" quand le GEO-COMBO est interrompu
+     */
+    function playTooBadSound() {
+        try {
+            if (!SoundCache.tooBad) {
+                initComboSounds();
+            }
+            SoundCache.tooBad.currentTime = 0;
+            SoundCache.tooBad.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son too_bad:', err);
+            });
+            console.log('🎵 Son too_bad joué');
+        } catch (err) {
+            console.warn('⚠️ Erreur audio too_bad:', err);
+        }
+    }
+    
+    /**
+     * Joue le son "GEO-COMBO prêt" en boucle
+     */
+    function playComboReadySound() {
+        try {
+            if (!SoundCache.comboReady) {
+                initComboSounds();
+            }
+            SoundCache.comboReady.currentTime = 0;
+            SoundCache.comboReady.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son combo ready:', err);
+            });
+            console.log('🎵 Son GEO-COMBO ready lancé');
+        } catch (err) {
+            console.warn('⚠️ Erreur audio combo ready:', err);
+        }
+    }
+    
+    /**
+     * Arrête le son "GEO-COMBO prêt"
+     */
+    function stopComboReadySound() {
+        try {
+            if (SoundCache.comboReady) {
+                SoundCache.comboReady.pause();
+                SoundCache.comboReady.currentTime = 0;
+                console.log('🔇 Son GEO-COMBO ready arrêté');
+            }
+        } catch (err) {
+            console.warn('⚠️ Erreur arrêt audio combo ready:', err);
+        }
+    }
+    
+    /**
+     * Joue le son de succès selon le numéro du placement dans le combo
+     * @param {number} placementNumber - 1, 2 ou 3
+     */
+    function playComboSuccessSound(placementNumber) {
+        try {
+            if (!SoundCache.comboSuccess1) {
+                initComboSounds();
+            }
+            
+            let sound;
+            switch (placementNumber) {
+                case 1:
+                    sound = SoundCache.comboSuccess1;
+                    break;
+                case 2:
+                    sound = SoundCache.comboSuccess2;
+                    break;
+                case 3:
+                    sound = SoundCache.comboSuccess3;
+                    // Jouer aussi le son de complétion après un court délai
+                    setTimeout(() => {
+                        if (SoundCache.comboComplete) {
+                            SoundCache.comboComplete.currentTime = 0;
+                            SoundCache.comboComplete.play().catch(err => {
+                                console.warn('⚠️ Impossible de jouer le son combo complete:', err);
+                            });
+                        }
+                    }, 300);
+                    break;
+                default:
+                    return;
+            }
+            
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(err => {
+                    console.warn(`⚠️ Impossible de jouer le son success-${placementNumber}:`, err);
+                });
+                console.log(`🎵 Son succès ${placementNumber}/3 joué`);
+            }
+        } catch (err) {
+            console.warn('⚠️ Erreur audio combo success:', err);
+        }
+    }
+    
+    /**
+     * Joue le son d'erreur
+     */
+    function playErrorSound() {
+        try {
+            // Créer ou réutiliser l'objet Audio
+            if (!SoundCache.error) {
+                SoundCache.error = new Audio('/sounds/error.mp3');
+                SoundCache.error.volume = 0.5;
+            }
+            
+            // Réinitialiser la position et jouer
+            SoundCache.error.currentTime = 0;
+            SoundCache.error.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son d\'erreur:', err);
+            });
+        } catch (err) {
+            console.warn('⚠️ Erreur audio:', err);
+        }
+    }
+    
+    /**
+     * Déclenche le bonus GEO-COMBO
+     */
+    function triggerGeoCombo() {
+        console.log('🎉🔥 GEO-COMBO COMPLÉTÉ! +30 secondes!');
+        
+        // Soustraire 30 secondes au temps écoulé (bonus)
+        const bonusMs = 30 * 1000;
+        GameState.stats.startTime += bonusMs;
+        GameState.stats.elapsedTime = Math.max(0, GameState.stats.elapsedTime - bonusMs);
+        
+        // Mettre à jour l'affichage du timer
+        updateTimerDisplay();
+        
+        // Ajouter l'effet de halo sur le chronomètre
+        addTimerComboEffect();
+        
+        // Afficher la notification GEO-COMBO
+        showGeoComboNotification();
+        
+        // Reset le combo
+        resetGeoCombo();
+    }
+    
+    /**
+     * Ajoute un effet de halo autour du chronomètre pour le GEO-COMBO
+     */
+    function addTimerComboEffect() {
+        const statusTime = GameState.elements?.statusTime;
+        if (!statusTime) return;
+        
+        // Ajouter la classe d'effet
+        statusTime.classList.add('combo-effect');
+        
+        // Retirer l'effet après l'animation
+        setTimeout(() => {
+            statusTime.classList.remove('combo-effect');
+        }, 2500);
+    }
+    
+    /**
+     * Affiche la notification flottante du GEO-COMBO
+     */
+    function showGeoComboNotification() {
+        const container = GameState.elements?.gameContainer;
+        if (!container) return;
+        
+        // Créer la notification
+        const notification = document.createElement('div');
+        notification.className = 'geo-combo-notification';
+        
+        const isFR = GameState.currentLanguage === 'FR';
+        notification.innerHTML = `
+            <div class="geo-combo-title">🔥 GEO-COMBO !</div>
+            <div class="geo-combo-bonus">${isFR ? 'Vous gagnez 30 secondes !' : "You've gained an extra 30 seconds!"}</div>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Animation d'entrée
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+        
+        // Supprimer après l'animation
+        setTimeout(() => {
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 500);
+        }, 2500);
     }
     
     /**
@@ -1644,7 +2006,49 @@
         labelGroup.appendChild(text);
         svg.appendChild(labelGroup);
         
+        // Faire disparaître le label après 20 secondes
+        setTimeout(() => {
+            labelGroup.classList.add('fading-out');
+            setTimeout(() => {
+                labelGroup.classList.add('hidden');
+                labelGroup.classList.remove('fading-out');
+            }, 500); // Durée de l'animation de fade out
+        }, 20000); // 20 secondes
+        
+        // Ajouter un événement de clic sur le pays pour réafficher brièvement le label
+        const allPaths = svg.querySelectorAll(`#${targetId}, .${targetId}`);
+        allPaths.forEach(path => {
+            path.addEventListener('click', (e) => {
+                // Seulement si le pays est correct (vert)
+                if (path.classList.contains('country-correct')) {
+                    e.stopPropagation();
+                    showLabelBriefly(labelGroup);
+                }
+            });
+        });
+        
         console.log(`🏷️ Label verrouillé placé: ${countryName} sur ${targetId}`);
+    }
+    
+    /**
+     * Affiche brièvement un label caché (0.5s)
+     * @param {SVGGElement} labelGroup - Le groupe SVG du label
+     */
+    function showLabelBriefly(labelGroup) {
+        if (!labelGroup) return;
+        
+        // Afficher le label
+        labelGroup.classList.remove('hidden');
+        labelGroup.classList.add('showing');
+        
+        // Le cacher à nouveau après 0.5 seconde
+        setTimeout(() => {
+            labelGroup.classList.add('fading-out');
+            setTimeout(() => {
+                labelGroup.classList.add('hidden');
+                labelGroup.classList.remove('fading-out', 'showing');
+            }, 300);
+        }, 500);
     }
     
     /**

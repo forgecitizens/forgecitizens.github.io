@@ -234,10 +234,29 @@ body {
     padding: 2px 8px;
     border: 1px inset var(--win98-border-dark);
     background: var(--win98-bg);
+    position: relative;
+    transition: box-shadow 0.3s ease;
 }
 
 .status-section:not(:last-child) {
     margin-right: 4px;
+}
+
+/* Effet de halo GEO-COMBO sur le chronomètre */
+.status-section.combo-effect {
+    animation: timerComboGlow 0.5s ease-in-out 5;
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.8), 0 0 30px rgba(255, 87, 34, 0.6);
+    background: linear-gradient(135deg, #fff8e1, #ffe0b2);
+    border-color: #ff9800;
+}
+
+@keyframes timerComboGlow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 152, 0, 0.6), 0 0 20px rgba(255, 87, 34, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 152, 0, 1), 0 0 40px rgba(255, 87, 34, 0.8);
+    }
 }
 
 /* ========================================================================
@@ -391,6 +410,32 @@ body {
 .locked-label {
     pointer-events: none;
     animation: labelLock 0.4s ease;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+/* Label en cours de disparition */
+.locked-label.fading-out {
+    opacity: 0;
+}
+
+/* Label caché (après 20 secondes) */
+.locked-label.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Label qui réapparaît brièvement au clic */
+.locked-label.showing {
+    opacity: 1;
+    visibility: visible;
+    animation: labelFlash 0.3s ease;
+}
+
+@keyframes labelFlash {
+    0% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 .locked-label .locked-bg {
@@ -540,16 +585,15 @@ body {
     display: inline-block;
     padding: 4px 10px;
     background: var(--label-bg);
-    border: 1px solid var(--label-border);
+    border: 2px solid var(--label-border);
     border-radius: 3px;
     font-size: 11px;
     font-family: var(--font-system);
     color: var(--label-text);
-    cursor: grab;
+    cursor: pointer;
     user-select: none;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-    touch-action: none; /* Important pour le support tactile */
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .country-label:hover {
@@ -558,23 +602,43 @@ body {
     background: #ffffaa;
 }
 
-/* Label en cours de drag */
-.country-label.dragging {
-    cursor: grabbing;
-    background: var(--label-dragging);
-    transform: scale(1.1);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
-    opacity: 0.9;
-    z-index: 10000;
+/* Label sélectionné */
+.country-label.selected {
+    background: #90caf9;
+    border-color: #1976d2;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+    animation: selectPulse 0.3s ease;
 }
 
-/* Clone pour le drag tactile */
-.country-label.touch-drag {
-    position: fixed;
-    pointer-events: none;
-    z-index: 10000;
-    transform: scale(1.1);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+@keyframes selectPulse {
+    0% { transform: translateY(-3px) scale(1); }
+    50% { transform: translateY(-3px) scale(1.1); }
+    100% { transform: translateY(-3px) scale(1.05); }
+}
+
+/* Wrapper quand GEO-COMBO est actif (3 labels sélectionnés) */
+.labels-visible-wrapper.geo-combo-active {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2));
+    border-radius: 8px;
+    padding: 8px 12px;
+    animation: comboGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes comboGlow {
+    from {
+        box-shadow: 0 0 5px rgba(255, 152, 0, 0.3);
+    }
+    to {
+        box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+    }
+}
+
+.labels-visible-wrapper.geo-combo-active .country-label.selected {
+    background: linear-gradient(135deg, #ffb74d, #ff9800);
+    border-color: #e65100;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Label placé correctement */
@@ -589,6 +653,105 @@ body {
 @keyframes placeSuccess {
     0% { transform: scale(1.2); }
     100% { transform: scale(1); }
+}
+
+/* ========================================================================
+   7.1 NOTIFICATION GEO-COMBO
+   ======================================================================== */
+
+.geo-combo-notification {
+    position: absolute;
+    right: 20px;
+    bottom: 100px;
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(255, 87, 34, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    text-align: center;
+    font-family: var(--font-system);
+}
+
+.geo-combo-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.geo-combo-notification.hide {
+    opacity: 0;
+    transform: translateY(-30px);
+}
+
+.geo-combo-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: comboTitlePulse 0.5s ease-in-out 3;
+}
+
+@keyframes comboTitlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.geo-combo-bonus {
+    font-size: 13px;
+    opacity: 0.95;
+}
+
+/* ========================================================================
+   7.2 NOTIFICATION AUTO-SHUFFLE
+   ======================================================================== */
+
+.auto-shuffle-notification {
+    position: absolute;
+    right: 20px;
+    bottom: 100px;
+    background: linear-gradient(135deg, #e53935, #c62828);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(229, 57, 53, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    text-align: center;
+    font-family: var(--font-system);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 320px;
+}
+
+.auto-shuffle-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.auto-shuffle-notification.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.auto-shuffle-icon {
+    font-size: 24px;
+    animation: shuffleSpin 0.6s ease-in-out 2;
+}
+
+@keyframes shuffleSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.auto-shuffle-text {
+    font-size: 14px;
+    font-weight: bold;
 }
 
 /* Indicateur de drop valide sur la carte */
@@ -1081,6 +1244,155 @@ body {
     100% { transform: scale(1); opacity: 1; }
 }
 
+/* ========================================================================
+   12. MODALE DES CRÉDITS
+   ======================================================================== */
+
+.credits-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.credits-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.credits-modal {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4);
+    min-width: 400px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.credits-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--win98-black);
+    z-index: 10;
+}
+
+.credits-close-btn:hover {
+    background: #d4d4d4;
+}
+
+.credits-close-btn:active {
+    border-style: inset;
+}
+
+.credits-title {
+    background: var(--win98-titlebar);
+    color: white;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.credits-content {
+    padding: 16px 20px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.credits-section h3 {
+    font-size: 13px;
+    color: #000080;
+    margin: 0 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.credits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.credits-list li {
+    background: #ffffff;
+    border: 1px inset var(--win98-border-dark);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.credits-list li:last-child {
+    margin-bottom: 0;
+}
+
+.credits-item-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.credits-author {
+    color: #006400;
+    font-weight: bold;
+}
+
+.credits-list a {
+    color: #0000ee;
+    text-decoration: underline;
+}
+
+.credits-list a:hover {
+    color: #551a8b;
+}
+
+.credits-list a:visited {
+    color: #551a8b;
+}
+
+.credits-license {
+    color: #666;
+    font-style: italic;
+    font-size: 10px;
+}
+
 /* Responsive pour la modale de langue */
 @media (max-width: 480px) {
     .language-modal {
@@ -1103,5 +1415,10 @@ body {
     
     .flag-label {
         font-size: 11px;
+    }
+    
+    .credits-modal {
+        min-width: auto;
+        margin: 16px;
     }
 }
