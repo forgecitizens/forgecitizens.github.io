@@ -31,12 +31,15 @@
         paths: {
             countriesFR: '/assets/mapper-game/countries_FR.json',
             countriesEN: '/assets/mapper-game/countries_EN.json',
+            countriesEasyFR: '/assets/mapper-game/countries_easy_mode_FR.json',
+            countriesEasyEN: '/assets/mapper-game/countries_easy_mode_EN.json',
             worldSVG: '/assets/mapper-game/world.svg'
         },
         
         // Paramètres du jeu
         game: {
             defaultLanguage: 'FR',
+            defaultDifficulty: 'easy', // 'easy' ou 'hard'
             defaultRegion: 'world', // 'world', 'europe', 'africa', etc.
             timerEnabled: true
         },
@@ -233,6 +236,7 @@
         
         // État actuel
         currentLanguage: CONFIG.game.defaultLanguage,
+        currentDifficulty: CONFIG.game.defaultDifficulty,
         currentRegion: CONFIG.game.defaultRegion,
         isPlaying: false,
         isPaused: false,
@@ -332,7 +336,11 @@
             // Modale de langue
             languageModalOverlay: document.getElementById('language-modal-overlay'),
             flagFR: document.getElementById('flag-fr'),
-            flagEN: document.getElementById('flag-en')
+            flagEN: document.getElementById('flag-en'),
+            // Modale de difficulté
+            difficultyModalOverlay: document.getElementById('difficulty-modal-overlay'),
+            difficultyEasy: document.getElementById('difficulty-easy'),
+            difficultyHard: document.getElementById('difficulty-hard')
         };
         
         // Stocker les références
@@ -366,6 +374,15 @@
         
         if (elements.flagEN) {
             elements.flagEN.addEventListener('click', () => selectLanguage('EN'));
+        }
+        
+        // Attacher les événements aux boutons de difficulté
+        if (elements.difficultyEasy) {
+            elements.difficultyEasy.addEventListener('click', () => selectDifficulty('easy'));
+        }
+        
+        if (elements.difficultyHard) {
+            elements.difficultyHard.addEventListener('click', () => selectDifficulty('hard'));
         }
         
         // Initialiser la modale des crédits
@@ -630,17 +647,129 @@
         // Définir la langue active
         GameState.currentLanguage = lang;
         
+        // Cacher la modale de langue
+        hideLanguageModal();
+        
+        // Afficher la modale de difficulté après un court délai
+        setTimeout(() => {
+            showDifficultyModal();
+        }, 300);
+    }
+    
+    /* ========================================================================
+       6b. SÉLECTION DE DIFFICULTÉ (MODALE)
+       ======================================================================== */
+    
+    /**
+     * Affiche la modale de sélection de difficulté
+     */
+    function showDifficultyModal() {
+        console.log('🗺️ Mapper: Affichage modale de difficulté...');
+        
+        const overlay = GameState.elements?.difficultyModalOverlay;
+        if (overlay) {
+            // Mettre à jour les textes selon la langue sélectionnée
+            updateDifficultyModalTexts();
+            
+            // Petit délai pour l'animation
+            setTimeout(() => {
+                overlay.classList.add('visible');
+            }, 100);
+        }
+        
+        const statusText = GameState.currentLanguage === 'FR' 
+            ? 'Choisissez la difficulté...' 
+            : 'Choose difficulty...';
+        updateStatus(statusText);
+    }
+    
+    /**
+     * Cache la modale de sélection de difficulté
+     */
+    function hideDifficultyModal() {
+        const overlay = GameState.elements?.difficultyModalOverlay;
+        if (overlay) {
+            overlay.classList.add('closing');
+            
+            // Attendre la fin de l'animation
+            setTimeout(() => {
+                overlay.classList.remove('visible', 'closing');
+            }, 200);
+        }
+    }
+    
+    /**
+     * Met à jour les textes de la modale de difficulté selon la langue
+     */
+    function updateDifficultyModalTexts() {
+        const lang = GameState.currentLanguage;
+        
+        // Titre
+        const titleEl = document.getElementById('difficulty-modal-title');
+        if (titleEl) {
+            titleEl.textContent = lang === 'FR' ? '🎯 Difficulté' : '🎯 Difficulty';
+        }
+        
+        // Sous-titre
+        const subtitleEl = document.getElementById('difficulty-modal-subtitle');
+        if (subtitleEl) {
+            subtitleEl.textContent = lang === 'FR' 
+                ? 'Choisissez votre niveau de difficulté' 
+                : 'Choose your difficulty level';
+        }
+        
+        // Labels et descriptions
+        const easyLabelEl = document.getElementById('difficulty-easy-label');
+        const easyDescEl = document.getElementById('difficulty-easy-desc');
+        const hardLabelEl = document.getElementById('difficulty-hard-label');
+        const hardDescEl = document.getElementById('difficulty-hard-desc');
+        
+        if (easyLabelEl) {
+            easyLabelEl.textContent = lang === 'FR' ? 'Facile' : 'Easy';
+        }
+        if (easyDescEl) {
+            easyDescEl.textContent = lang === 'FR' 
+                ? 'Vous ne devez trouver que les pays, pas les îles' 
+                : 'You only need to find countries, not islands';
+        }
+        if (hardLabelEl) {
+            hardLabelEl.textContent = lang === 'FR' ? 'Difficile' : 'Hard';
+        }
+        if (hardDescEl) {
+            hardDescEl.textContent = lang === 'FR' 
+                ? 'Vous devez trouver les pays et les îles' 
+                : 'You must find both countries and islands';
+        }
+    }
+    
+    /**
+     * Sélection de la difficulté depuis la modale
+     * @param {string} difficulty - 'easy' ou 'hard'
+     */
+    function selectDifficulty(difficulty) {
+        console.log(`🗺️ Mapper: Difficulté sélectionnée → ${difficulty}`);
+        
+        // Marquer le bouton comme sélectionné visuellement
+        const easyBtn = GameState.elements?.difficultyEasy;
+        const hardBtn = GameState.elements?.difficultyHard;
+        
+        if (easyBtn) easyBtn.classList.toggle('selected', difficulty === 'easy');
+        if (hardBtn) hardBtn.classList.toggle('selected', difficulty === 'hard');
+        
+        // Définir la difficulté active
+        GameState.currentDifficulty = difficulty;
+        
         // Mettre à jour le statut
-        const loadingText = lang === 'FR' ? 'Chargement...' : 'Loading...';
+        const loadingText = GameState.currentLanguage === 'FR' ? 'Chargement...' : 'Loading...';
         updateStatus(loadingText);
         
-        // Charger les ressources pour cette langue
-        loadResourcesForLanguage(lang)
+        // Charger les ressources pour cette langue et difficulté
+        loadResourcesForLanguage(GameState.currentLanguage)
             .then(() => {
-                console.log(`✅ Mapper: Ressources ${lang} chargées`);
+                console.log(`✅ Mapper: Ressources ${GameState.currentLanguage} (${difficulty}) chargées`);
                 
                 // Cacher la modale
-                hideLanguageModal();
+                hideDifficultyModal();
                 
                 // Mettre à jour l'interface
                 updateLanguageButtons();
@@ -662,25 +791,44 @@
      * @returns {Promise}
      */
     async function loadResourcesForLanguage(lang) {
-        console.log(`🗺️ Mapper: Chargement ressources ${lang}...`);
+        console.log(`🗺️ Mapper: Chargement ressources ${lang} (difficulté: ${GameState.currentDifficulty})...`);
         
         try {
-            // Déterminer le chemin du fichier JSON
-            const jsonPath = lang === 'FR' 
-                ? CONFIG.paths.countriesFR 
-                : CONFIG.paths.countriesEN;
+            // Déterminer le chemin du fichier JSON selon langue ET difficulté
+            let jsonPath;
+            if (GameState.currentDifficulty === 'easy') {
+                jsonPath = lang === 'FR' 
+                    ? CONFIG.paths.countriesEasyFR 
+                    : CONFIG.paths.countriesEasyEN;
+            } else {
+                jsonPath = lang === 'FR' 
+                    ? CONFIG.paths.countriesFR 
+                    : CONFIG.paths.countriesEN;
+            }
             
             // Charger en parallèle les pays et la carte SVG
-            const [countries, svgContent] = await Promise.all([
-                loadJSON(jsonPath),
-                loadSVG(CONFIG.paths.worldSVG)
-            ]);
-            
-            // Stocker les données
-            GameState.countries = countries;
-            GameState.svgContent = svgContent;
-            
-            const countryCount = Object.keys(countries).length;
+                // Déterminer le chemin du fichier de scoring
+                let scoringPath;
+                if (GameState.currentDifficulty === 'easy') {
+                    scoringPath = '/assets/mapper-game/scoring_easy.json';
+                } else {
+                    scoringPath = '/assets/mapper-game/scoring_hard.json';
+                }
+
+                // Charger en parallèle les pays, la carte SVG et le scoring
+                const [countries, svgContent, scoring] = await Promise.all([
+                    loadJSON(jsonPath),
+                    loadSVG(CONFIG.paths.worldSVG),
+                    loadJSON(scoringPath)
+                ]);
+
+                // Stocker les données
+                GameState.countries = countries;
+                GameState.svgContent = svgContent;
+                GameState.scoring = scoring;
+
+                const countryCount = Object.keys(countries).length;
+
             console.log(`✅ Mapper: ${countryCount} pays chargés (${lang})`);
             console.log('✅ Mapper: Carte SVG chargée');
             
@@ -1480,14 +1628,23 @@
         
         const targetCountryId = countryPath.dataset.countryId;
         
-        // Prendre le premier label sélectionné
-        const labelCountryCode = GameState.selectedLabels[0];
-        
-        // Trouver l'élément label correspondant
-        const labelElement = document.querySelector(`.country-label[data-country-code="${labelCountryCode}"]`);
-        
-        // Effectuer le placement
-        handleDrop(labelCountryCode, targetCountryId, labelElement);
+        // Chercher si le pays cliqué correspond à un des labels sélectionnés
+        const matchingLabel = GameState.selectedLabels.find(code => checkCountryMatch(code, targetCountryId));
+        if (matchingLabel) {
+            // Placement normal
+            const labelElement = document.querySelector(`.country-label[data-country-code="${matchingLabel}"]`);
+            handleDrop(matchingLabel, targetCountryId, labelElement);
+        } else {
+            // Aucun label sélectionné ne correspond à ce pays
+            // Si GEO-COMBO actif, c'est une erreur !
+            if (GameState.geoCombo.active) {
+                // On simule une erreur GEO-COMBO (comme si on avait tenté de placer un label sur le mauvais pays)
+                // On prend arbitrairement le premier label sélectionné pour l'erreur
+                const fakeLabel = GameState.selectedLabels[0];
+                handleDrop(fakeLabel, targetCountryId, null);
+            }
+            // Sinon, ne rien faire
+        }
     }
     
     /**
@@ -1497,6 +1654,73 @@
      * @param {HTMLElement} labelElement - Élément du label
      */
     function handleDrop(labelCountryCode, targetCountryId, labelElement) {
+            /**
+             * Animation du score gagné
+             * @param {number} points
+             * @param {string} countryId
+             * @param {boolean} geoComboBonus
+             */
+            function animateScoreGain(points, countryId, geoComboBonus) {
+                const mapContainer = GameState.elements?.mapContainer;
+                const scoreZone = GameState.elements?.statusScore;
+                if (!mapContainer || !scoreZone) return;
+
+                // Trouver le pays sur la carte
+                const svg = mapContainer.querySelector('svg');
+                if (!svg) return;
+                let countryPath = svg.querySelector(`#${countryId}`);
+                if (!countryPath) countryPath = svg.querySelector(`.${countryId}`);
+                if (!countryPath) return;
+
+                // Obtenir la position du pays (centre du path)
+                const bbox = countryPath.getBoundingClientRect();
+                const mapRect = mapContainer.getBoundingClientRect();
+                const scoreRect = scoreZone.getBoundingClientRect();
+                const startX = bbox.left + bbox.width / 2 - mapRect.left;
+                const startY = bbox.top + bbox.height / 2 - mapRect.top;
+                const endX = scoreRect.left + scoreRect.width / 2 - mapRect.left;
+                const endY = scoreRect.top + scoreRect.height / 2 - mapRect.top;
+
+                // Créer l'élément animé
+                const anim = document.createElement('div');
+                anim.className = 'score-anim';
+                anim.textContent = `+${points}`;
+
+                // Couleur selon points
+                if (points === 1) anim.classList.add('score-anim-green');
+                else if (points === 3) anim.classList.add('score-anim-orange');
+                else if (points === 5) anim.classList.add('score-anim-purple');
+                else if (points === 9) anim.classList.add('score-anim-red');
+
+                // Position initiale
+                anim.style.position = 'absolute';
+                anim.style.left = `${startX}px`;
+                anim.style.top = `${startY}px`;
+                anim.style.zIndex = 3000;
+                mapContainer.appendChild(anim);
+
+                // Animation du déplacement
+                anim.animate([
+                    { transform: `translate(0, 0) scale(1)`, opacity: 1 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.3)`, opacity: 1 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1)`, opacity: 0.2 }
+                ], {
+                    duration: 900,
+                    easing: 'cubic-bezier(0.4,0.8,0.2,1)'
+                });
+
+                setTimeout(() => {
+                    anim.remove();
+                }, 950);
+
+                // Effet shake sur la zone de score si 9 points
+                if (points === 9 && geoComboBonus) {
+                    scoreZone.classList.add('score-shake');
+                    setTimeout(() => {
+                        scoreZone.classList.remove('score-shake');
+                    }, 700);
+                }
+            }
         console.log(`📍 Placement: Label "${labelCountryCode}" sur pays "${targetCountryId}"`);
         
         // Normaliser l'ID cible (convertir nom de classe en code ISO si nécessaire)
@@ -1529,30 +1753,49 @@
                 code => code !== labelCountryCode
             );
             
-            // Mettre à jour les statistiques
-            GameState.stats.correctCount++;
+            // Déterminer le score à attribuer
+            let points = 1;
+            const scoring = GameState.scoring?.[labelCountryCode];
+            if (scoring) {
+                if (scoring.difficulty === 1) points = 1;
+                else if (scoring.difficulty === 2) points = 3;
+                else if (scoring.difficulty === 3) points = 5;
+            }
+
+            // Si GEO-COMBO actif et pays difficile (5 points), attribuer 9 points
+            let isGeoComboBonus = false;
+            if (GameState.geoCombo.active && points === 5) {
+                points = 9;
+                isGeoComboBonus = true;
+            }
+
+            // Mettre à jour le score total
+            GameState.stats.correctCount += points;
             GameState.remainingLabels = GameState.remainingLabels.filter(
                 code => code !== labelCountryCode
             );
             GameState.placedLabels.push(labelCountryCode);
-            
+
             // Réinitialiser le compteur d'erreurs consécutives
             GameState.consecutiveErrors = 0;
-            
+
             // Gérer le GEO-COMBO
             if (GameState.geoCombo.active) {
                 GameState.geoCombo.consecutiveCorrect++;
                 console.log(`🔥 GEO-COMBO: ${GameState.geoCombo.consecutiveCorrect}/${LABELS_DISPLAY_COUNT}`);
-                
+
                 // Jouer le son de succès correspondant
                 playComboSuccessSound(GameState.geoCombo.consecutiveCorrect);
-                
+
                 // Vérifier si le GEO-COMBO est complété
                 if (GameState.geoCombo.consecutiveCorrect === LABELS_DISPLAY_COUNT) {
                     triggerGeoCombo();
                 }
             }
-            
+
+            // Animation de points gagnés
+            animateScoreGain(points, targetCountryId, isGeoComboBonus);
+
             // Mettre à jour l'affichage du score
             updateScoreDisplay();
             
@@ -1582,10 +1825,23 @@
                 ? `🟠 Proche! ${normalizedTargetId} est voisin de ${labelCountryCode}` 
                 : `🔴 Loin! ${normalizedTargetId} n'est pas voisin de ${labelCountryCode}`);
             
-            // Casser le GEO-COMBO en cas d'erreur
+            // Casser le GEO-COMBO en cas d'erreur ET déclencher un reshuffle
             if (GameState.geoCombo.active) {
-                console.log('💔 GEO-COMBO cassé!');
+                console.log('💔 GEO-COMBO cassé! Reshuffle automatique!');
                 resetGeoCombo(true); // Jouer too_bad car erreur
+                
+                // Afficher la notification spécifique au GEO-COMBO
+                showGeoComboErrorNotification();
+                
+                // Déclencher le reshuffle après un court délai
+                setTimeout(() => {
+                    handleRefreshLabels();
+                }, 500);
+                
+                // Mettre à jour les statistiques et sortir
+                GameState.stats.wrongCount++;
+                updateScoreDisplay();
+                return; // On sort car le reshuffle est déjà déclenché
             }
             
             // Incrémenter le compteur d'erreurs consécutives
@@ -1608,6 +1864,42 @@
             GameState.stats.wrongCount++;
             updateScoreDisplay();
         }
+    }
+    
+    /**
+     * Affiche la notification d'erreur lors d'un GEO-COMBO
+     */
+    function showGeoComboErrorNotification() {
+        const container = GameState.elements?.gameContainer;
+        if (!container) return;
+        
+        // Jouer le son d'erreur
+        playErrorSound();
+        
+        const notification = document.createElement('div');
+        notification.className = 'auto-shuffle-notification geo-combo-error';
+        
+        const isFR = GameState.currentLanguage === 'FR';
+        notification.innerHTML = `
+            <div class="auto-shuffle-icon">💔</div>
+            <div class="auto-shuffle-text">${isFR ? 'Pas d\'erreur autorisée pour un GEO-COMBO. On mélange les étiquettes !' : 'No mistakes allowed during a GEO-COMBO attempt. Labels are reshuffled!'}</div>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Animer l'apparition
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+        
+        // Supprimer après 2 secondes
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.classList.add('hide');
+            setTimeout(() => {
+                notification.remove();
+            }, 400);
+        }, 2000);
     }
     
     /**

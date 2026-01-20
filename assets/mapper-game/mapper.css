@@ -842,6 +842,43 @@ body {
     font-size: 12px;
 }
 
+/* Animation score gagné */
+.score-anim {
+    font-size: 2.2em;
+    font-weight: bold;
+    pointer-events: none;
+    position: absolute;
+    will-change: transform, opacity;
+    transition: opacity 0.2s;
+    user-select: none;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
+}
+.score-anim-green {
+    color: #2ecc40;
+}
+.score-anim-orange {
+    color: #ff9800;
+}
+.score-anim-purple {
+    color: #8e44ad;
+}
+.score-anim-red {
+    color: #e53935;
+    text-shadow: 0 0 8px #e53935, 0 0 16px #e53935;
+}
+
+/* Effet shake sur la zone de score */
+.score-shake {
+    animation: scoreShake 0.7s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes scoreShake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-8px); }
+    40%, 60% { transform: translateX(8px); }
+    100% { transform: translateX(0); }
+}
+
 /* ========================================================================
    9. ÉTATS DU JEU
    ======================================================================== */
@@ -1184,6 +1221,139 @@ body {
         transform: scale(0.9);
         opacity: 0;
     }
+}
+
+/* ========================================================================
+   13b. MODALE DE SÉLECTION DE DIFFICULTÉ
+   ======================================================================== */
+
+/* Overlay sombre */
+.difficulty-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.difficulty-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Fenêtre modale */
+.difficulty-modal {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    box-shadow: 
+        inset 1px 1px 0 var(--win98-white),
+        inset -1px -1px 0 var(--win98-border-dark),
+        4px 4px 16px rgba(0, 0, 0, 0.5);
+    padding: 0;
+    min-width: 380px;
+    max-width: 90vw;
+    animation: modalAppear 0.3s ease;
+}
+
+/* Barre de titre de la modale */
+.difficulty-modal-title {
+    background: var(--win98-titlebar);
+    color: var(--win98-white);
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Sous-titre */
+.difficulty-modal-subtitle {
+    padding: 16px 24px 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--win98-black);
+}
+
+/* Conteneur des options de difficulté */
+.difficulty-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 24px 24px;
+}
+
+/* Boutons de difficulté */
+.difficulty-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 20px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    cursor: pointer;
+    font-family: var(--font-system);
+    transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.difficulty-button:hover {
+    background: #d4d4d4;
+    transform: translateY(-2px);
+}
+
+.difficulty-button:active {
+    border-style: inset;
+    transform: translateY(0);
+}
+
+.difficulty-button:focus {
+    outline: 2px dotted var(--win98-black);
+    outline-offset: 2px;
+}
+
+/* Icône de difficulté */
+.difficulty-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+/* Label de difficulté */
+.difficulty-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--win98-black);
+}
+
+/* Description de la difficulté */
+.difficulty-description {
+    font-size: 11px;
+    color: #555;
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.4;
+}
+
+/* État sélectionné */
+.difficulty-button.selected {
+    border-style: inset;
+    background: #a0a0a0;
+}
+
+/* Animation de fermeture */
+.difficulty-modal-overlay.closing {
+    opacity: 0;
+}
+
+.difficulty-modal-overlay.closing .difficulty-modal {
+    animation: modalDisappear 0.2s ease forwards;
 }
 
 /* ========================================================================
