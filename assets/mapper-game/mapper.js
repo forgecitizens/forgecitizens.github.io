@@ -1,3 +1,55 @@
+// --- Système de pause ---
+// Empêche le pinch-zoom natif sur mobile (seule la carte doit zoomer)
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+let isPaused = false;
+function setPause(state) {
+    isPaused = state;
+    const rulesOverlay = document.getElementById('rules-modal-overlay');
+    if (rulesOverlay) {
+        if (state) {
+            rulesOverlay.classList.add('visible');
+        } else {
+            rulesOverlay.classList.remove('visible');
+        }
+    }
+    // Remplace le bouton Pause/Play
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.textContent = state ? 'Play' : 'Pause';
+    // Pause le chrono
+    if (typeof stopTimer === 'function' && typeof startTimer === 'function') {
+        if (state) stopTimer();
+        else startTimer();
+    }
+}
+
+// Ouvre la modale pause/règles avec le bouton Pause
+document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'pause-btn') {
+        setPause(!isPaused);
+    }
+    if (e.target && e.target.id === 'rules-close-btn') {
+        setPause(false);
+    }
+});
+
+// Gestion touche espace
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        setPause(!isPaused);
+    }
+});
+
+// Gestion bouton Pause/Play
+document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'pause-btn') {
+        setPause(!isPaused);
+    }
+});
 /**
  * ========================================================================
  * MAPPER GAME - Main JavaScript
@@ -1088,52 +1140,40 @@
          */
         function zoomToPoint(newScale, clientX, clientY) {
             const oldScale = zoomState.scale;
-            
-            // S'assurer que les scales sont valides
             if (!oldScale || oldScale <= 0) {
                 console.warn('⚠️ oldScale invalide, reset à 1');
                 zoomState.scale = 1;
                 return zoomToPoint(newScale, clientX, clientY);
             }
-            
-            // Position de la souris relative au conteneur
-            const containerRect = container.getBoundingClientRect();
-            const mouseX = clientX - containerRect.left;
-            const mouseY = clientY - containerRect.top;
-            
-            // Vérifier que la souris est dans le conteneur
-            if (mouseX < 0 || mouseY < 0 || mouseX > containerRect.width || mouseY > containerRect.height) {
-                console.warn('⚠️ Souris hors du conteneur');
-                return;
-            }
-            
-            // Sauvegarder les valeurs avant modification
-            const oldScrollLeft = container.scrollLeft;
-            const oldScrollTop = container.scrollTop;
-            
-            // Position absolue dans le contenu scrollé (à l'échelle actuelle)
-            const contentX = oldScrollLeft + mouseX;
-            const contentY = oldScrollTop + mouseY;
-            
-            // Coordonnées dans le SVG original (non-zoomé)
-            const svgX = contentX / oldScale;
-            const svgY = contentY / oldScale;
-            
+
+            // Conversion screen -> SVG (mouse-centered zoom)
+            const pt = svg.createSVGPoint();
+            pt.x = clientX;
+            pt.y = clientY;
+            const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+            console.log('[zoom] Mouse screen', clientX, clientY, '-> svg', svgP.x, svgP.y);
+
             // Appliquer le nouveau scale
             zoomState.scale = newScale;
+            svg.style.transformOrigin = '';
             svg.style.transform = `scale(${newScale})`;
-            
-            // Calculer la nouvelle position de ce point SVG après zoom
-            const newContentX = svgX * newScale;
-            const newContentY = svgY * newScale;
-            
-            // Calculer le nouveau scroll
-            const newScrollLeft = newContentX - mouseX;
-            const newScrollTop = newContentY - mouseY;
-            
-            // Appliquer le scroll (avec clamp pour éviter les valeurs négatives)
-            container.scrollLeft = Math.max(0, newScrollLeft);
-            container.scrollTop = Math.max(0, newScrollTop);
+
+            // Après scale, le point svgP doit rester sous le curseur
+            // On ajuste le scroll du container pour compenser le déplacement
+            // Recalcule la position écran du point svgP après scale
+            const ctm = svg.getScreenCTM();
+            const after = svg.createSVGPoint();
+            after.x = svgP.x;
+            after.y = svgP.y;
+            const screenAfter = after.matrixTransform(ctm);
+            const dx = clientX - screenAfter.x;
+            const dy = clientY - screenAfter.y;
+            // Ajuste le scroll du container
+            container.scrollLeft -= dx;
+            container.scrollTop -= dy;
+
+            // Debug
+            console.log('[zoom] scroll adjust', {dx, dy, scrollLeft: container.scrollLeft, scrollTop: container.scrollTop});
         }
         
         // Zoom avec la molette

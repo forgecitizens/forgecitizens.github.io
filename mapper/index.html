@@ -43,13 +43,8 @@
 
         <!-- Barre d'outils -->
         <div class="toolbar">
-            <button class="toolbar-btn" id="btn-new-game" disabled>🎮 Nouvelle partie</button>
-            <div class="toolbar-separator"></div>
-            <button class="toolbar-btn" id="btn-region-world" disabled>🌍 Monde</button>
-            <button class="toolbar-btn" id="btn-region-europe" disabled>🇪🇺 Europe</button>
-            <div class="toolbar-separator"></div>
-            <button class="toolbar-btn" id="btn-lang-fr" disabled>🇫🇷 Français</button>
-            <button class="toolbar-btn" id="btn-lang-en" disabled>🇬🇧 English</button>
+            <button class="toolbar-btn" id="pause-btn">Pause</button>
+            <button class="toolbar-btn" id="rules-btn">Règles du jeu</button>
         </div>
 
         <!-- Zone de contenu principale -->
@@ -166,6 +161,15 @@
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modale pause/règles (identique à crédits) -->
+    <div class="credits-modal-overlay" id="rules-modal-overlay">
+        <div class="credits-modal">
+            <button class="credits-close-btn" id="rules-close-btn" title="Fermer">×</button>
+            <div class="credits-title">📖 Règles du jeu</div>
+            <div class="credits-content" id="rules-content"></div>
         </div>
     </div>
 
