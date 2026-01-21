@@ -52,6 +52,70 @@
 }
 
 /* ========================================================================
+   1.1 DARK MODE
+   ======================================================================== */
+.dark-mode {
+    /* Couleurs du jeu - Dark Mode */
+    --mapper-ocean: #1a2a3a;
+    --mapper-land: #2d3a4a;
+    --mapper-land-hover: #3d4a5a;
+    --mapper-border: #4a5a6a;
+    
+    /* Labels - Dark Mode */
+    --label-bg: #3a3a4a;
+    --label-border: #5a5a6a;
+    --label-text: #ffffff;
+}
+
+/* Carte en mode sombre */
+.dark-mode .world-map {
+    background: var(--mapper-ocean);
+}
+
+.dark-mode .world-map path.country-path {
+    fill: var(--mapper-land);
+    stroke: var(--mapper-border);
+}
+
+.dark-mode .world-map path.country-path:hover,
+.dark-mode .world-map path.country-path.country-hover {
+    fill: var(--mapper-land-hover);
+    stroke: #6a7a8a;
+}
+
+/* Labels placés sur la carte en mode sombre */
+.dark-mode .placed-label {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.dark-mode .country-label-text {
+    fill: #ffffff;
+}
+
+/* Labels dans la liste en mode sombre */
+.dark-mode .country-label {
+    background: var(--label-bg);
+    border-color: var(--label-border);
+    color: var(--label-text);
+}
+
+.dark-mode .country-label:hover {
+    background: #4a4a5a;
+}
+
+.dark-mode .country-label.selected {
+    background: #1565c0;
+    border-color: #0d47a1;
+    color: #ffffff;
+}
+
+/* Map container en mode sombre */
+.dark-mode .map-container {
+    background: var(--mapper-ocean);
+}
+
+/* ========================================================================
    2. RESET & BASE
    ======================================================================== */
 * {
@@ -165,11 +229,50 @@ body {
 .menu-item {
     padding: 2px 8px;
     cursor: pointer;
+    position: relative;
 }
 
 .menu-item:hover {
     background: #000080;
     color: white;
+}
+
+/* Menu déroulant */
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 150px;
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.menu-item:hover .menu-dropdown,
+.menu-item.menu-open .menu-dropdown {
+    display: block;
+}
+
+.menu-dropdown-item {
+    padding: 4px 12px;
+    cursor: pointer;
+    color: #000000;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-dropdown-item:hover {
+    background: #000080;
+    color: white;
+}
+
+.menu-checkbox {
+    font-family: var(--font-mono);
+    font-size: 12px;
 }
 
 /* Barre d'outils */
@@ -1561,6 +1664,44 @@ body {
     color: #666;
     font-style: italic;
     font-size: 10px;
+}
+
+/* Styles pour les règles du jeu */
+.rules-section {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.rules-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.rules-section h3 {
+    font-size: 13px;
+    color: #000080;
+    margin: 0 0 8px 0;
+}
+
+.rules-section p {
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.rules-section ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.rules-section li {
+    margin-bottom: 4px;
+    color: #333;
 }
 
 /* Responsive pour la modale de langue */

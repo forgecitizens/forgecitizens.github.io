@@ -6,7 +6,11 @@ document.addEventListener('touchmove', function(e) {
     }
 }, { passive: false });
 
+// Variables globales pour la pause (seront utilisées par l'IIFE)
 let isPaused = false;
+let pauseStartTimer = null;
+let pauseStopTimer = null;
+
 function setPause(state) {
     isPaused = state;
     const rulesOverlay = document.getElementById('rules-modal-overlay');
@@ -20,10 +24,11 @@ function setPause(state) {
     // Remplace le bouton Pause/Play
     const pauseBtn = document.getElementById('pause-btn');
     if (pauseBtn) pauseBtn.textContent = state ? 'Play' : 'Pause';
-    // Pause le chrono
-    if (typeof stopTimer === 'function' && typeof startTimer === 'function') {
-        if (state) stopTimer();
-        else startTimer();
+    // Pause le chrono (utilise les fonctions exposées par l'IIFE)
+    if (state && pauseStopTimer) {
+        pauseStopTimer();
+    } else if (!state && pauseStartTimer) {
+        pauseStartTimer();
     }
 }
 
@@ -40,16 +45,12 @@ document.addEventListener('click', (e) => {
 // Gestion touche espace
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
+        // Empêcher le scroll par défaut de la touche espace
+        e.preventDefault();
         setPause(!isPaused);
     }
 });
 
-// Gestion bouton Pause/Play
-document.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'pause-btn') {
-        setPause(!isPaused);
-    }
-});
 /**
  * ========================================================================
  * MAPPER GAME - Main JavaScript
@@ -440,7 +441,140 @@ document.addEventListener('click', (e) => {
         // Initialiser la modale des crédits
         initCreditsModal();
         
+        // Initialiser la modale des règles (pause)
+        initRulesModal();
+        
+        // Initialiser le menu Options
+        initOptionsMenu();
+        
         console.log('✅ Mapper: UI initialisée');
+    }
+    
+    /**
+     * Initialise le menu Options avec le dark mode
+     */
+    function initOptionsMenu() {
+        const toggleDarkMode = document.getElementById('toggle-dark-mode');
+        const darkModeCheck = document.getElementById('dark-mode-check');
+        const gameContainer = document.getElementById('game-container');
+        const mapContainer = document.getElementById('map-container');
+        
+        // Charger l'état du dark mode depuis le localStorage
+        const isDarkMode = localStorage.getItem('mapper-dark-mode') === 'true';
+        if (isDarkMode) {
+            enableDarkMode();
+        }
+        
+        if (toggleDarkMode) {
+            toggleDarkMode.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isCurrentlyDark = document.body.classList.contains('dark-mode');
+                
+                if (isCurrentlyDark) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+        }
+        
+        function enableDarkMode() {
+            document.body.classList.add('dark-mode');
+            if (gameContainer) gameContainer.classList.add('dark-mode');
+            if (mapContainer) mapContainer.classList.add('dark-mode');
+            if (darkModeCheck) darkModeCheck.textContent = '☑';
+            localStorage.setItem('mapper-dark-mode', 'true');
+            console.log('🌙 Mode sombre activé');
+        }
+        
+        function disableDarkMode() {
+            document.body.classList.remove('dark-mode');
+            if (gameContainer) gameContainer.classList.remove('dark-mode');
+            if (mapContainer) mapContainer.classList.remove('dark-mode');
+            if (darkModeCheck) darkModeCheck.textContent = '☐';
+            localStorage.setItem('mapper-dark-mode', 'false');
+            console.log('☀️ Mode clair activé');
+        }
+        
+        // Fermer le menu dropdown quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            const optionsBtn = document.getElementById('btn-options');
+            if (optionsBtn && !optionsBtn.contains(e.target)) {
+                optionsBtn.classList.remove('menu-open');
+            }
+        });
+    }
+    
+    /**
+     * Initialise la modale des règles (pause)
+     */
+    function initRulesModal() {
+        const rulesContent = document.getElementById('rules-content');
+        const rulesOverlay = document.getElementById('rules-modal-overlay');
+        
+        if (rulesContent) {
+            // Peupler le contenu des règles
+            rulesContent.innerHTML = `
+                <div class="rules-section">
+                    <h3>🎯 Objectif</h3>
+                    <p>Replacez les noms des pays sur la carte du monde en les faisant correspondre à leur emplacement géographique.</p>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>🕹️ Comment jouer</h3>
+                    <ul>
+                        <li><strong>Sélectionnez</strong> un ou plusieurs labels dans la liste à droite (ils s'illuminent en bleu)</li>
+                        <li><strong>Cliquez</strong> sur le pays correspondant sur la carte</li>
+                        <li>Si c'est correct : le pays devient <span style="color:#00ff00">vert</span> et le label est placé</li>
+                        <li>Si c'est incorrect : le pays clignote en <span style="color:#ff4444">rouge</span> (ou <span style="color:#ff9900">orange</span> si vous êtes proche)</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>🔥 GEO-COMBO</h3>
+                    <p>Sélectionnez les <strong>3 labels</strong> en même temps pour activer le mode GEO-COMBO !</p>
+                    <ul>
+                        <li>Placez les 3 pays correctement sans erreur pour obtenir un <strong>bonus de points</strong></li>
+                        <li>Attention : une seule erreur annule le combo et mélange les labels !</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>📊 Points</h3>
+                    <ul>
+                        <li><span style="color:#00ff00">+1</span> : pays facile</li>
+                        <li><span style="color:#ff9900">+3</span> : pays moyen</li>
+                        <li><span style="color:#ff00ff">+5</span> : pays difficile</li>
+                        <li><span style="color:#ff4444">+9</span> : pays difficile en GEO-COMBO !</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>⌨️ Raccourcis</h3>
+                    <ul>
+                        <li><strong>Espace</strong> : Pause / Reprendre</li>
+                        <li><strong>Molette</strong> : Zoom sur la carte</li>
+                        <li><strong>Échap</strong> : Fermer les modales</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Fermer avec Escape
+        if (rulesOverlay) {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && rulesOverlay.classList.contains('visible')) {
+                    setPause(false);
+                }
+            });
+            
+            // Fermer en cliquant sur l'overlay
+            rulesOverlay.addEventListener('click', (e) => {
+                if (e.target === rulesOverlay) {
+                    setPause(false);
+                }
+            });
+        }
     }
     
     /**
@@ -1671,19 +1805,15 @@ document.addEventListener('click', (e) => {
         // Chercher si le pays cliqué correspond à un des labels sélectionnés
         const matchingLabel = GameState.selectedLabels.find(code => checkCountryMatch(code, targetCountryId));
         if (matchingLabel) {
-            // Placement normal
+            // Placement correct
             const labelElement = document.querySelector(`.country-label[data-country-code="${matchingLabel}"]`);
             handleDrop(matchingLabel, targetCountryId, labelElement);
         } else {
-            // Aucun label sélectionné ne correspond à ce pays
-            // Si GEO-COMBO actif, c'est une erreur !
-            if (GameState.geoCombo.active) {
-                // On simule une erreur GEO-COMBO (comme si on avait tenté de placer un label sur le mauvais pays)
-                // On prend arbitrairement le premier label sélectionné pour l'erreur
-                const fakeLabel = GameState.selectedLabels[0];
-                handleDrop(fakeLabel, targetCountryId, null);
-            }
-            // Sinon, ne rien faire
+            // Aucun label sélectionné ne correspond à ce pays → c'est une erreur
+            // On prend le premier label sélectionné pour traiter l'erreur
+            const selectedLabel = GameState.selectedLabels[0];
+            const labelElement = document.querySelector(`.country-label[data-country-code="${selectedLabel}"]`);
+            handleDrop(selectedLabel, targetCountryId, labelElement);
         }
     }
     
@@ -2648,8 +2778,14 @@ document.addEventListener('click', (e) => {
         renderMap,
         generateShuffledLabels,
         handleDrop,
+        startTimer,
+        stopTimer,
         getState: () => GameState
     };
+
+    // Connecter les fonctions de timer aux variables globales pour la pause
+    pauseStartTimer = startTimer;
+    pauseStopTimer = stopTimer;
 
     // Lancer l'initialisation
     init();
