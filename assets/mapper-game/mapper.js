@@ -702,6 +702,9 @@ window.addEventListener('keydown', (e) => {
         // Réinitialiser le zoom
         resetZoom();
         
+        // Démarrer les animations d'avion
+        startPlaneAnimations();
+        
         // Mettre à jour l'interface
         updateGameState('playing');
         
@@ -748,6 +751,7 @@ window.addEventListener('keydown', (e) => {
         
         GameState.isPlaying = false;
         stopTimer();
+        stopPlaneAnimations();
         updateGameState('finished');
         
         // Afficher le score final
@@ -2759,6 +2763,168 @@ window.addEventListener('keydown', (e) => {
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    /* ========================================================================
+       9. ANIMATION AVION
+       ======================================================================== */
+    
+    let planeAnimationTimeouts = [];
+    
+    /**
+     * Démarre le système d'animation de l'avion
+     * Timing: 20s, puis 50s, puis toutes les 30s
+     */
+    function startPlaneAnimations() {
+        // Nettoyer les timeouts précédents
+        stopPlaneAnimations();
+        
+        // Premier avion après 20 secondes
+        planeAnimationTimeouts.push(setTimeout(() => {
+            triggerPlaneAnimation();
+            
+            // Deuxième avion après 50 secondes (30s après le premier)
+            planeAnimationTimeouts.push(setTimeout(() => {
+                triggerPlaneAnimation();
+                
+                // Ensuite toutes les 30 secondes
+                const intervalId = setInterval(() => {
+                    if (GameState.isPlaying && !isPaused) {
+                        triggerPlaneAnimation();
+                    }
+                }, 30000);
+                planeAnimationTimeouts.push(intervalId);
+                
+            }, 30000));
+            
+        }, 20000));
+        
+        console.log('✈️ Animation avion programmée');
+    }
+    
+    /**
+     * Arrête toutes les animations d'avion en cours
+     */
+    function stopPlaneAnimations() {
+        planeAnimationTimeouts.forEach(id => {
+            clearTimeout(id);
+            clearInterval(id);
+        });
+        planeAnimationTimeouts = [];
+        
+        // Supprimer les avions en cours d'animation
+        document.querySelectorAll('.flying-plane').forEach(el => el.remove());
+    }
+    
+    /**
+     * Déclenche une animation d'avion volant d'un pays à un autre
+     */
+    function triggerPlaneAnimation() {
+        if (!GameState.isPlaying || isPaused) return;
+        
+        const mapContainer = GameState.elements?.mapContainer;
+        const svg = mapContainer?.querySelector('svg');
+        if (!svg) return;
+        
+        // Récupérer tous les pays de la carte
+        const countries = svg.querySelectorAll('path.country-path');
+        if (countries.length < 2) return;
+        
+        // Choisir deux pays au hasard (départ et arrivée)
+        const countryArray = Array.from(countries);
+        const startCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        let endCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        
+        // S'assurer que c'est un pays différent
+        while (endCountry === startCountry) {
+            endCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        }
+        
+        // Obtenir les positions (centres des pays)
+        const startBBox = startCountry.getBBox();
+        const endBBox = endCountry.getBBox();
+        
+        const startX = startBBox.x + startBBox.width / 2;
+        const startY = startBBox.y + startBBox.height / 2;
+        const endX = endBBox.x + endBBox.width / 2;
+        const endY = endBBox.y + endBBox.height / 2;
+        
+        // Calculer l'angle de rotation pour orienter l'avion
+        // L'image de l'avion pointe vers le haut par défaut, donc on ajoute 90° pour l'orienter correctement
+        const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
+        
+        // Créer l'élément avion
+        const plane = document.createElement('img');
+        plane.src = '/assets/mapper-game/mapper-plane.png';
+        plane.className = 'flying-plane';
+        plane.style.cssText = `
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+            z-index: 1000;
+            transform-origin: center center;
+            transform: rotate(${angle}deg);
+        `;
+        
+        // Positionner l'avion dans le conteneur SVG
+        // Convertir les coordonnées SVG en coordonnées écran
+        const svgRect = svg.getBoundingClientRect();
+        const containerRect = mapContainer.getBoundingClientRect();
+        const viewBox = svg.viewBox.baseVal;
+        
+        const scaleX = svgRect.width / viewBox.width;
+        const scaleY = svgRect.height / viewBox.height;
+        
+        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        
+        plane.style.left = `${screenStartX}px`;
+        plane.style.top = `${screenStartY}px`;
+        
+        mapContainer.appendChild(plane);
+        
+        // Durée de l'animation (6-10 secondes selon la distance) - plus lent pour un effet réaliste
+        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
+        const duration = Math.min(Math.max(distance * 15, 6000), 10000); // Entre 6 et 10 secondes
+        
+        // Animation avec Web Animations API
+        const animation = plane.animate([
+            { 
+                left: `${screenStartX}px`, 
+                top: `${screenStartY}px`, 
+                width: '8px', 
+                height: '8px',
+                opacity: 0.3
+            },
+            { 
+                left: `${(screenStartX + screenEndX) / 2}px`, 
+                top: `${(screenStartY + screenEndY) / 2 - 30}px`, // Monte un peu au milieu
+                width: '32px', 
+                height: '32px',
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                left: `${screenEndX}px`, 
+                top: `${screenEndY}px`, 
+                width: '8px', 
+                height: '8px',
+                opacity: 0.3
+            }
+        ], {
+            duration: duration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+        
+        animation.onfinish = () => {
+            plane.remove();
+        };
+        
+        console.log(`✈️ Avion en vol: ${startCountry.dataset?.countryId || 'pays'} → ${endCountry.dataset?.countryId || 'pays'}`);
     }
 
     /* ========================================================================
