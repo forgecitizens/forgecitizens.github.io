@@ -1,14 +1,12 @@
 {
   "global_instability_index": {
-    "value": 483,
+    "value": 490,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-01-19",
-    "last_updated": "2026-01-19T22:00:00Z",
-    "version": "1.9",
-    "note": "Hausse modérée et graduelle due à l'escalade persistante en Iran (bilan >5 000 morts confirmés, estimations ONG jusqu'à 20 000+, répression brutale, blackout prolongé, rapprochement forces US avec déploiement naval accru et menaces Trump). Crises chroniques stables au Soudan (famine extrême, aide épuisée imminente). Tensions au Groenland s'intensifient (droits de douane US 10-25 % annoncés sur 8 pays européens jusqu'à vente Groenland, réactions UE dures, marchés volatils). Justification du score : l'Iran domine avec bilan humain en augmentation et risques internationaux accrus ; Soudan en chronicité extrême ; Groenland voit escalade économique US vs alliés OTAN ; Ukraine attaques énergie persistantes ; Chine/Taïwan tensions stables. Alerte G4 géomagnétique (potentielle dès fin 19 janvier) ajoute risque systémique sans impact majeur confirmé. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs changeant la donne internationale ou en zones hautement productives/militarisées ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
-  },
-
-  "history": [
+    "calculation_date": "2026-01-21",
+    "last_updated": "2026-01-21T19:00:00Z",
+    "version": "1.10",
+    "note": "Hausse modérée et graduelle due à l'escalade économique et diplomatique sur le Groenland (Trump annonce droits de douane 10-25 % sur 8 pays européens jusqu'à vente totale, réactions UE dures avec menaces de représailles, marchés volatils en baisse modérée). Tensions persistantes en Iran (bilan >5000 morts confirmés, répression brutale, blackout prolongé, rapprochement US naval). Crises chroniques stables au Soudan (famine extrême, aide épuisée imminente). Justification du score : Groenland domine l'actualité avec fracture transatlantique accrue (WEF Davos amplifie tensions, Trump refuse usage force mais utilise économie comme arme) ; Iran bilan humain en augmentation et risques internationaux persistants ; Soudan chronicité extrême ; Ukraine attaques énergie persistantes ; Chine/Taïwan tensions stables. Alerte géomagnétique G4 imminente (arrivée CME, risques perturbations satellites/électricité sans impact majeur confirmé). Pas d'événement game-changer, hausse limitée. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs changeant la donne internationale ou en zones hautement productives/militarisées ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -27,16 +25,24 @@
     { "date": "2026-01-16", "value": 463 },
     { "date": "2026-01-17", "value": 469 },
     { "date": "2026-01-18", "value": 478 },
-    { "date": "2026-01-19", "value": 483 }
-  ],
-
-  "major_contributors": [
+    { "date": "2026-01-19", "value": 483 },
+    { "date": "2026-01-20", "value": 486 },
+    { "date": "2026-01-21", "value": 490 }
+  ],  "major_contributors": [
+    {
+      "country_or_region": "Groenland / Danemark / Tensions transatlantiques",
+      "fig_weight": 0.050,
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.400,
+      "events": "Escalade économique : Trump annonce droits de douane 10 % (puis 25 % en juin) sur 8 pays européens (DK, NO, SE, FR, DE, UK, NL, FI) jusqu'à vente totale Groenland ; réactions UE unanimes et dures (réunions d'urgence, menaces représailles, dénoncent chantage) ; marchés rattled avec baisse modérée (volatilité accrue) ; déploiement militaire européen accru sans confrontation directe ; WEF Davos amplifie tensions avec déclarations Trump refusant force mais rappelant sauvetage US en WW2",
+      "gravity": "Élevé (Fibonacci 5 + 3 : menace économique + fracture OTAN)"
+    },
     {
       "country_or_region": "Iran",
       "fig_weight": 0.072,
       "daily_instability_score": 13,
       "weighted_contribution": 0.936,
-      "events": "Manifestations depuis plus de trois semaines, bilan des morts explosif (>5 000 confirmés, estimations ONG jusqu'à 20 000+), répression brutale intensifiée (exécutions imminentes maintenues, >10 000 arrestations), blackout internet prolongé, fermeture aérienne maintenue, rapprochement forces US (déploiement naval accru, menaces Trump persistantes)",
+      "events": "Manifestations persistantes, bilan des morts explosif (>5000 confirmés, estimations ONG jusqu'à 20000+), répression brutale (exécutions imminentes, >10000 arrestations), blackout internet prolongé, fermeture aérienne, rapprochement US naval accru avec menaces Trump persistantes sans action immédiate",
       "gravity": "Très élevé (Fibonacci 13 : violences massives + risque d'intervention internationale + instabilité du régime/nucléaire)"
     },
     {
@@ -48,12 +54,20 @@
       "gravity": "Très élevé (Fibonacci 8 + 5 chronicité extrême)"
     },
     {
-      "country_or_region": "Groenland / Danemark / Tensions transatlantiques",
-      "fig_weight": 0.045,
-      "daily_instability_score": 8,
-      "weighted_contribution": 0.360,
-      "events": "Menaces américaines persistantes, droits de douane 10 % (puis 25 % en juin) annoncés sur 8 pays européens jusqu'à vente Groenland, réactions UE dures (réunions d'urgence, menaces représailles), marchés volatils ; déploiement militaire européen accru (troupes physiques et exercices conjoints), risque de fin de l'OTAN",
-      "gravity": "Élevé (Fibonacci 5 + 3 : menace + fracture OTAN + escalade économique)"
+      "country_or_region": "Ukraine / Russie",
+      "fig_weight": 0.070,
+      "daily_instability_score": 7,
+      "weighted_contribution": 0.490,
+      "events": "Attaques russes massives sur infrastructures énergétiques (système à 60 % capacité, état d'urgence prolongé, millions sans chauffage/électricité en hiver extrême), avancées russes persistantes, combats intenses Donetsk",
+      "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
+    },
+    {
+      "country_or_region": "Chine / Taïwan",
+      "fig_weight": 0.110,
+      "daily_instability_score": 5,
+      "weighted_contribution": 0.550,
+      "events": "Tensions persistantes avec exercices récents simulant blocus, condamnations américaines, rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 21 janvier",
+      "gravity": "Modéré (Fibonacci 5)"
     },
     {
       "country_or_region": "République démocratique du Congo (Est)",
@@ -80,22 +94,6 @@
       "gravity": "Élevé (Fibonacci 5 + 3)"
     },
     {
-      "country_or_region": "Ukraine / Russie",
-      "fig_weight": 0.070,
-      "daily_instability_score": 7,
-      "weighted_contribution": 0.490,
-      "events": "Attaques russes massives sur les infrastructures énergétiques (système à seulement 60 % de capacité, état d'urgence prolongé, millions sans chauffage/électricité en hiver extrême), avancées russes ralenties mais persistantes, combats intenses dans le Donetsk",
-      "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
-    },
-    {
-      "country_or_region": "Chine / Taïwan",
-      "fig_weight": 0.110,
-      "daily_instability_score": 5,
-      "weighted_contribution": 0.550,
-      "events": "Tensions persistantes avec exercices militaires récents simulant un blocus (Justice Mission 2025), condamnations américaines, rhétorique expansionniste chinoise, menace régionale continue sans nouveau développement explosif le 19 janvier",
-      "gravity": "Modéré (Fibonacci 5)"
-    },
-    {
       "country_or_region": "Soudan du Sud",
       "fig_weight": 0.025,
       "daily_instability_score": 5,
@@ -103,27 +101,24 @@
       "events": "Violences ethniques et enlèvements en hausse chronique",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],
-
-  "summary": {
-    "total_weighted_sum": 7.23,
+  ],  "summary": {
+    "total_weighted_sum": 7.35,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée et en hausse modérée – l'Iran domine avec bilan humain en forte augmentation et rapprochement forces US ; crises africaines chroniques graves (Soudan famine extrême) ; Groenland voit escalade économique US vs alliés OTAN (tarifs 10-25 % annoncés) ; Ukraine attaques énergie persistantes ; Chine/Taïwan tensions stables. Alerte G4 géomagnétique ajoute risque systémique sans impact majeur. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs changeant la donne ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
-  },
-
-  "metadata": {
+    "interpretation": "Instabilité très élevée et en hausse modérée – Groenland domine avec escalade économique US vs alliés OTAN (tarifs douaniers annoncés) ; Iran bilan humain en augmentation et rapprochement US ; crises africaines chroniques graves (Soudan famine extrême) ; Ukraine attaques énergie persistantes ; Chine/Taïwan tensions stables. Alerte géomagnétique G4 ajoute risque systémique sans impact majeur. Pas d'événement majeur changeant la donne, hausse limitée. Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },  "metadata": {
     "sources": [
-      "HRANA, NCRI, Reuters, Amnesty International (Iran : bilan, répression)",
-      "Programme alimentaire mondial, Al Jazeera, UN OCHA (Soudan : famine, aide)",
-      "Reuters, POLITICO, BBC, France24, The Guardian (Groenland : tarifs US, réactions UE)",
-      "NOAA SWPC, Forbes, USA Today (alerte géomagnétique G4)",
-      "Reuters, Al Jazeera, The Guardian (Ukraine : énergie)",
-      "US State Dept, Reuters, Al Jazeera (Chine/Taïwan : tensions)",
+      "Al Jazeera, CNN, NPR, Reuters, The New York Times (Groenland : tarifs US, réactions UE, WEF Davos)",
+      "HRANA, NCRI, Amnesty International (Iran : bilan, répression)",
+      "Programme alimentaire mondial, UN OCHA (Soudan : famine, aide)",
+      "Reuters, The Guardian (Ukraine : énergie)",
+      "US State Dept, Reuters (Chine/Taïwan : tensions)",
+      "NOAA SWPC (alerte géomagnétique G4)",
       "International Crisis Group, CFR (conflits mondiaux 2026)"
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
-    "next_update_planned": "2026-01-20"
+    "next_update_planned": "2026-01-22"
   }
 }
+
