@@ -1625,7 +1625,7 @@ window.addEventListener('keydown', (e) => {
         const refreshBtn = document.createElement('button');
         refreshBtn.className = 'labels-refresh-btn';
         refreshBtn.id = 'labels-refresh-btn';
-        refreshBtn.innerHTML = '🔄';
+        refreshBtn.innerHTML = '<img src="/assets/mapper-game/random.png" alt="Shuffle" class="refresh-icon">';
         refreshBtn.title = GameState.currentLanguage === 'FR' 
             ? 'Afficher d\'autres pays' 
             : 'Show other countries';
@@ -1792,12 +1792,35 @@ window.addEventListener('keydown', (e) => {
                 if (wrapper) {
                     wrapper.classList.add('geo-combo-active');
                 }
+                
+                // Ajouter l'effet de flamme sur les barres
+                activateFireEffect(true);
             }
         } else {
             // Désactiver le combo si on désélectionne un label
             if (GameState.geoCombo.active) {
                 resetGeoCombo(true); // Jouer too_bad car désélection
             }
+        }
+    }
+    
+    /**
+     * Active ou désactive l'effet de flamme sur titlebar, menubar et toolbar
+     * @param {boolean} activate - true pour activer, false pour désactiver
+     */
+    function activateFireEffect(activate) {
+        const titlebar = document.querySelector('.titlebar');
+        const menubar = document.querySelector('.menubar');
+        const toolbar = document.querySelector('.toolbar');
+        
+        if (activate) {
+            titlebar?.classList.add('geo-combo-fire');
+            menubar?.classList.add('geo-combo-fire');
+            toolbar?.classList.add('geo-combo-fire');
+        } else {
+            titlebar?.classList.remove('geo-combo-fire');
+            menubar?.classList.remove('geo-combo-fire');
+            toolbar?.classList.remove('geo-combo-fire');
         }
     }
     
@@ -1817,6 +1840,9 @@ window.addEventListener('keydown', (e) => {
         
         // Arrêter le son GEO-COMBO ready
         stopComboReadySound();
+        
+        // Désactiver l'effet de flamme
+        activateFireEffect(false);
         
         const wrapper = GameState.elements?.labelsVisibleWrapper;
         if (wrapper) {
@@ -1850,6 +1876,10 @@ window.addEventListener('keydown', (e) => {
         
         // Vérifier qu'au moins un label est sélectionné
         if (GameState.selectedLabels.length === 0) {
+            // Si le pays n'est pas déjà validé (vert), afficher l'animation du curseur
+            if (!countryPath.classList.contains('country-correct')) {
+                showCursorHintAnimation();
+            }
             console.log('ℹ️ Sélectionnez d\'abord un pays dans la liste');
             return;
         }
@@ -1871,6 +1901,122 @@ window.addEventListener('keydown', (e) => {
         }
     }
     
+    /**
+     * Affiche l'animation du curseur qui pointe vers un label aléatoire
+     * Animation: apparaît du bas, monte et s'arrête sur un label, scintille, puis disparaît
+     */
+    function showCursorHintAnimation() {
+        const wrapper = GameState.elements?.labelsVisibleWrapper;
+        const labelsContainer = document.getElementById('labels-container');
+        if (!wrapper || !labelsContainer) return;
+        
+        // Récupérer les labels actuellement affichés
+        const visibleLabels = wrapper.querySelectorAll('.country-label');
+        if (visibleLabels.length === 0) return;
+        
+        // Supprimer toute animation de curseur précédente
+        const existingCursor = document.querySelector('.cursor-hint-animation');
+        if (existingCursor) existingCursor.remove();
+        
+        // Choisir un label au hasard
+        const randomLabel = visibleLabels[Math.floor(Math.random() * visibleLabels.length)];
+        const labelRect = randomLabel.getBoundingClientRect();
+        const containerRect = labelsContainer.getBoundingClientRect();
+        
+        // Position cible (un peu plus bas que le centre du label)
+        const targetX = labelRect.left + labelRect.width / 2 - containerRect.left;
+        const targetY = labelRect.top + labelRect.height / 2 - containerRect.top + 20; // +20px plus bas
+        
+        // Créer l'élément curseur
+        const cursor = document.createElement('img');
+        cursor.src = '/assets/mapper-game/cursor.png';
+        cursor.className = 'cursor-hint-animation';
+        cursor.style.cssText = `
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            pointer-events: none;
+            z-index: 3000;
+            left: ${targetX}px;
+            bottom: -50px;
+            transform: translateX(-50%);
+            opacity: 0;
+        `;
+        
+        labelsContainer.appendChild(cursor);
+        
+        // Préparer le son de clic
+        const clickSound = new Audio('/sounds/mouseclick.wav');
+        clickSound.volume = 0.5;
+        
+        // Animation: monter du bas vers le label, scintiller, puis disparaître
+        const targetBottom = containerRect.height - targetY;
+        const animation = cursor.animate([
+            { 
+                bottom: '-50px', 
+                opacity: 0,
+                filter: 'brightness(1)'
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1)',
+                offset: 0.3
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1.5)',
+                offset: 0.4
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1)',
+                offset: 0.5
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1.8)',
+                offset: 0.6
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1)',
+                offset: 0.7
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 1,
+                filter: 'brightness(1.5)',
+                offset: 0.8
+            },
+            { 
+                bottom: `${targetBottom}px`, 
+                opacity: 0,
+                filter: 'brightness(1)',
+                offset: 1
+            }
+        ], {
+            duration: 1500,
+            easing: 'ease-out',
+            fill: 'forwards'
+        });
+        
+        // Jouer le son de clic quand le scintillement commence (à 30% de l'animation = 450ms)
+        setTimeout(() => {
+            clickSound.play().catch(() => {}); // Ignorer les erreurs si le son ne peut pas être joué
+        }, 450);
+        
+        animation.onfinish = () => {
+            cursor.remove();
+        };
+        
+        console.log('👆 Animation curseur: pointage vers un label');
+    }
+
     /**
      * Gère le placement d'un label sur un pays
      * @param {string} labelCountryCode - Code du pays du label
