@@ -915,7 +915,7 @@ window.addEventListener('keydown', (e) => {
         const hardDescEl = document.getElementById('difficulty-hard-desc');
         
         if (easyLabelEl) {
-            easyLabelEl.textContent = lang === 'FR' ? 'Facile' : 'Easy';
+            easyLabelEl.textContent = lang === 'FR' ? 'Normal' : 'Regular';
         }
         if (easyDescEl) {
             easyDescEl.textContent = lang === 'FR' 
@@ -927,8 +927,8 @@ window.addEventListener('keydown', (e) => {
         }
         if (hardDescEl) {
             hardDescEl.textContent = lang === 'FR' 
-                ? 'Vous devez trouver les pays et les îles' 
-                : 'You must find both countries and islands';
+                ? 'Vous devez trouver les pays et les îles. (PC recommandé ou tablette)' 
+                : 'You have to find countries and islands. (PC or tablet recommended)';
         }
     }
     
@@ -1267,72 +1267,62 @@ window.addEventListener('keydown', (e) => {
         const zoomState = GameState.zoom;
         
         /**
-         * Zoom vers le point de la souris (comme Google Maps)
-         * Le point sous le curseur reste fixe pendant le zoom
-         * 
-         * Algorithme:
-         * 1. Calculer la position de la souris dans le conteneur
-         * 2. Calculer quelle coordonnée SVG est sous cette position (tenant compte du scroll et scale)
-         * 3. Appliquer le nouveau scale
-         * 4. Calculer le nouveau scroll pour que la même coordonnée SVG reste sous la souris
+         * Applique le zoom en conservant un point fixe (sous le curseur/centre du pinch)
+         * Utilise translate + scale pour un contrôle précis
          */
-        function zoomToPoint(newScale, clientX, clientY) {
+        function applyZoom(newScale, focalX, focalY) {
             const oldScale = zoomState.scale;
             if (!oldScale || oldScale <= 0) {
                 console.warn('⚠️ oldScale invalide, reset à 1');
                 zoomState.scale = 1;
-                return zoomToPoint(newScale, clientX, clientY);
+                return applyZoom(newScale, focalX, focalY);
             }
-
-            // Conversion screen -> SVG (mouse-centered zoom)
-            const pt = svg.createSVGPoint();
-            pt.x = clientX;
-            pt.y = clientY;
-            const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-            console.log('[zoom] Mouse screen', clientX, clientY, '-> svg', svgP.x, svgP.y);
-
+            
+            // Clamp newScale
+            newScale = Math.max(CONFIG.zoom.min, Math.min(CONFIG.zoom.max, newScale));
+            if (newScale === oldScale) return;
+            
+            // Position du point focal dans le conteneur (relative au scroll)
+            const containerRect = container.getBoundingClientRect();
+            const pointInContainerX = focalX - containerRect.left + container.scrollLeft;
+            const pointInContainerY = focalY - containerRect.top + container.scrollTop;
+            
+            // Position du point focal dans le SVG (coordonnées non-scalées)
+            const pointInSvgX = pointInContainerX / oldScale;
+            const pointInSvgY = pointInContainerY / oldScale;
+            
+            // Nouvelle position du point focal après le nouveau scale
+            const newPointInContainerX = pointInSvgX * newScale;
+            const newPointInContainerY = pointInSvgY * newScale;
+            
+            // Différence de scroll nécessaire pour garder le point focal fixe
+            const scrollDiffX = newPointInContainerX - pointInContainerX;
+            const scrollDiffY = newPointInContainerY - pointInContainerY;
+            
             // Appliquer le nouveau scale
             zoomState.scale = newScale;
-            svg.style.transformOrigin = '';
             svg.style.transform = `scale(${newScale})`;
-
-            // Après scale, le point svgP doit rester sous le curseur
-            // On ajuste le scroll du container pour compenser le déplacement
-            // Recalcule la position écran du point svgP après scale
-            const ctm = svg.getScreenCTM();
-            const after = svg.createSVGPoint();
-            after.x = svgP.x;
-            after.y = svgP.y;
-            const screenAfter = after.matrixTransform(ctm);
-            const dx = clientX - screenAfter.x;
-            const dy = clientY - screenAfter.y;
-            // Ajuste le scroll du container
-            container.scrollLeft -= dx;
-            container.scrollTop -= dy;
-
-            // Debug
-            console.log('[zoom] scroll adjust', {dx, dy, scrollLeft: container.scrollLeft, scrollTop: container.scrollTop});
+            svg.style.transformOrigin = '0 0';
+            
+            // Ajuster le scroll pour compenser
+            container.scrollLeft += scrollDiffX;
+            container.scrollTop += scrollDiffY;
+            
+            console.log(`🔍 Zoom: ${Math.round(newScale * 100)}%`);
         }
         
-        // Zoom avec la molette
+        // Zoom avec la molette (PC)
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             
-            // Calculer le nouveau scale
             const direction = e.deltaY > 0 ? -1 : 1;
-            const newScale = Math.max(
-                CONFIG.zoom.min,
-                Math.min(CONFIG.zoom.max, zoomState.scale + direction * CONFIG.zoom.step)
-            );
+            const newScale = zoomState.scale + direction * CONFIG.zoom.step;
             
-            if (newScale !== zoomState.scale) {
-                zoomToPoint(newScale, e.clientX, e.clientY);
-                console.log(`🔍 Zoom: ${Math.round(newScale * 100)}%`);
-            }
+            applyZoom(newScale, e.clientX, e.clientY);
             
         }, { passive: false });
         
-        // Pan avec clic gauche maintenu (bouton molette ou clic normal)
+        // Pan avec clic gauche maintenu (PC)
         container.addEventListener('mousedown', (e) => {
             // Ignorer si on clique sur un label sélectionnable
             if (e.target.closest('.country-label.selectable')) return;
@@ -1374,29 +1364,89 @@ window.addEventListener('keydown', (e) => {
             }
         });
         
-        // Support tactile pour le pan
+        // ===== SUPPORT TACTILE (MOBILE) =====
         let touchStartX, touchStartY;
+        let initialPinchDistance = null;
+        let initialPinchScale = null;
+        let pinchCenterX, pinchCenterY;
         
         container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
+                // Pan avec 1 doigt
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
                 zoomState.scrollLeft = container.scrollLeft;
                 zoomState.scrollTop = container.scrollTop;
+                initialPinchDistance = null;
+            } else if (e.touches.length === 2) {
+                // Début du pinch-to-zoom
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                
+                // Distance initiale entre les deux doigts
+                initialPinchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                initialPinchScale = zoomState.scale;
+                
+                // Centre du pinch (point focal)
+                pinchCenterX = (touch1.clientX + touch2.clientX) / 2;
+                pinchCenterY = (touch1.clientY + touch2.clientY) / 2;
             }
-        }, { passive: true });
+        }, { passive: false });
         
         container.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1 && touchStartX !== undefined) {
+            if (e.touches.length === 1 && initialPinchDistance === null) {
+                // Pan avec 1 doigt (pas de pinch en cours)
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
                 
                 container.scrollLeft = zoomState.scrollLeft - dx;
                 container.scrollTop = zoomState.scrollTop - dy;
+            } else if (e.touches.length === 2 && initialPinchDistance !== null) {
+                // Pinch-to-zoom avec 2 doigts
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                
+                // Nouvelle distance entre les doigts
+                const currentDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                
+                // Calculer le nouveau scale basé sur le ratio des distances
+                const scaleRatio = currentDistance / initialPinchDistance;
+                const newScale = initialPinchScale * scaleRatio;
+                
+                // Nouveau centre du pinch
+                const newCenterX = (touch1.clientX + touch2.clientX) / 2;
+                const newCenterY = (touch1.clientY + touch2.clientY) / 2;
+                
+                // Appliquer le zoom centré sur le point focal
+                applyZoom(newScale, newCenterX, newCenterY);
+            }
+        }, { passive: false });
+        
+        container.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                // Réinitialiser le pinch
+                initialPinchDistance = null;
+                initialPinchScale = null;
+                
+                // Si on revient à 1 doigt, réinitialiser le pan
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    zoomState.scrollLeft = container.scrollLeft;
+                    zoomState.scrollTop = container.scrollTop;
+                }
             }
         }, { passive: true });
         
-        console.log('✅ Mapper: Zoom/Pan configuré');
+        console.log('✅ Mapper: Zoom/Pan configuré (avec pinch-to-zoom mobile)');
     }
     
     /**
@@ -2772,34 +2822,59 @@ window.addEventListener('keydown', (e) => {
     let planeAnimationTimeouts = [];
     
     /**
-     * Démarre le système d'animation de l'avion
-     * Timing: 20s, puis 50s, puis toutes les 30s
+     * Démarre le système d'animation des avions (grand et petit)
+     * Timing grand avion: 20s, puis 50s, puis toutes les 30s
+     * Timing petit avion: 10s avant chaque grand avion (donc 10s, 40s, puis toutes les 30s)
      */
     function startPlaneAnimations() {
         // Nettoyer les timeouts précédents
         stopPlaneAnimations();
         
-        // Premier avion après 20 secondes
+        // Petit avion après 10 secondes (10s avant le premier grand avion)
+        planeAnimationTimeouts.push(setTimeout(() => {
+            triggerSmallPlaneAnimation();
+        }, 10000));
+        
+        // Premier grand avion après 20 secondes
         planeAnimationTimeouts.push(setTimeout(() => {
             triggerPlaneAnimation();
             
-            // Deuxième avion après 50 secondes (30s après le premier)
+            // Petit avion après 40 secondes (10s avant le deuxième grand avion à 50s)
+            planeAnimationTimeouts.push(setTimeout(() => {
+                triggerSmallPlaneAnimation();
+            }, 20000)); // 20s après le premier grand avion = 40s total
+            
+            // Deuxième grand avion après 50 secondes (30s après le premier)
             planeAnimationTimeouts.push(setTimeout(() => {
                 triggerPlaneAnimation();
                 
-                // Ensuite toutes les 30 secondes
-                const intervalId = setInterval(() => {
+                // Ensuite toutes les 30 secondes pour le grand avion
+                const bigPlaneIntervalId = setInterval(() => {
                     if (GameState.isPlaying && !isPaused) {
                         triggerPlaneAnimation();
                     }
                 }, 30000);
-                planeAnimationTimeouts.push(intervalId);
+                planeAnimationTimeouts.push(bigPlaneIntervalId);
+                
+                // Petit avion 10s avant chaque grand avion (donc 20s après le précédent grand avion)
+                // Premier après 20s, puis toutes les 30s
+                planeAnimationTimeouts.push(setTimeout(() => {
+                    if (GameState.isPlaying && !isPaused) {
+                        triggerSmallPlaneAnimation();
+                    }
+                    const smallPlaneIntervalId = setInterval(() => {
+                        if (GameState.isPlaying && !isPaused) {
+                            triggerSmallPlaneAnimation();
+                        }
+                    }, 30000);
+                    planeAnimationTimeouts.push(smallPlaneIntervalId);
+                }, 20000));
                 
             }, 30000));
             
         }, 20000));
         
-        console.log('✈️ Animation avion programmée');
+        console.log('✈️ Animation avions programmée (grand + petit)');
     }
     
     /**
@@ -2813,9 +2888,150 @@ window.addEventListener('keydown', (e) => {
         planeAnimationTimeouts = [];
         
         // Supprimer les avions en cours d'animation
-        document.querySelectorAll('.flying-plane').forEach(el => el.remove());
+        document.querySelectorAll('.flying-plane, .flying-small-plane').forEach(el => el.remove());
     }
     
+    /**
+     * Déclenche une animation du petit avion volant entre pays voisins
+     * Ne traverse jamais les océans - uniquement les frontières terrestres
+     * 3x plus lent que le grand avion
+     */
+    function triggerSmallPlaneAnimation() {
+        if (!GameState.isPlaying || isPaused) return;
+        
+        const mapContainer = GameState.elements?.mapContainer;
+        const svg = mapContainer?.querySelector('svg');
+        if (!svg) return;
+        
+        // Récupérer tous les pays de la carte qui ont des voisins terrestres
+        const countries = svg.querySelectorAll('path.country-path');
+        if (countries.length < 2) return;
+        
+        // Créer un mapping countryId -> element
+        const countryMap = new Map();
+        countries.forEach(country => {
+            const id = country.dataset?.countryId;
+            if (id) countryMap.set(id, country);
+        });
+        
+        // Trouver un pays de départ qui a au moins un voisin terrestre présent sur la carte
+        const countriesWithNeighbors = [];
+        countryMap.forEach((element, countryId) => {
+            const neighbors = BORDERS[countryId];
+            if (neighbors && neighbors.length > 0) {
+                // Vérifier qu'au moins un voisin est présent sur la carte
+                const availableNeighbors = neighbors.filter(n => countryMap.has(n));
+                if (availableNeighbors.length > 0) {
+                    countriesWithNeighbors.push({ countryId, element, neighbors: availableNeighbors });
+                }
+            }
+        });
+        
+        if (countriesWithNeighbors.length === 0) {
+            console.log('🛩️ Petit avion: Aucun pays avec voisin terrestre trouvé');
+            return;
+        }
+        
+        // Choisir un pays de départ au hasard
+        const startData = countriesWithNeighbors[Math.floor(Math.random() * countriesWithNeighbors.length)];
+        const startCountry = startData.element;
+        
+        // Choisir un voisin terrestre au hasard
+        const endCountryId = startData.neighbors[Math.floor(Math.random() * startData.neighbors.length)];
+        const endCountry = countryMap.get(endCountryId);
+        
+        if (!endCountry) {
+            console.log('🛩️ Petit avion: Pays voisin non trouvé sur la carte');
+            return;
+        }
+        
+        // Obtenir les positions (centres des pays)
+        const startBBox = startCountry.getBBox();
+        const endBBox = endCountry.getBBox();
+        
+        const startX = startBBox.x + startBBox.width / 2;
+        const startY = startBBox.y + startBBox.height / 2;
+        const endX = endBBox.x + endBBox.width / 2;
+        const endY = endBBox.y + endBBox.height / 2;
+        
+        // Calculer l'angle de rotation pour orienter l'avion
+        const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
+        
+        // Créer l'élément petit avion
+        const plane = document.createElement('img');
+        plane.src = '/assets/mapper-game/mapper_small_plane.png';
+        plane.className = 'flying-small-plane';
+        plane.style.cssText = `
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            z-index: 999;
+            transform-origin: center center;
+            transform: rotate(${angle}deg);
+        `;
+        
+        // Positionner l'avion dans le conteneur SVG
+        const svgRect = svg.getBoundingClientRect();
+        const containerRect = mapContainer.getBoundingClientRect();
+        const viewBox = svg.viewBox.baseVal;
+        
+        const scaleX = svgRect.width / viewBox.width;
+        const scaleY = svgRect.height / viewBox.height;
+        
+        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        
+        plane.style.left = `${screenStartX}px`;
+        plane.style.top = `${screenStartY}px`;
+        
+        mapContainer.appendChild(plane);
+        
+        // Durée de l'animation: 3x plus lent que le grand avion
+        // Grand avion: 6-10s selon distance, petit avion: 18-30s
+        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
+        const baseDuration = Math.min(Math.max(distance * 15, 6000), 10000);
+        const duration = baseDuration * 3; // 3x plus lent
+        
+        // Animation plus simple (pas de montée au milieu car voyage court)
+        const animation = plane.animate([
+            { 
+                left: `${screenStartX}px`, 
+                top: `${screenStartY}px`, 
+                width: '6px', 
+                height: '6px',
+                opacity: 0.5
+            },
+            { 
+                left: `${(screenStartX + screenEndX) / 2}px`, 
+                top: `${(screenStartY + screenEndY) / 2}px`,
+                width: '20px', 
+                height: '20px',
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                left: `${screenEndX}px`, 
+                top: `${screenEndY}px`, 
+                width: '6px', 
+                height: '6px',
+                opacity: 0.5
+            }
+        ], {
+            duration: duration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+        
+        animation.onfinish = () => {
+            plane.remove();
+        };
+        
+        console.log(`🛩️ Petit avion en vol: ${startData.countryId} → ${endCountryId} (voisins terrestres)`);
+    }
+
     /**
      * Déclenche une animation d'avion volant d'un pays à un autre
      */

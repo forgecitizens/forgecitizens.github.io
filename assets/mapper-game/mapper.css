@@ -1424,8 +1424,9 @@ body {
 
 /* Icône de difficulté */
 .difficulty-icon {
-    font-size: 32px;
-    line-height: 1;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
 }
 
 /* Label de difficulté */
