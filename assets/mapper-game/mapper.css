@@ -552,6 +552,13 @@ body {
     cursor: pointer;
     transition: transform 0.1s ease;
     margin-left: 8px;
+    padding: 6px;
+}
+
+.labels-refresh-btn .refresh-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .labels-refresh-btn:hover {
@@ -569,6 +576,13 @@ body {
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* ========================================================================
+   Animation curseur d'aide (hint)
+   ======================================================================== */
+.cursor-hint-animation {
+    filter: drop-shadow(0 0 5px rgba(255, 200, 0, 0.8));
 }
 
 /* Message quand tous les pays sont placés */
@@ -639,6 +653,115 @@ body {
     border-color: #e65100;
     color: #fff;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================================================
+   GEO-COMBO - Effet de flamme sur les barres
+   ======================================================================== */
+
+/* Animation de flamme/scintillement */
+@keyframes fireFlicker {
+    0%, 100% {
+        background-position: 0% 50%;
+        filter: brightness(1);
+    }
+    25% {
+        background-position: 50% 50%;
+        filter: brightness(1.1);
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: brightness(1.2);
+    }
+    75% {
+        background-position: 50% 50%;
+        filter: brightness(1.05);
+    }
+}
+
+@keyframes emberGlow {
+    0%, 100% {
+        box-shadow: 
+            inset 0 0 10px rgba(255, 100, 0, 0.3),
+            0 0 5px rgba(255, 100, 0, 0.2);
+    }
+    50% {
+        box-shadow: 
+            inset 0 0 20px rgba(255, 150, 0, 0.5),
+            0 0 15px rgba(255, 100, 0, 0.4);
+    }
+}
+
+/* Titlebar en mode GEO-COMBO */
+.titlebar.geo-combo-fire {
+    background: linear-gradient(
+        90deg,
+        #0000ff 0%,
+        #ff6600 15%,
+        #ff9900 30%,
+        #ffcc00 50%,
+        #ff9900 70%,
+        #ff6600 85%,
+        #0000ff 100%
+    );
+    background-size: 200% 100%;
+    animation: fireFlicker 0.8s ease-in-out infinite, emberGlow 1.2s ease-in-out infinite;
+    transition: all 0.3s ease;
+}
+
+.titlebar.geo-combo-fire .titlebar-text {
+    text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #ff6600,
+        0 0 15px #ff3300;
+    animation: textPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes textPulse {
+    from { opacity: 0.9; }
+    to { opacity: 1; }
+}
+
+/* Menubar en mode GEO-COMBO */
+.menubar.geo-combo-fire {
+    background: linear-gradient(
+        180deg,
+        var(--win98-bg) 0%,
+        rgba(255, 150, 50, 0.3) 50%,
+        var(--win98-bg) 100%
+    );
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, #ff6600, #ffcc00, #ff6600) 1;
+    animation: menubarFlicker 1s ease-in-out infinite;
+}
+
+@keyframes menubarFlicker {
+    0%, 100% { border-image: linear-gradient(90deg, #ff6600, #ffcc00, #ff6600) 1; }
+    50% { border-image: linear-gradient(90deg, #ffcc00, #ff6600, #ffcc00) 1; }
+}
+
+/* Toolbar en mode GEO-COMBO */
+.toolbar.geo-combo-fire {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 150, 50, 0.15) 0%,
+        var(--win98-bg) 100%
+    );
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, #ff9900, #ff6600, #ff9900) 1;
+}
+
+.toolbar.geo-combo-fire .toolbar-btn {
+    animation: btnGlow 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes btnGlow {
+    from {
+        box-shadow: 0 0 2px rgba(255, 100, 0, 0.3);
+    }
+    to {
+        box-shadow: 0 0 8px rgba(255, 150, 0, 0.6);
+    }
 }
 
 /* Label placé correctement */
