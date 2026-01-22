@@ -1,3 +1,56 @@
+// --- Système de pause ---
+// Empêche le pinch-zoom natif sur mobile (seule la carte doit zoomer)
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Variables globales pour la pause (seront utilisées par l'IIFE)
+let isPaused = false;
+let pauseStartTimer = null;
+let pauseStopTimer = null;
+
+function setPause(state) {
+    isPaused = state;
+    const rulesOverlay = document.getElementById('rules-modal-overlay');
+    if (rulesOverlay) {
+        if (state) {
+            rulesOverlay.classList.add('visible');
+        } else {
+            rulesOverlay.classList.remove('visible');
+        }
+    }
+    // Remplace le bouton Pause/Play
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.textContent = state ? 'Play' : 'Pause';
+    // Pause le chrono (utilise les fonctions exposées par l'IIFE)
+    if (state && pauseStopTimer) {
+        pauseStopTimer();
+    } else if (!state && pauseStartTimer) {
+        pauseStartTimer();
+    }
+}
+
+// Ouvre la modale pause/règles avec le bouton Pause
+document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'pause-btn') {
+        setPause(!isPaused);
+    }
+    if (e.target && e.target.id === 'rules-close-btn') {
+        setPause(false);
+    }
+});
+
+// Gestion touche espace
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        // Empêcher le scroll par défaut de la touche espace
+        e.preventDefault();
+        setPause(!isPaused);
+    }
+});
+
 /**
  * ========================================================================
  * MAPPER GAME - Main JavaScript
@@ -388,7 +441,140 @@
         // Initialiser la modale des crédits
         initCreditsModal();
         
+        // Initialiser la modale des règles (pause)
+        initRulesModal();
+        
+        // Initialiser le menu Options
+        initOptionsMenu();
+        
         console.log('✅ Mapper: UI initialisée');
+    }
+    
+    /**
+     * Initialise le menu Options avec le dark mode
+     */
+    function initOptionsMenu() {
+        const toggleDarkMode = document.getElementById('toggle-dark-mode');
+        const darkModeCheck = document.getElementById('dark-mode-check');
+        const gameContainer = document.getElementById('game-container');
+        const mapContainer = document.getElementById('map-container');
+        
+        // Charger l'état du dark mode depuis le localStorage
+        const isDarkMode = localStorage.getItem('mapper-dark-mode') === 'true';
+        if (isDarkMode) {
+            enableDarkMode();
+        }
+        
+        if (toggleDarkMode) {
+            toggleDarkMode.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isCurrentlyDark = document.body.classList.contains('dark-mode');
+                
+                if (isCurrentlyDark) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+        }
+        
+        function enableDarkMode() {
+            document.body.classList.add('dark-mode');
+            if (gameContainer) gameContainer.classList.add('dark-mode');
+            if (mapContainer) mapContainer.classList.add('dark-mode');
+            if (darkModeCheck) darkModeCheck.textContent = '☑';
+            localStorage.setItem('mapper-dark-mode', 'true');
+            console.log('🌙 Mode sombre activé');
+        }
+        
+        function disableDarkMode() {
+            document.body.classList.remove('dark-mode');
+            if (gameContainer) gameContainer.classList.remove('dark-mode');
+            if (mapContainer) mapContainer.classList.remove('dark-mode');
+            if (darkModeCheck) darkModeCheck.textContent = '☐';
+            localStorage.setItem('mapper-dark-mode', 'false');
+            console.log('☀️ Mode clair activé');
+        }
+        
+        // Fermer le menu dropdown quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            const optionsBtn = document.getElementById('btn-options');
+            if (optionsBtn && !optionsBtn.contains(e.target)) {
+                optionsBtn.classList.remove('menu-open');
+            }
+        });
+    }
+    
+    /**
+     * Initialise la modale des règles (pause)
+     */
+    function initRulesModal() {
+        const rulesContent = document.getElementById('rules-content');
+        const rulesOverlay = document.getElementById('rules-modal-overlay');
+        
+        if (rulesContent) {
+            // Peupler le contenu des règles
+            rulesContent.innerHTML = `
+                <div class="rules-section">
+                    <h3>🎯 Objectif</h3>
+                    <p>Replacez les noms des pays sur la carte du monde en les faisant correspondre à leur emplacement géographique.</p>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>🕹️ Comment jouer</h3>
+                    <ul>
+                        <li><strong>Sélectionnez</strong> un ou plusieurs labels dans la liste à droite (ils s'illuminent en bleu)</li>
+                        <li><strong>Cliquez</strong> sur le pays correspondant sur la carte</li>
+                        <li>Si c'est correct : le pays devient <span style="color:#00ff00">vert</span> et le label est placé</li>
+                        <li>Si c'est incorrect : le pays clignote en <span style="color:#ff4444">rouge</span> (ou <span style="color:#ff9900">orange</span> si vous êtes proche)</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>🔥 GEO-COMBO</h3>
+                    <p>Sélectionnez les <strong>3 labels</strong> en même temps pour activer le mode GEO-COMBO !</p>
+                    <ul>
+                        <li>Placez les 3 pays correctement sans erreur pour obtenir un <strong>bonus de points</strong></li>
+                        <li>Attention : une seule erreur annule le combo et mélange les labels !</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>📊 Points</h3>
+                    <ul>
+                        <li><span style="color:#00ff00">+1</span> : pays facile</li>
+                        <li><span style="color:#ff9900">+3</span> : pays moyen</li>
+                        <li><span style="color:#ff00ff">+5</span> : pays difficile</li>
+                        <li><span style="color:#ff4444">+9</span> : pays difficile en GEO-COMBO !</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3>⌨️ Raccourcis</h3>
+                    <ul>
+                        <li><strong>Espace</strong> : Pause / Reprendre</li>
+                        <li><strong>Molette</strong> : Zoom sur la carte</li>
+                        <li><strong>Échap</strong> : Fermer les modales</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Fermer avec Escape
+        if (rulesOverlay) {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && rulesOverlay.classList.contains('visible')) {
+                    setPause(false);
+                }
+            });
+            
+            // Fermer en cliquant sur l'overlay
+            rulesOverlay.addEventListener('click', (e) => {
+                if (e.target === rulesOverlay) {
+                    setPause(false);
+                }
+            });
+        }
     }
     
     /**
@@ -516,6 +702,9 @@
         // Réinitialiser le zoom
         resetZoom();
         
+        // Démarrer les animations d'avion
+        startPlaneAnimations();
+        
         // Mettre à jour l'interface
         updateGameState('playing');
         
@@ -562,6 +751,7 @@
         
         GameState.isPlaying = false;
         stopTimer();
+        stopPlaneAnimations();
         updateGameState('finished');
         
         // Afficher le score final
@@ -725,7 +915,7 @@
         const hardDescEl = document.getElementById('difficulty-hard-desc');
         
         if (easyLabelEl) {
-            easyLabelEl.textContent = lang === 'FR' ? 'Facile' : 'Easy';
+            easyLabelEl.textContent = lang === 'FR' ? 'Normal' : 'Regular';
         }
         if (easyDescEl) {
             easyDescEl.textContent = lang === 'FR' 
@@ -737,8 +927,8 @@
         }
         if (hardDescEl) {
             hardDescEl.textContent = lang === 'FR' 
-                ? 'Vous devez trouver les pays et les îles' 
-                : 'You must find both countries and islands';
+                ? 'Vous devez trouver les pays et les îles. (PC recommandé ou tablette)' 
+                : 'You have to find countries and islands. (PC or tablet recommended)';
         }
     }
     
@@ -1077,84 +1267,62 @@
         const zoomState = GameState.zoom;
         
         /**
-         * Zoom vers le point de la souris (comme Google Maps)
-         * Le point sous le curseur reste fixe pendant le zoom
-         * 
-         * Algorithme:
-         * 1. Calculer la position de la souris dans le conteneur
-         * 2. Calculer quelle coordonnée SVG est sous cette position (tenant compte du scroll et scale)
-         * 3. Appliquer le nouveau scale
-         * 4. Calculer le nouveau scroll pour que la même coordonnée SVG reste sous la souris
+         * Applique le zoom en conservant un point fixe (sous le curseur/centre du pinch)
+         * Utilise translate + scale pour un contrôle précis
          */
-        function zoomToPoint(newScale, clientX, clientY) {
+        function applyZoom(newScale, focalX, focalY) {
             const oldScale = zoomState.scale;
-            
-            // S'assurer que les scales sont valides
             if (!oldScale || oldScale <= 0) {
                 console.warn('⚠️ oldScale invalide, reset à 1');
                 zoomState.scale = 1;
-                return zoomToPoint(newScale, clientX, clientY);
+                return applyZoom(newScale, focalX, focalY);
             }
             
-            // Position de la souris relative au conteneur
+            // Clamp newScale
+            newScale = Math.max(CONFIG.zoom.min, Math.min(CONFIG.zoom.max, newScale));
+            if (newScale === oldScale) return;
+            
+            // Position du point focal dans le conteneur (relative au scroll)
             const containerRect = container.getBoundingClientRect();
-            const mouseX = clientX - containerRect.left;
-            const mouseY = clientY - containerRect.top;
+            const pointInContainerX = focalX - containerRect.left + container.scrollLeft;
+            const pointInContainerY = focalY - containerRect.top + container.scrollTop;
             
-            // Vérifier que la souris est dans le conteneur
-            if (mouseX < 0 || mouseY < 0 || mouseX > containerRect.width || mouseY > containerRect.height) {
-                console.warn('⚠️ Souris hors du conteneur');
-                return;
-            }
+            // Position du point focal dans le SVG (coordonnées non-scalées)
+            const pointInSvgX = pointInContainerX / oldScale;
+            const pointInSvgY = pointInContainerY / oldScale;
             
-            // Sauvegarder les valeurs avant modification
-            const oldScrollLeft = container.scrollLeft;
-            const oldScrollTop = container.scrollTop;
+            // Nouvelle position du point focal après le nouveau scale
+            const newPointInContainerX = pointInSvgX * newScale;
+            const newPointInContainerY = pointInSvgY * newScale;
             
-            // Position absolue dans le contenu scrollé (à l'échelle actuelle)
-            const contentX = oldScrollLeft + mouseX;
-            const contentY = oldScrollTop + mouseY;
-            
-            // Coordonnées dans le SVG original (non-zoomé)
-            const svgX = contentX / oldScale;
-            const svgY = contentY / oldScale;
+            // Différence de scroll nécessaire pour garder le point focal fixe
+            const scrollDiffX = newPointInContainerX - pointInContainerX;
+            const scrollDiffY = newPointInContainerY - pointInContainerY;
             
             // Appliquer le nouveau scale
             zoomState.scale = newScale;
             svg.style.transform = `scale(${newScale})`;
+            svg.style.transformOrigin = '0 0';
             
-            // Calculer la nouvelle position de ce point SVG après zoom
-            const newContentX = svgX * newScale;
-            const newContentY = svgY * newScale;
+            // Ajuster le scroll pour compenser
+            container.scrollLeft += scrollDiffX;
+            container.scrollTop += scrollDiffY;
             
-            // Calculer le nouveau scroll
-            const newScrollLeft = newContentX - mouseX;
-            const newScrollTop = newContentY - mouseY;
-            
-            // Appliquer le scroll (avec clamp pour éviter les valeurs négatives)
-            container.scrollLeft = Math.max(0, newScrollLeft);
-            container.scrollTop = Math.max(0, newScrollTop);
+            console.log(`🔍 Zoom: ${Math.round(newScale * 100)}%`);
         }
         
-        // Zoom avec la molette
+        // Zoom avec la molette (PC)
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             
-            // Calculer le nouveau scale
             const direction = e.deltaY > 0 ? -1 : 1;
-            const newScale = Math.max(
-                CONFIG.zoom.min,
-                Math.min(CONFIG.zoom.max, zoomState.scale + direction * CONFIG.zoom.step)
-            );
+            const newScale = zoomState.scale + direction * CONFIG.zoom.step;
             
-            if (newScale !== zoomState.scale) {
-                zoomToPoint(newScale, e.clientX, e.clientY);
-                console.log(`🔍 Zoom: ${Math.round(newScale * 100)}%`);
-            }
+            applyZoom(newScale, e.clientX, e.clientY);
             
         }, { passive: false });
         
-        // Pan avec clic gauche maintenu (bouton molette ou clic normal)
+        // Pan avec clic gauche maintenu (PC)
         container.addEventListener('mousedown', (e) => {
             // Ignorer si on clique sur un label sélectionnable
             if (e.target.closest('.country-label.selectable')) return;
@@ -1196,29 +1364,89 @@
             }
         });
         
-        // Support tactile pour le pan
+        // ===== SUPPORT TACTILE (MOBILE) =====
         let touchStartX, touchStartY;
+        let initialPinchDistance = null;
+        let initialPinchScale = null;
+        let pinchCenterX, pinchCenterY;
         
         container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
+                // Pan avec 1 doigt
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
                 zoomState.scrollLeft = container.scrollLeft;
                 zoomState.scrollTop = container.scrollTop;
+                initialPinchDistance = null;
+            } else if (e.touches.length === 2) {
+                // Début du pinch-to-zoom
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                
+                // Distance initiale entre les deux doigts
+                initialPinchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                initialPinchScale = zoomState.scale;
+                
+                // Centre du pinch (point focal)
+                pinchCenterX = (touch1.clientX + touch2.clientX) / 2;
+                pinchCenterY = (touch1.clientY + touch2.clientY) / 2;
             }
-        }, { passive: true });
+        }, { passive: false });
         
         container.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1 && touchStartX !== undefined) {
+            if (e.touches.length === 1 && initialPinchDistance === null) {
+                // Pan avec 1 doigt (pas de pinch en cours)
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
                 
                 container.scrollLeft = zoomState.scrollLeft - dx;
                 container.scrollTop = zoomState.scrollTop - dy;
+            } else if (e.touches.length === 2 && initialPinchDistance !== null) {
+                // Pinch-to-zoom avec 2 doigts
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                
+                // Nouvelle distance entre les doigts
+                const currentDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                
+                // Calculer le nouveau scale basé sur le ratio des distances
+                const scaleRatio = currentDistance / initialPinchDistance;
+                const newScale = initialPinchScale * scaleRatio;
+                
+                // Nouveau centre du pinch
+                const newCenterX = (touch1.clientX + touch2.clientX) / 2;
+                const newCenterY = (touch1.clientY + touch2.clientY) / 2;
+                
+                // Appliquer le zoom centré sur le point focal
+                applyZoom(newScale, newCenterX, newCenterY);
+            }
+        }, { passive: false });
+        
+        container.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                // Réinitialiser le pinch
+                initialPinchDistance = null;
+                initialPinchScale = null;
+                
+                // Si on revient à 1 doigt, réinitialiser le pan
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    zoomState.scrollLeft = container.scrollLeft;
+                    zoomState.scrollTop = container.scrollTop;
+                }
             }
         }, { passive: true });
         
-        console.log('✅ Mapper: Zoom/Pan configuré');
+        console.log('✅ Mapper: Zoom/Pan configuré (avec pinch-to-zoom mobile)');
     }
     
     /**
@@ -1631,19 +1859,15 @@
         // Chercher si le pays cliqué correspond à un des labels sélectionnés
         const matchingLabel = GameState.selectedLabels.find(code => checkCountryMatch(code, targetCountryId));
         if (matchingLabel) {
-            // Placement normal
+            // Placement correct
             const labelElement = document.querySelector(`.country-label[data-country-code="${matchingLabel}"]`);
             handleDrop(matchingLabel, targetCountryId, labelElement);
         } else {
-            // Aucun label sélectionné ne correspond à ce pays
-            // Si GEO-COMBO actif, c'est une erreur !
-            if (GameState.geoCombo.active) {
-                // On simule une erreur GEO-COMBO (comme si on avait tenté de placer un label sur le mauvais pays)
-                // On prend arbitrairement le premier label sélectionné pour l'erreur
-                const fakeLabel = GameState.selectedLabels[0];
-                handleDrop(fakeLabel, targetCountryId, null);
-            }
-            // Sinon, ne rien faire
+            // Aucun label sélectionné ne correspond à ce pays → c'est une erreur
+            // On prend le premier label sélectionné pour traiter l'erreur
+            const selectedLabel = GameState.selectedLabels[0];
+            const labelElement = document.querySelector(`.country-label[data-country-code="${selectedLabel}"]`);
+            handleDrop(selectedLabel, targetCountryId, labelElement);
         }
     }
     
@@ -2592,6 +2816,334 @@
     }
 
     /* ========================================================================
+       9. ANIMATION AVION
+       ======================================================================== */
+    
+    let planeAnimationTimeouts = [];
+    
+    /**
+     * Démarre le système d'animation des avions (grand et petit)
+     * Timing grand avion: 20s, puis 50s, puis toutes les 30s
+     * Timing petit avion: 10s avant chaque grand avion (donc 10s, 40s, puis toutes les 30s)
+     */
+    function startPlaneAnimations() {
+        // Nettoyer les timeouts précédents
+        stopPlaneAnimations();
+        
+        // Petit avion après 10 secondes (10s avant le premier grand avion)
+        planeAnimationTimeouts.push(setTimeout(() => {
+            triggerSmallPlaneAnimation();
+        }, 10000));
+        
+        // Premier grand avion après 20 secondes
+        planeAnimationTimeouts.push(setTimeout(() => {
+            triggerPlaneAnimation();
+            
+            // Petit avion après 40 secondes (10s avant le deuxième grand avion à 50s)
+            planeAnimationTimeouts.push(setTimeout(() => {
+                triggerSmallPlaneAnimation();
+            }, 20000)); // 20s après le premier grand avion = 40s total
+            
+            // Deuxième grand avion après 50 secondes (30s après le premier)
+            planeAnimationTimeouts.push(setTimeout(() => {
+                triggerPlaneAnimation();
+                
+                // Ensuite toutes les 30 secondes pour le grand avion
+                const bigPlaneIntervalId = setInterval(() => {
+                    if (GameState.isPlaying && !isPaused) {
+                        triggerPlaneAnimation();
+                    }
+                }, 30000);
+                planeAnimationTimeouts.push(bigPlaneIntervalId);
+                
+                // Petit avion 10s avant chaque grand avion (donc 20s après le précédent grand avion)
+                // Premier après 20s, puis toutes les 30s
+                planeAnimationTimeouts.push(setTimeout(() => {
+                    if (GameState.isPlaying && !isPaused) {
+                        triggerSmallPlaneAnimation();
+                    }
+                    const smallPlaneIntervalId = setInterval(() => {
+                        if (GameState.isPlaying && !isPaused) {
+                            triggerSmallPlaneAnimation();
+                        }
+                    }, 30000);
+                    planeAnimationTimeouts.push(smallPlaneIntervalId);
+                }, 20000));
+                
+            }, 30000));
+            
+        }, 20000));
+        
+        console.log('✈️ Animation avions programmée (grand + petit)');
+    }
+    
+    /**
+     * Arrête toutes les animations d'avion en cours
+     */
+    function stopPlaneAnimations() {
+        planeAnimationTimeouts.forEach(id => {
+            clearTimeout(id);
+            clearInterval(id);
+        });
+        planeAnimationTimeouts = [];
+        
+        // Supprimer les avions en cours d'animation
+        document.querySelectorAll('.flying-plane, .flying-small-plane').forEach(el => el.remove());
+    }
+    
+    /**
+     * Déclenche une animation du petit avion volant entre pays voisins
+     * Ne traverse jamais les océans - uniquement les frontières terrestres
+     * 3x plus lent que le grand avion
+     */
+    function triggerSmallPlaneAnimation() {
+        if (!GameState.isPlaying || isPaused) return;
+        
+        const mapContainer = GameState.elements?.mapContainer;
+        const svg = mapContainer?.querySelector('svg');
+        if (!svg) return;
+        
+        // Récupérer tous les pays de la carte qui ont des voisins terrestres
+        const countries = svg.querySelectorAll('path.country-path');
+        if (countries.length < 2) return;
+        
+        // Créer un mapping countryId -> element
+        const countryMap = new Map();
+        countries.forEach(country => {
+            const id = country.dataset?.countryId;
+            if (id) countryMap.set(id, country);
+        });
+        
+        // Trouver un pays de départ qui a au moins un voisin terrestre présent sur la carte
+        const countriesWithNeighbors = [];
+        countryMap.forEach((element, countryId) => {
+            const neighbors = BORDERS[countryId];
+            if (neighbors && neighbors.length > 0) {
+                // Vérifier qu'au moins un voisin est présent sur la carte
+                const availableNeighbors = neighbors.filter(n => countryMap.has(n));
+                if (availableNeighbors.length > 0) {
+                    countriesWithNeighbors.push({ countryId, element, neighbors: availableNeighbors });
+                }
+            }
+        });
+        
+        if (countriesWithNeighbors.length === 0) {
+            console.log('🛩️ Petit avion: Aucun pays avec voisin terrestre trouvé');
+            return;
+        }
+        
+        // Choisir un pays de départ au hasard
+        const startData = countriesWithNeighbors[Math.floor(Math.random() * countriesWithNeighbors.length)];
+        const startCountry = startData.element;
+        
+        // Choisir un voisin terrestre au hasard
+        const endCountryId = startData.neighbors[Math.floor(Math.random() * startData.neighbors.length)];
+        const endCountry = countryMap.get(endCountryId);
+        
+        if (!endCountry) {
+            console.log('🛩️ Petit avion: Pays voisin non trouvé sur la carte');
+            return;
+        }
+        
+        // Obtenir les positions (centres des pays)
+        const startBBox = startCountry.getBBox();
+        const endBBox = endCountry.getBBox();
+        
+        const startX = startBBox.x + startBBox.width / 2;
+        const startY = startBBox.y + startBBox.height / 2;
+        const endX = endBBox.x + endBBox.width / 2;
+        const endY = endBBox.y + endBBox.height / 2;
+        
+        // Calculer l'angle de rotation pour orienter l'avion
+        const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
+        
+        // Créer l'élément petit avion
+        const plane = document.createElement('img');
+        plane.src = '/assets/mapper-game/mapper_small_plane.png';
+        plane.className = 'flying-small-plane';
+        plane.style.cssText = `
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            z-index: 999;
+            transform-origin: center center;
+            transform: rotate(${angle}deg);
+        `;
+        
+        // Positionner l'avion dans le conteneur SVG
+        const svgRect = svg.getBoundingClientRect();
+        const containerRect = mapContainer.getBoundingClientRect();
+        const viewBox = svg.viewBox.baseVal;
+        
+        const scaleX = svgRect.width / viewBox.width;
+        const scaleY = svgRect.height / viewBox.height;
+        
+        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        
+        plane.style.left = `${screenStartX}px`;
+        plane.style.top = `${screenStartY}px`;
+        
+        mapContainer.appendChild(plane);
+        
+        // Durée de l'animation: 3x plus lent que le grand avion
+        // Grand avion: 6-10s selon distance, petit avion: 18-30s
+        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
+        const baseDuration = Math.min(Math.max(distance * 15, 6000), 10000);
+        const duration = baseDuration * 3; // 3x plus lent
+        
+        // Animation plus simple (pas de montée au milieu car voyage court)
+        const animation = plane.animate([
+            { 
+                left: `${screenStartX}px`, 
+                top: `${screenStartY}px`, 
+                width: '6px', 
+                height: '6px',
+                opacity: 0.5
+            },
+            { 
+                left: `${(screenStartX + screenEndX) / 2}px`, 
+                top: `${(screenStartY + screenEndY) / 2}px`,
+                width: '20px', 
+                height: '20px',
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                left: `${screenEndX}px`, 
+                top: `${screenEndY}px`, 
+                width: '6px', 
+                height: '6px',
+                opacity: 0.5
+            }
+        ], {
+            duration: duration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+        
+        animation.onfinish = () => {
+            plane.remove();
+        };
+        
+        console.log(`🛩️ Petit avion en vol: ${startData.countryId} → ${endCountryId} (voisins terrestres)`);
+    }
+
+    /**
+     * Déclenche une animation d'avion volant d'un pays à un autre
+     */
+    function triggerPlaneAnimation() {
+        if (!GameState.isPlaying || isPaused) return;
+        
+        const mapContainer = GameState.elements?.mapContainer;
+        const svg = mapContainer?.querySelector('svg');
+        if (!svg) return;
+        
+        // Récupérer tous les pays de la carte
+        const countries = svg.querySelectorAll('path.country-path');
+        if (countries.length < 2) return;
+        
+        // Choisir deux pays au hasard (départ et arrivée)
+        const countryArray = Array.from(countries);
+        const startCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        let endCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        
+        // S'assurer que c'est un pays différent
+        while (endCountry === startCountry) {
+            endCountry = countryArray[Math.floor(Math.random() * countryArray.length)];
+        }
+        
+        // Obtenir les positions (centres des pays)
+        const startBBox = startCountry.getBBox();
+        const endBBox = endCountry.getBBox();
+        
+        const startX = startBBox.x + startBBox.width / 2;
+        const startY = startBBox.y + startBBox.height / 2;
+        const endX = endBBox.x + endBBox.width / 2;
+        const endY = endBBox.y + endBBox.height / 2;
+        
+        // Calculer l'angle de rotation pour orienter l'avion
+        // L'image de l'avion pointe vers le haut par défaut, donc on ajoute 90° pour l'orienter correctement
+        const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
+        
+        // Créer l'élément avion
+        const plane = document.createElement('img');
+        plane.src = '/assets/mapper-game/mapper-plane.png';
+        plane.className = 'flying-plane';
+        plane.style.cssText = `
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+            z-index: 1000;
+            transform-origin: center center;
+            transform: rotate(${angle}deg);
+        `;
+        
+        // Positionner l'avion dans le conteneur SVG
+        // Convertir les coordonnées SVG en coordonnées écran
+        const svgRect = svg.getBoundingClientRect();
+        const containerRect = mapContainer.getBoundingClientRect();
+        const viewBox = svg.viewBox.baseVal;
+        
+        const scaleX = svgRect.width / viewBox.width;
+        const scaleY = svgRect.height / viewBox.height;
+        
+        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
+        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        
+        plane.style.left = `${screenStartX}px`;
+        plane.style.top = `${screenStartY}px`;
+        
+        mapContainer.appendChild(plane);
+        
+        // Durée de l'animation (6-10 secondes selon la distance) - plus lent pour un effet réaliste
+        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
+        const duration = Math.min(Math.max(distance * 15, 6000), 10000); // Entre 6 et 10 secondes
+        
+        // Animation avec Web Animations API
+        const animation = plane.animate([
+            { 
+                left: `${screenStartX}px`, 
+                top: `${screenStartY}px`, 
+                width: '8px', 
+                height: '8px',
+                opacity: 0.3
+            },
+            { 
+                left: `${(screenStartX + screenEndX) / 2}px`, 
+                top: `${(screenStartY + screenEndY) / 2 - 30}px`, // Monte un peu au milieu
+                width: '32px', 
+                height: '32px',
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                left: `${screenEndX}px`, 
+                top: `${screenEndY}px`, 
+                width: '8px', 
+                height: '8px',
+                opacity: 0.3
+            }
+        ], {
+            duration: duration,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+        
+        animation.onfinish = () => {
+            plane.remove();
+        };
+        
+        console.log(`✈️ Avion en vol: ${startCountry.dataset?.countryId || 'pays'} → ${endCountry.dataset?.countryId || 'pays'}`);
+    }
+
+    /* ========================================================================
        DÉMARRAGE
        ======================================================================== */
     
@@ -2608,8 +3160,14 @@
         renderMap,
         generateShuffledLabels,
         handleDrop,
+        startTimer,
+        stopTimer,
         getState: () => GameState
     };
+
+    // Connecter les fonctions de timer aux variables globales pour la pause
+    pauseStartTimer = startTimer;
+    pauseStopTimer = stopTimer;
 
     // Lancer l'initialisation
     init();
