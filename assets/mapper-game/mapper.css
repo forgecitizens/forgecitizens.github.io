@@ -971,6 +971,22 @@ body {
     transform: translateY(-20px);
 }
 
+/* Notification GEO-COMBO error - centrée en bas */
+.auto-shuffle-notification.geo-combo-error {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    bottom: 80px;
+}
+
+.auto-shuffle-notification.geo-combo-error.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.auto-shuffle-notification.geo-combo-error.hide {
+    transform: translateX(-50%) translateY(-20px);
+}
+
 .auto-shuffle-icon {
     font-size: 24px;
     animation: shuffleSpin 0.6s ease-in-out 2;

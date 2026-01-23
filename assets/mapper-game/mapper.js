@@ -2161,6 +2161,9 @@ window.addEventListener('keydown', (e) => {
                 if (GameState.geoCombo.consecutiveCorrect === LABELS_DISPLAY_COUNT) {
                     triggerGeoCombo();
                 }
+            } else {
+                // Jouer le son de succès normal (hors GEO-COMBO)
+                playSuccessBellSound();
             }
 
             // Animation de points gagnés
@@ -2313,7 +2316,8 @@ window.addEventListener('keydown', (e) => {
         comboSuccess2: null,
         comboSuccess3: null,
         comboComplete: null,
-        tooBad: null
+        tooBad: null,
+        successBell: null
     };
     
     /**
@@ -2341,6 +2345,27 @@ window.addEventListener('keydown', (e) => {
         // Son quand le GEO-COMBO est interrompu
         SoundCache.tooBad = new Audio('/sounds/mapper%20sounds/too_bad.wav');
         SoundCache.tooBad.volume = 0.5;
+        
+        // Son de succès normal (hors GEO-COMBO)
+        SoundCache.successBell = new Audio('/sounds/mapper%20sounds/success_bell.mp3');
+        SoundCache.successBell.volume = 0.4;
+    }
+    
+    /**
+     * Joue le son de succès normal (hors GEO-COMBO)
+     */
+    function playSuccessBellSound() {
+        try {
+            if (!SoundCache.successBell) {
+                initComboSounds();
+            }
+            SoundCache.successBell.currentTime = 0;
+            SoundCache.successBell.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son success_bell:', err);
+            });
+        } catch (err) {
+            console.warn('⚠️ Erreur audio success_bell:', err);
+        }
     }
     
     /**
@@ -2676,18 +2701,6 @@ window.addEventListener('keydown', (e) => {
                 labelGroup.classList.remove('fading-out');
             }, 500); // Durée de l'animation de fade out
         }, 20000); // 20 secondes
-        
-        // Ajouter un événement de clic sur le pays pour réafficher brièvement le label
-        const allPaths = svg.querySelectorAll(`#${targetId}, .${targetId}`);
-        allPaths.forEach(path => {
-            path.addEventListener('click', (e) => {
-                // Seulement si le pays est correct (vert)
-                if (path.classList.contains('country-correct')) {
-                    e.stopPropagation();
-                    showLabelBriefly(labelGroup);
-                }
-            });
-        });
         
         console.log(`🏷️ Label verrouillé placé: ${countryName} sur ${targetId}`);
     }
