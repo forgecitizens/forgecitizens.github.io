@@ -525,7 +525,9 @@
                 <button class="info-modal-close" id="today-modal-close">×</button>
             </div>
             <div class="info-modal-content">
-                <p id="today-note-content" style="font-size: 1.1em; line-height: 1.6;">Chargement...</p>
+                <ul id="today-note-content" style="font-size: 1.05em; line-height: 1.7; padding-left: 1.2em; margin: 0;">
+                    <li>Chargement...</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -712,9 +714,12 @@
                     // Mettre à jour la note "Aujourd'hui"
                     const noteEl = document.getElementById('today-note-content');
                     if (noteEl && data.global_instability_index && data.global_instability_index.note) {
-                        noteEl.textContent = data.global_instability_index.note;
+                        // Séparer par phrases (. suivi d'espace ou fin) et créer des <li>
+                        const noteText = data.global_instability_index.note;
+                        const sentences = noteText.split(/(?<=[.!?;])\s+/).filter(s => s.trim().length > 0);
+                        noteEl.innerHTML = sentences.map(s => `<li>${s.trim()}</li>`).join('');
                     } else if (noteEl) {
-                        noteEl.textContent = 'Aucune note disponible pour aujourd\'hui.';
+                        noteEl.innerHTML = '<li>Aucune note disponible pour aujourd\'hui.</li>';
                     }
 
                     const value = extractValue(data);
