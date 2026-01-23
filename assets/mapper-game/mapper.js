@@ -2075,13 +2075,13 @@ window.addEventListener('keydown', (e) => {
                     { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.3)`, opacity: 1 },
                     { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1)`, opacity: 0.2 }
                 ], {
-                    duration: 900,
+                    duration: 1800,
                     easing: 'cubic-bezier(0.4,0.8,0.2,1)'
                 });
 
                 setTimeout(() => {
                     anim.remove();
-                }, 950);
+                }, 1850);
 
                 // Effet shake sur la zone de score si 9 points
                 if (points === 9 && geoComboBonus) {

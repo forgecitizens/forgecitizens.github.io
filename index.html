@@ -780,7 +780,9 @@
                 loadVisitorCount();
                 visitorsOverlay.classList.add('show');
                 visitorsPopup.classList.add('show');
-                document.getElementById('startMenu').style.display = 'none';
+                // Fermer le menu Démarrer proprement via les classes
+                document.getElementById('startMenu').classList.remove('show');
+                document.getElementById('startButton').classList.remove('active');
             }
 
             function closeVisitorsPopup() {
