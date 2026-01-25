@@ -1893,6 +1893,11 @@ window.addEventListener('keydown', (e) => {
             const refreshBtn = GameState.elements?.labelsRefreshBtn;
             if (refreshBtn) refreshBtn.style.display = 'none';
             
+            // Terminer la partie après un court délai pour laisser voir le message
+            setTimeout(() => {
+                endGame();
+            }, 1500);
+            
             return;
         }
         
@@ -2928,8 +2933,20 @@ window.addEventListener('keydown', (e) => {
         }
         
         // Chercher par classe (pour les pays multi-territoires)
-        const pathsByClass = svg.querySelectorAll(`.${countryId}`);
-        pathsByClass.forEach(p => paths.push(p));
+        // Gérer les noms avec espaces en utilisant un sélecteur d'attribut
+        try {
+            // Essayer d'abord avec un sélecteur de classe simple (si pas d'espace)
+            if (!countryId.includes(' ')) {
+                const pathsByClass = svg.querySelectorAll(`.${countryId}`);
+                pathsByClass.forEach(p => paths.push(p));
+            } else {
+                // Pour les noms avec espaces, utiliser un sélecteur d'attribut class
+                const pathsByClass = svg.querySelectorAll(`[class="${countryId}"]`);
+                pathsByClass.forEach(p => paths.push(p));
+            }
+        } catch (e) {
+            console.warn(`Sélecteur CSS invalide pour: ${countryId}`);
+        }
         
         if (paths.length === 0) {
             console.warn(`Pays non trouvé pour coloration: ${countryId}`);
@@ -2967,8 +2984,16 @@ window.addEventListener('keydown', (e) => {
         // Trouver le path du pays pour calculer sa position
         let targetPath = svg.getElementById(targetId);
         if (!targetPath) {
-            // Essayer par classe
-            targetPath = svg.querySelector(`.${targetId}`);
+            // Essayer par classe (gérer les noms avec espaces)
+            try {
+                if (!targetId.includes(' ')) {
+                    targetPath = svg.querySelector(`.${targetId}`);
+                } else {
+                    targetPath = svg.querySelector(`[class="${targetId}"]`);
+                }
+            } catch (e) {
+                console.warn(`Sélecteur CSS invalide pour: ${targetId}`);
+            }
         }
         if (!targetPath) return;
         
