@@ -192,31 +192,34 @@
     <!-- Modale de fin de partie -->
     <div class="endgame-modal-overlay" id="endgame-modal-overlay">
         <div class="endgame-modal">
-            <div class="endgame-title" id="endgame-title">🎉 Partie terminée !</div>
+            <div class="endgame-title" id="endgame-title">
+                <img src="/assets/mapper-game/la-geographie.png" alt="" class="endgame-title-icon">
+                <span id="endgame-title-text">Partie terminée !</span>
+            </div>
             <div class="endgame-stats">
                 <div class="endgame-stat">
-                    <span class="endgame-stat-icon">🎯</span>
+                    <img src="/assets/mapper-game/high-score.png" alt="" class="endgame-stat-icon">
                     <span class="endgame-stat-label" id="endgame-score-label">Score</span>
-                    <span class="endgame-stat-value" id="endgame-score">0/0</span>
+                    <span class="endgame-stat-value" id="endgame-score">0</span>
                 </div>
                 <div class="endgame-stat">
-                    <span class="endgame-stat-icon">⏱️</span>
+                    <img src="/assets/mapper-game/time.png" alt="" class="endgame-stat-icon">
                     <span class="endgame-stat-label" id="endgame-time-label">Temps</span>
                     <span class="endgame-stat-value" id="endgame-time">00:00</span>
                 </div>
                 <div class="endgame-stat">
-                    <span class="endgame-stat-icon">❌</span>
+                    <img src="/assets/mapper-game/cancel.png" alt="" class="endgame-stat-icon">
                     <span class="endgame-stat-label" id="endgame-errors-label">Erreurs</span>
                     <span class="endgame-stat-value" id="endgame-errors">0</span>
                 </div>
             </div>
             <div class="endgame-actions">
                 <button class="endgame-btn endgame-btn-primary" id="endgame-restart">
-                    <span class="endgame-btn-icon">🔄</span>
+                    <img src="/assets/mapper-game/refresh.png" alt="" class="endgame-btn-icon">
                     <span class="endgame-btn-text" id="endgame-restart-text">Recommencer</span>
                 </button>
                 <button class="endgame-btn endgame-btn-secondary" id="endgame-change-difficulty">
-                    <span class="endgame-btn-icon">🎯</span>
+                    <img src="/assets/mapper-game/change_lvl.png" alt="" class="endgame-btn-icon">
                     <span class="endgame-btn-text" id="endgame-difficulty-text">Changer de difficulté</span>
                 </button>
             </div>

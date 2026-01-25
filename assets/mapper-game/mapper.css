@@ -1684,11 +1684,21 @@ body {
 }
 
 .endgame-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     font-size: 24px;
     font-weight: bold;
     color: #000080;
     margin-bottom: 24px;
     font-family: var(--font-system);
+}
+
+.endgame-title-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
 }
 
 .endgame-stats {
@@ -1708,7 +1718,9 @@ body {
 }
 
 .endgame-stat-icon {
-    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
     margin-right: 12px;
 }
 
@@ -1770,7 +1782,13 @@ body {
 }
 
 .endgame-btn-icon {
-    font-size: 18px;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.endgame-btn-primary .endgame-btn-icon {
+    filter: invert(1);
 }
 
 /* Animation de fermeture modale fin */
@@ -1793,16 +1811,27 @@ body {
         font-size: 20px;
     }
     
+    .endgame-title-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
     .endgame-stat {
         padding: 10px 12px;
     }
     
     .endgame-stat-icon {
-        font-size: 20px;
+        width: 24px;
+        height: 24px;
     }
     
     .endgame-stat-value {
         font-size: 16px;
+    }
+    
+    .endgame-btn-icon {
+        width: 20px;
+        height: 20px;
     }
 }
 

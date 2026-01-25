@@ -801,15 +801,15 @@ window.addEventListener('keydown', (e) => {
         const stats = GameState.stats;
         
         // Mettre à jour les textes selon la langue
-        const titleEl = document.getElementById('endgame-title');
+        const titleTextEl = document.getElementById('endgame-title-text');
         const scoreLabelEl = document.getElementById('endgame-score-label');
         const timeLabelEl = document.getElementById('endgame-time-label');
         const errorsLabelEl = document.getElementById('endgame-errors-label');
         const restartTextEl = document.getElementById('endgame-restart-text');
         const difficultyTextEl = document.getElementById('endgame-difficulty-text');
         
-        if (titleEl) {
-            titleEl.textContent = lang === 'FR' ? '🎉 Partie terminée !' : '🎉 Game Over!';
+        if (titleTextEl) {
+            titleTextEl.textContent = lang === 'FR' ? 'Partie terminée !' : 'Game Over!';
         }
         if (scoreLabelEl) {
             scoreLabelEl.textContent = lang === 'FR' ? 'Score' : 'Score';
@@ -833,7 +833,7 @@ window.addEventListener('keydown', (e) => {
         const errorsEl = GameState.elements?.endgameErrors;
         
         if (scoreEl) {
-            scoreEl.textContent = `${stats.correctCount}/${stats.totalCountries}`;
+            scoreEl.textContent = `${stats.correctCount}`;
         }
         if (timeEl) {
             timeEl.textContent = formatTime(stats.elapsedTime);
@@ -3141,8 +3141,8 @@ window.addEventListener('keydown', (e) => {
     function updateScoreDisplay() {
         const statusScore = GameState.elements?.statusScore;
         if (statusScore) {
-            const { correctCount, totalCountries } = GameState.stats;
-            statusScore.textContent = `Score: ${correctCount}/${totalCountries}`;
+            const { correctCount } = GameState.stats;
+            statusScore.textContent = `Score: ${correctCount}`;
         }
     }
 
