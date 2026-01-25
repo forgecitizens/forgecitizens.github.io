@@ -16,6 +16,10 @@ function setPause(state) {
     const rulesOverlay = document.getElementById('rules-modal-overlay');
     if (rulesOverlay) {
         if (state) {
+            // Mettre à jour le contenu selon la langue avant d'afficher
+            if (typeof updateRulesContent === 'function') {
+                updateRulesContent();
+            }
             rulesOverlay.classList.add('visible');
         } else {
             rulesOverlay.classList.remove('visible');
@@ -36,6 +40,9 @@ function setPause(state) {
 document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'pause-btn') {
         setPause(!isPaused);
+    }
+    if (e.target && e.target.id === 'rules-btn') {
+        setPause(true);
     }
     if (e.target && e.target.id === 'rules-close-btn') {
         setPause(false);
@@ -533,56 +540,10 @@ window.addEventListener('keydown', (e) => {
      * Initialise la modale des règles (pause)
      */
     function initRulesModal() {
-        const rulesContent = document.getElementById('rules-content');
         const rulesOverlay = document.getElementById('rules-modal-overlay');
         
-        if (rulesContent) {
-            // Peupler le contenu des règles
-            rulesContent.innerHTML = `
-                <div class="rules-section">
-                    <h3>🎯 Objectif</h3>
-                    <p>Replacez les noms des pays sur la carte du monde en les faisant correspondre à leur emplacement géographique.</p>
-                </div>
-                
-                <div class="rules-section">
-                    <h3>🕹️ Comment jouer</h3>
-                    <ul>
-                        <li><strong>Sélectionnez</strong> un ou plusieurs labels dans la liste à droite (ils s'illuminent en bleu)</li>
-                        <li><strong>Cliquez</strong> sur le pays correspondant sur la carte</li>
-                        <li>Si c'est correct : le pays devient <span style="color:#00ff00">vert</span> et le label est placé</li>
-                        <li>Si c'est incorrect : le pays clignote en <span style="color:#ff4444">rouge</span> (ou <span style="color:#ff9900">orange</span> si vous êtes proche)</li>
-                    </ul>
-                </div>
-                
-                <div class="rules-section">
-                    <h3>🔥 GEO-COMBO</h3>
-                    <p>Sélectionnez les <strong>3 labels</strong> en même temps pour activer le mode GEO-COMBO !</p>
-                    <ul>
-                        <li>Placez les 3 pays correctement sans erreur pour obtenir un <strong>bonus de points</strong></li>
-                        <li>Attention : une seule erreur annule le combo et mélange les labels !</li>
-                    </ul>
-                </div>
-                
-                <div class="rules-section">
-                    <h3>📊 Points</h3>
-                    <ul>
-                        <li><span style="color:#00ff00">+1</span> : pays facile</li>
-                        <li><span style="color:#ff9900">+3</span> : pays moyen</li>
-                        <li><span style="color:#ff00ff">+5</span> : pays difficile</li>
-                        <li><span style="color:#ff4444">+9</span> : pays difficile en GEO-COMBO !</li>
-                    </ul>
-                </div>
-                
-                <div class="rules-section">
-                    <h3>⌨️ Raccourcis</h3>
-                    <ul>
-                        <li><strong>Espace</strong> : Pause / Reprendre</li>
-                        <li><strong>Molette</strong> : Zoom sur la carte</li>
-                        <li><strong>Échap</strong> : Fermer les modales</li>
-                    </ul>
-                </div>
-            `;
-        }
+        // Peupler le contenu des règles (sera mis à jour selon la langue)
+        updateRulesContent();
         
         // Fermer avec Escape
         if (rulesOverlay) {
@@ -598,6 +559,119 @@ window.addEventListener('keydown', (e) => {
                     setPause(false);
                 }
             });
+        }
+    }
+    
+    /**
+     * Met à jour le contenu de la modale des règles selon la langue
+     */
+    function updateRulesContent() {
+        const rulesContent = document.getElementById('rules-content');
+        const rulesTitle = document.getElementById('rules-modal-title');
+        const lang = GameState.currentLanguage || 'FR';
+        
+        if (rulesTitle) {
+            rulesTitle.textContent = lang === 'FR' ? 'Règles du jeu' : 'Game Rules';
+        }
+        
+        if (rulesContent) {
+            if (lang === 'FR') {
+                rulesContent.innerHTML = `
+                    <div class="rules-section">
+                        <h3>Objectif</h3>
+                        <p>Le jeu vous propose trois noms de pays et vous devez correctement les placer sur la carte. Plus le pays est difficile à trouver plus vous gagnez de points.</p>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>Comment jouer</h3>
+                        <ul>
+                            <li>Sélectionnez un ou plusieurs pays sur les trois proposés par le jeu</li>
+                            <li>Placez-les correctement sur la carte du monde</li>
+                            <li>Si la réponse est correcte, le pays se colore en <span style="color:#00ff00">vert</span></li>
+                            <li>Si la réponse est incorrecte, le pays se colore en <span style="color:#ff4444">rouge</span></li>
+                            <li>Un pays s'affiche en <span style="color:#ff9900">orange</span> si le pays que vous devez trouver dispose d'une frontière terrestre avec celui-ci</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>GEO-COMBO !</h3>
+                        <ul>
+                            <li>Vous passez automatiquement en mode GEO-COMBO si vous sélectionnez les trois étiquettes proposées par le jeu.</li>
+                            <li>Placez les trois étiquettes sans faire d'erreur pour obtenir <strong>30 secondes au chrono</strong> et un <strong>bonus de points</strong>.</li>
+                        </ul>
+                        <p><strong>Attention !</strong> Une seule erreur pendant le mode GEO-COMBO annule le combo.</p>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>Système de points</h3>
+                        <ul>
+                            <li><span style="color:#00ff00">+1</span> : si vous trouvez un pays facile à identifier sur la carte</li>
+                            <li><span style="color:#ff9900">+3</span> : si vous trouvez un pays plutôt difficile à identifier sur la carte</li>
+                            <li><span style="color:#ff00ff">+5</span> : si vous trouvez un pays difficile à identifier sur la carte</li>
+                            <li><span style="color:#ff4444">+9</span> : si vous trouvez un pays difficile à identifier sur la carte ET que vous êtes en mode GEO-COMBO</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>Touches & raccourcis</h3>
+                        <p><strong>PC/Ordinateur :</strong></p>
+                        <ul>
+                            <li><strong>Espace</strong> : Pause / Reprendre / Règles du jeu</li>
+                            <li><strong>Clic gauche (maintenir)</strong> : Déplacer la carte</li>
+                            <li><strong>Molette Haut/Bas</strong> : Zoom sur la carte</li>
+                            <li><strong>Échap</strong> : Fermer la fenêtre affichée</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                rulesContent.innerHTML = `
+                    <div class="rules-section">
+                        <h3>Objective</h3>
+                        <p>The game offers you three country names and you must correctly place them on the map. The harder the country is to find, the more points you earn.</p>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>How to play</h3>
+                        <ul>
+                            <li>Select one or more countries from the three offered by the game</li>
+                            <li>Place them correctly on the world map</li>
+                            <li>If the answer is correct, the country turns <span style="color:#00ff00">green</span></li>
+                            <li>If the answer is incorrect, the country turns <span style="color:#ff4444">red</span></li>
+                            <li>A country appears in <span style="color:#ff9900">orange</span> if the country you need to find shares a land border with it</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>GEO-COMBO!</h3>
+                        <ul>
+                            <li>You automatically enter GEO-COMBO mode if you select all three labels offered by the game.</li>
+                            <li>Place all three labels without making an error to get <strong>30 seconds on the timer</strong> and a <strong>point bonus</strong>.</li>
+                        </ul>
+                        <p><strong>Warning!</strong> A single error during GEO-COMBO mode cancels the combo.</p>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>Point system</h3>
+                        <ul>
+                            <li><span style="color:#00ff00">+1</span>: if you find a country that is easy to identify on the map</li>
+                            <li><span style="color:#ff9900">+3</span>: if you find a country that is somewhat difficult to identify on the map</li>
+                            <li><span style="color:#ff00ff">+5</span>: if you find a country that is difficult to identify on the map</li>
+                            <li><span style="color:#ff4444">+9</span>: if you find a difficult country AND you are in GEO-COMBO mode</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rules-section">
+                        <h3>Keys & shortcuts</h3>
+                        <p><strong>PC/Computer:</strong></p>
+                        <ul>
+                            <li><strong>Space</strong>: Pause / Resume / Game rules</li>
+                            <li><strong>Left click (hold)</strong>: Move the map</li>
+                            <li><strong>Scroll Up/Down</strong>: Zoom on the map</li>
+                            <li><strong>Escape</strong>: Close the displayed window</li>
+                        </ul>
+                    </div>
+                `;
+            }
         }
     }
     
@@ -3843,8 +3917,12 @@ window.addEventListener('keydown', (e) => {
         handleDrop,
         startTimer,
         stopTimer,
+        updateRulesContent,
         getState: () => GameState
     };
+    
+    // Exposer updateRulesContent globalement pour setPause
+    window.updateRulesContent = updateRulesContent;
 
     // Connecter les fonctions de timer aux variables globales pour la pause
     pauseStartTimer = startTimer;
