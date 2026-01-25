@@ -1845,7 +1845,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('../img/ui/wallpaper_map.jpg') center center / cover no-repeat;
+    background: url('wallpaper_map.jpg') center center / cover no-repeat;
     display: flex;
     flex-direction: column;
     align-items: center;
