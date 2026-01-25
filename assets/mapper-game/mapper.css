@@ -1996,7 +1996,7 @@ body {
 }
 
 .credits-section h3 {
-    font-size: 13px;
+    font-size: 16px;
     color: #000080;
     margin: 0 0 12px 0;
     padding-bottom: 6px;
@@ -2014,7 +2014,7 @@ body {
     border: 1px inset var(--win98-border-dark);
     padding: 10px 12px;
     margin-bottom: 8px;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -2048,7 +2048,7 @@ body {
 .credits-license {
     color: #666;
     font-style: italic;
-    font-size: 10px;
+    font-size: 12px;
 }
 
 /* Styles pour les règles du jeu */
@@ -2068,7 +2068,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 16px;
     color: #000080;
     margin: 0 0 8px 0;
 }
@@ -2080,7 +2080,7 @@ body {
 }
 
 .rules-section p {
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.5;
     margin: 0 0 8px 0;
     color: #333;
@@ -2089,7 +2089,7 @@ body {
 .rules-section ul {
     margin: 0;
     padding-left: 20px;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.6;
 }
 
@@ -2129,6 +2129,27 @@ body {
     .credits-modal {
         min-width: auto;
         margin: 16px;
+    }
+    
+    .credits-section h3 {
+        font-size: 14px;
+    }
+    
+    .credits-list li {
+        font-size: 12px;
+    }
+    
+    .credits-license {
+        font-size: 10px;
+    }
+    
+    .rules-section h3 {
+        font-size: 14px;
+    }
+    
+    .rules-section p,
+    .rules-section ul {
+        font-size: 12px;
     }
 }
 
