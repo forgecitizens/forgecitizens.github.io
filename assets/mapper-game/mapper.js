@@ -846,7 +846,173 @@ window.addEventListener('keydown', (e) => {
         const overlay = GameState.elements?.endgameModalOverlay;
         if (overlay) {
             overlay.classList.add('visible');
+            
+            // Jouer le son de fin de partie
+            playEndgameSound();
+            
+            // Lancer l'animation de confettis
+            startConfettiAnimation(overlay);
         }
+    }
+    
+    /**
+     * Joue le son de fin de partie
+     */
+    function playEndgameSound() {
+        try {
+            const endgameSound = new Audio('/sounds/mapper%20sounds/end_game.mp3');
+            endgameSound.volume = 0.6;
+            endgameSound.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son de fin de partie:', err);
+            });
+            console.log('🎵 Son de fin de partie joué');
+        } catch (err) {
+            console.warn('⚠️ Erreur audio fin de partie:', err);
+        }
+    }
+    
+    /**
+     * Lance l'animation de confettis
+     * @param {HTMLElement} container - Le conteneur où afficher les confettis
+     */
+    function startConfettiAnimation(container) {
+        const confettiImages = [
+            '/assets/mapper-game/confettis.png',
+            '/assets/mapper-game/confettis_A.png'
+        ];
+        
+        const confettiCount = 30; // Nombre de confettis
+        const duration = 4000; // Durée de l'animation en ms
+        
+        // Créer un conteneur pour les confettis
+        let confettiContainer = container.querySelector('.confetti-container');
+        if (!confettiContainer) {
+            confettiContainer = document.createElement('div');
+            confettiContainer.className = 'confetti-container';
+            confettiContainer.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                overflow: hidden;
+                z-index: 1000;
+            `;
+            container.appendChild(confettiContainer);
+        } else {
+            // Vider les confettis précédents
+            confettiContainer.innerHTML = '';
+        }
+        
+        // Générer les confettis avec un délai aléatoire
+        for (let i = 0; i < confettiCount; i++) {
+            setTimeout(() => {
+                createConfetti(confettiContainer, confettiImages, duration);
+            }, Math.random() * 1500); // Étaler sur 1.5 secondes
+        }
+        
+        // Nettoyer le conteneur après la fin des animations
+        setTimeout(() => {
+            if (confettiContainer && confettiContainer.parentNode) {
+                confettiContainer.innerHTML = '';
+            }
+        }, duration + 2000);
+    }
+    
+    /**
+     * Crée un confetti individuel
+     * @param {HTMLElement} container - Le conteneur des confettis
+     * @param {string[]} images - Les images de confettis disponibles
+     * @param {number} duration - Durée de l'animation
+     */
+    function createConfetti(container, images, duration) {
+        const confetti = document.createElement('img');
+        
+        // Choisir une image aléatoirement
+        confetti.src = images[Math.floor(Math.random() * images.length)];
+        confetti.className = 'confetti-piece';
+        
+        // Position horizontale aléatoire
+        const startX = Math.random() * 100;
+        
+        // Taille aléatoire (entre 20px et 40px)
+        const size = 20 + Math.random() * 20;
+        
+        // Déterminer si ce confetti doit tourner
+        const shouldRotate = Math.random() > 0.4; // 60% de chance de rotation
+        const rotationSpeed = shouldRotate ? (1 + Math.random() * 3) : 0; // Vitesse de rotation
+        const rotationDirection = Math.random() > 0.5 ? 1 : -1; // Sens de rotation
+        
+        // Décalage horizontal pendant la chute (effet de flottement)
+        const horizontalDrift = (Math.random() - 0.5) * 30;
+        
+        // Durée individuelle (variation autour de la durée de base)
+        const individualDuration = duration * (0.7 + Math.random() * 0.6);
+        
+        confetti.style.cssText = `
+            position: absolute;
+            top: -50px;
+            left: ${startX}%;
+            width: ${size}px;
+            height: ${size}px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 1001;
+        `;
+        
+        container.appendChild(confetti);
+        
+        // Animation de chute avec keyframes
+        const keyframes = shouldRotate ? [
+            { 
+                transform: `translateY(0) translateX(0) rotate(0deg)`, 
+                opacity: 1 
+            },
+            { 
+                transform: `translateY(25vh) translateX(${horizontalDrift * 0.3}px) rotate(${rotationDirection * rotationSpeed * 120}deg)`, 
+                opacity: 1,
+                offset: 0.25
+            },
+            { 
+                transform: `translateY(50vh) translateX(${horizontalDrift * 0.6}px) rotate(${rotationDirection * rotationSpeed * 240}deg)`, 
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                transform: `translateY(75vh) translateX(${horizontalDrift * 0.9}px) rotate(${rotationDirection * rotationSpeed * 360}deg)`, 
+                opacity: 0.8,
+                offset: 0.75
+            },
+            { 
+                transform: `translateY(100vh) translateX(${horizontalDrift}px) rotate(${rotationDirection * rotationSpeed * 480}deg)`, 
+                opacity: 0 
+            }
+        ] : [
+            { 
+                transform: `translateY(0) translateX(0)`, 
+                opacity: 1 
+            },
+            { 
+                transform: `translateY(50vh) translateX(${horizontalDrift * 0.5}px)`, 
+                opacity: 1,
+                offset: 0.5
+            },
+            { 
+                transform: `translateY(100vh) translateX(${horizontalDrift}px)`, 
+                opacity: 0 
+            }
+        ];
+        
+        const animation = confetti.animate(keyframes, {
+            duration: individualDuration,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fill: 'forwards'
+        });
+        
+        animation.onfinish = () => {
+            confetti.remove();
+        };
     }
     
     /**
@@ -855,6 +1021,12 @@ window.addEventListener('keydown', (e) => {
     function hideEndgameModal() {
         const overlay = GameState.elements?.endgameModalOverlay;
         if (overlay) {
+            // Nettoyer les confettis
+            const confettiContainer = overlay.querySelector('.confetti-container');
+            if (confettiContainer) {
+                confettiContainer.innerHTML = '';
+            }
+            
             overlay.classList.add('closing');
             setTimeout(() => {
                 overlay.classList.remove('visible', 'closing');
