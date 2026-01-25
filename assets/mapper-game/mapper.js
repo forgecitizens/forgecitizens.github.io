@@ -587,9 +587,9 @@ window.addEventListener('keydown', (e) => {
                         <ul>
                             <li>Sélectionnez un ou plusieurs pays sur les trois proposés par le jeu</li>
                             <li>Placez-les correctement sur la carte du monde</li>
-                            <li>Si la réponse est correcte, le pays se colore en <span style="color:#00ff00">vert</span></li>
-                            <li>Si la réponse est incorrecte, le pays se colore en <span style="color:#ff4444">rouge</span></li>
-                            <li>Un pays s'affiche en <span style="color:#ff9900">orange</span> si le pays que vous devez trouver dispose d'une frontière terrestre avec celui-ci</li>
+                            <li>Si la réponse est correcte, le pays se colore en <span style="color:#228B22">vert</span></li>
+                            <li>Si la réponse est incorrecte, le pays se colore en <span style="color:#CC0000">rouge</span></li>
+                            <li>Un pays s'affiche en <span style="color:#CC7000">orange</span> si le pays que vous devez trouver dispose d'une frontière terrestre avec celui-ci</li>
                         </ul>
                     </div>
                     
@@ -605,10 +605,10 @@ window.addEventListener('keydown', (e) => {
                     <div class="rules-section">
                         <h3><img src="/assets/mapper-game/person.png" alt="" class="rules-icon"> Système de points</h3>
                         <ul>
-                            <li><span style="color:#00ff00">+1</span> : si vous trouvez un pays facile à identifier sur la carte</li>
-                            <li><span style="color:#ff9900">+3</span> : si vous trouvez un pays plutôt difficile à identifier sur la carte</li>
-                            <li><span style="color:#ff00ff">+5</span> : si vous trouvez un pays difficile à identifier sur la carte</li>
-                            <li><span style="color:#ff4444">+9</span> : si vous trouvez un pays difficile à identifier sur la carte ET que vous êtes en mode GEO-COMBO</li>
+                            <li><span style="color:#228B22">+1</span> : si vous trouvez un pays facile à identifier sur la carte</li>
+                            <li><span style="color:#CC7000">+3</span> : si vous trouvez un pays plutôt difficile à identifier sur la carte</li>
+                            <li><span style="color:#9932CC">+5</span> : si vous trouvez un pays difficile à identifier sur la carte</li>
+                            <li><span style="color:#CC0000">+9</span> : si vous trouvez un pays difficile à identifier sur la carte ET que vous êtes en mode GEO-COMBO</li>
                         </ul>
                     </div>
                     
@@ -635,9 +635,9 @@ window.addEventListener('keydown', (e) => {
                         <ul>
                             <li>Select one or more countries from the three offered by the game</li>
                             <li>Place them correctly on the world map</li>
-                            <li>If the answer is correct, the country turns <span style="color:#00ff00">green</span></li>
-                            <li>If the answer is incorrect, the country turns <span style="color:#ff4444">red</span></li>
-                            <li>A country appears in <span style="color:#ff9900">orange</span> if the country you need to find shares a land border with it</li>
+                            <li>If the answer is correct, the country turns <span style="color:#228B22">green</span></li>
+                            <li>If the answer is incorrect, the country turns <span style="color:#CC0000">red</span></li>
+                            <li>A country appears in <span style="color:#CC7000">orange</span> if the country you need to find shares a land border with it</li>
                         </ul>
                     </div>
                     
@@ -653,10 +653,10 @@ window.addEventListener('keydown', (e) => {
                     <div class="rules-section">
                         <h3><img src="/assets/mapper-game/person.png" alt="" class="rules-icon"> Point system</h3>
                         <ul>
-                            <li><span style="color:#00ff00">+1</span>: if you find a country that is easy to identify on the map</li>
-                            <li><span style="color:#ff9900">+3</span>: if you find a country that is somewhat difficult to identify on the map</li>
-                            <li><span style="color:#ff00ff">+5</span>: if you find a country that is difficult to identify on the map</li>
-                            <li><span style="color:#ff4444">+9</span>: if you find a difficult country AND you are in GEO-COMBO mode</li>
+                            <li><span style="color:#228B22">+1</span>: if you find a country that is easy to identify on the map</li>
+                            <li><span style="color:#CC7000">+3</span>: if you find a country that is somewhat difficult to identify on the map</li>
+                            <li><span style="color:#9932CC">+5</span>: if you find a country that is difficult to identify on the map</li>
+                            <li><span style="color:#CC0000">+9</span>: if you find a difficult country AND you are in GEO-COMBO mode</li>
                         </ul>
                     </div>
                     
