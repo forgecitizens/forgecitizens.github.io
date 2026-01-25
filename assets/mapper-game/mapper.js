@@ -606,15 +606,25 @@ window.addEventListener('keydown', (e) => {
      */
     function initCreditsModal() {
         const btnCredits = document.getElementById('btn-credits');
+        const creditsToolbarBtn = document.getElementById('credits-toolbar-btn');
         const creditsOverlay = document.getElementById('credits-modal-overlay');
         const creditsCloseBtn = document.getElementById('credits-close-btn');
         
+        // Ouvrir la modale depuis le menu "Crédits"
         if (btnCredits && creditsOverlay) {
-            // Ouvrir la modale au clic sur "Crédits"
             btnCredits.addEventListener('click', () => {
                 showCreditsModal();
             });
-            
+        }
+        
+        // Ouvrir la modale depuis le bouton toolbar "Crédits"
+        if (creditsToolbarBtn && creditsOverlay) {
+            creditsToolbarBtn.addEventListener('click', () => {
+                showCreditsModal();
+            });
+        }
+        
+        if (creditsOverlay) {
             // Fermer via le bouton X
             if (creditsCloseBtn) {
                 creditsCloseBtn.addEventListener('click', () => {
@@ -643,6 +653,19 @@ window.addEventListener('keydown', (e) => {
      */
     function showCreditsModal() {
         const creditsOverlay = document.getElementById('credits-modal-overlay');
+        const creditsTitle = document.getElementById('credits-modal-title');
+        const creditsToolbarBtn = document.getElementById('credits-toolbar-btn');
+        
+        // Mettre à jour le titre selon la langue
+        if (creditsTitle) {
+            creditsTitle.textContent = GameState.currentLanguage === 'FR' ? 'Crédits' : 'Credits';
+        }
+        
+        // Mettre à jour le texte du bouton toolbar selon la langue
+        if (creditsToolbarBtn) {
+            creditsToolbarBtn.textContent = GameState.currentLanguage === 'FR' ? 'Crédits' : 'Credits';
+        }
+        
         if (creditsOverlay) {
             creditsOverlay.classList.add('visible');
             // Arrêter le son GEO-COMBO si actif
