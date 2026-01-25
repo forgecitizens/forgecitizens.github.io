@@ -2564,13 +2564,46 @@ window.addEventListener('keydown', (e) => {
      */
     function normalizeCountryId(countryId) {
         const classToCodeMap = {
-            'Angola': 'AO', 'Argentina': 'AR', 'Australia': 'AU', 'Azerbaijan': 'AZ',
-            'Canada': 'CA', 'Chile': 'CL', 'China': 'CN', 'Croatia': 'HR',
-            'Denmark': 'DK', 'Ecuador': 'EC', 'Equatorial': 'GQ', 'France': 'FR',
-            'Greece': 'GR', 'India': 'IN', 'Indonesia': 'ID', 'Italy': 'IT',
-            'Japan': 'JP', 'Malaysia': 'MY', 'New': 'NZ', 'Norway': 'NO',
-            'Oman': 'OM', 'Philippines': 'PH', 'Portugal': 'PT', 'Russia': 'RU',
-            'South': 'ZA', 'Spain': 'ES', 'United': 'US', 'USA': 'US'
+            // Pays multi-territoires avec classes dans le SVG
+            'Angola': 'AO',
+            'Argentina': 'AR',
+            'Australia': 'AU',
+            'Azerbaijan': 'AZ',
+            'Bahamas': 'BS',
+            'Canada': 'CA',
+            'Cape Verde': 'CV',
+            'Chile': 'CL',
+            'China': 'CN',
+            'Comoros': 'KM',
+            'Cyprus': 'CY',
+            'Denmark': 'DK',
+            'Fiji': 'FJ',
+            'France': 'FR',
+            'Greece': 'GR',
+            'Indonesia': 'ID',
+            'Italy': 'IT',
+            'Japan': 'JP',
+            'Malaysia': 'MY',
+            'Malta': 'MT',
+            'Mauritius': 'MU',
+            'New Zealand': 'NZ',
+            'Norway': 'NO',
+            'Oman': 'OM',
+            'Papua New Guinea': 'PG',
+            'Philippines': 'PH',
+            'Russian Federation': 'RU',
+            'Samoa': 'WS',
+            'Seychelles': 'SC',
+            'Solomon Islands': 'SB',
+            'Tonga': 'TO',
+            'Trinidad and Tobago': 'TT',
+            'Turkey': 'TR',
+            'United Kingdom': 'GB',
+            'United States': 'US',
+            'Vanuatu': 'VU',
+            // Anciens mappings partiels conservés pour compatibilité
+            'USA': 'US',
+            'Russia': 'RU'
         };
         return classToCodeMap[countryId] || countryId;
     }
@@ -2738,37 +2771,49 @@ window.addEventListener('keydown', (e) => {
             return true;
         }
         
-        // Pour les pays multi-territoires, le targetId peut être le nom du pays
+        // Pour les pays multi-territoires, le targetId peut être le nom du pays (classe SVG)
         // On doit mapper les noms de classe aux codes ISO
         const classToCodeMap = {
+            // Pays multi-territoires avec classes dans le SVG
             'Angola': 'AO',
             'Argentina': 'AR',
             'Australia': 'AU',
             'Azerbaijan': 'AZ',
+            'Bahamas': 'BS',
             'Canada': 'CA',
+            'Cape Verde': 'CV',
             'Chile': 'CL',
             'China': 'CN',
-            'Croatia': 'HR',
+            'Comoros': 'KM',
+            'Cyprus': 'CY',
             'Denmark': 'DK',
-            'Ecuador': 'EC',
-            'Equatorial': 'GQ', // Equatorial Guinea
+            'Fiji': 'FJ',
             'France': 'FR',
             'Greece': 'GR',
-            'India': 'IN',
             'Indonesia': 'ID',
             'Italy': 'IT',
             'Japan': 'JP',
             'Malaysia': 'MY',
-            'New': 'NZ', // New Zealand
+            'Malta': 'MT',
+            'Mauritius': 'MU',
+            'New Zealand': 'NZ',
             'Norway': 'NO',
             'Oman': 'OM',
+            'Papua New Guinea': 'PG',
             'Philippines': 'PH',
-            'Portugal': 'PT',
-            'Russia': 'RU',
-            'South': 'ZA', // South Africa (mais pourrait être South Korea...)
-            'Spain': 'ES',
-            'United': 'US', // United States (mais pourrait être UK...)
-            'USA': 'US'
+            'Russian Federation': 'RU',
+            'Samoa': 'WS',
+            'Seychelles': 'SC',
+            'Solomon Islands': 'SB',
+            'Tonga': 'TO',
+            'Trinidad and Tobago': 'TT',
+            'Turkey': 'TR',
+            'United Kingdom': 'GB',
+            'United States': 'US',
+            'Vanuatu': 'VU',
+            // Anciens mappings partiels conservés pour compatibilité
+            'USA': 'US',
+            'Russia': 'RU'
         };
         
         // Vérifier si le targetId est un nom de classe connu
