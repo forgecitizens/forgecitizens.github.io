@@ -331,7 +331,10 @@ window.addEventListener('keydown', (e) => {
         },
         
         // Compteur d'erreurs consécutives (pour auto-shuffle)
-        consecutiveErrors: 0
+        consecutiveErrors: 0,
+        
+        // Timer d'inactivité (pour effet shake du bouton shuffle)
+        inactivityTimer: null
     };
 
     /* ========================================================================
@@ -705,6 +708,9 @@ window.addEventListener('keydown', (e) => {
         // Démarrer les animations d'avion
         startPlaneAnimations();
         
+        // Démarrer le timer d'inactivité
+        resetInactivityTimer();
+        
         // Mettre à jour l'interface
         updateGameState('playing');
         
@@ -736,9 +742,11 @@ window.addEventListener('keydown', (e) => {
         
         if (GameState.isPaused) {
             stopTimer();
+            stopInactivityTimer();
             updateGameState('paused');
         } else {
             startTimer();
+            resetInactivityTimer();
             updateGameState('playing');
         }
     }
@@ -751,6 +759,7 @@ window.addEventListener('keydown', (e) => {
         
         GameState.isPlaying = false;
         stopTimer();
+        stopInactivityTimer();
         stopPlaneAnimations();
         updateGameState('finished');
         
@@ -1692,6 +1701,9 @@ window.addEventListener('keydown', (e) => {
     function handleRefreshLabels() {
         console.log('🔄 Mapper: Refresh des labels...');
         
+        // Réinitialiser le timer d'inactivité
+        resetInactivityTimer();
+        
         // Animation du bouton
         const refreshBtn = GameState.elements?.labelsRefreshBtn;
         if (refreshBtn) {
@@ -1717,6 +1729,57 @@ window.addEventListener('keydown', (e) => {
             [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
+    }
+    
+    /**
+     * Démarre ou redémarre le timer d'inactivité
+     * Après 15 secondes sans interaction, le bouton shuffle tremble
+     */
+    function resetInactivityTimer() {
+        // Annuler le timer existant
+        if (GameState.inactivityTimer) {
+            clearTimeout(GameState.inactivityTimer);
+        }
+        
+        // Ne pas démarrer si le jeu n'est pas en cours
+        if (!GameState.isPlaying || GameState.isPaused) return;
+        
+        // Démarrer un nouveau timer de 15 secondes
+        GameState.inactivityTimer = setTimeout(() => {
+            triggerShuffleShake();
+        }, 15000);
+    }
+    
+    /**
+     * Déclenche l'effet de tremblement sur le bouton shuffle
+     * Peut se répéter si l'utilisateur reste inactif
+     */
+    function triggerShuffleShake() {
+        const refreshBtn = GameState.elements?.labelsRefreshBtn;
+        if (!refreshBtn || !GameState.isPlaying || GameState.isPaused) return;
+        
+        // Ajouter la classe de tremblement
+        refreshBtn.classList.add('shake');
+        
+        // Retirer la classe après l'animation
+        setTimeout(() => {
+            refreshBtn.classList.remove('shake');
+        }, 500);
+        
+        // Redémarrer le timer pour permettre un nouveau tremblement
+        GameState.inactivityTimer = setTimeout(() => {
+            triggerShuffleShake();
+        }, 15000);
+    }
+    
+    /**
+     * Arrête le timer d'inactivité
+     */
+    function stopInactivityTimer() {
+        if (GameState.inactivityTimer) {
+            clearTimeout(GameState.inactivityTimer);
+            GameState.inactivityTimer = null;
+        }
     }
     
     /**
@@ -1746,6 +1809,9 @@ window.addEventListener('keydown', (e) => {
         e.stopPropagation();
         const label = e.target.closest('.country-label');
         if (!label) return;
+        
+        // Réinitialiser le timer d'inactivité à chaque interaction
+        resetInactivityTimer();
         
         const countryCode = label.dataset.countryCode;
         const isSelected = GameState.selectedLabels.includes(countryCode);
@@ -1873,6 +1939,9 @@ window.addEventListener('keydown', (e) => {
     function handleCountryClick(e) {
         const countryPath = e.target.closest('path.country-path');
         if (!countryPath) return;
+        
+        // Réinitialiser le timer d'inactivité à chaque interaction
+        resetInactivityTimer();
         
         // Vérifier qu'au moins un label est sélectionné
         if (GameState.selectedLabels.length === 0) {

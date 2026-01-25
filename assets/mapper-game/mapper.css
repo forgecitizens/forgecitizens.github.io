@@ -101,13 +101,13 @@
 
 /* Labels dans la liste en mode sombre */
 .dark-mode .country-label {
-    background: var(--label-bg);
-    border-color: var(--label-border);
-    color: var(--label-text);
+    background: #1a1a1a;
+    border-color: #333;
+    color: #ffffff;
 }
 
 .dark-mode .country-label:hover {
-    background: #4a4a5a;
+    background: #333;
 }
 
 .dark-mode .country-label.selected {
@@ -625,12 +625,26 @@ body {
     left: 0;
     right: 0;
     background: var(--win98-bg);
+    background-image: url('/assets/mapper-game/tile-content.png');
+    background-repeat: repeat;
     border-top: 2px outset var(--win98-border-light);
     padding: 8px 12px;
     z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Overlay pour transparence de la texture */
+.labels-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
 }
 
 .labels-pool {
@@ -650,32 +664,36 @@ body {
 
 /* Bouton refresh */
 .labels-refresh-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--win98-bg);
-    border: 2px outset var(--win98-border-light);
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.1s ease;
-    margin-left: 8px;
-    padding: 6px;
+    transition: transform 0.1s ease, background 0.15s ease;
+    margin-left: 12px;
+    padding: 8px;
+    position: relative;
+    z-index: 1;
 }
 
 .labels-refresh-btn .refresh-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: invert(1);
 }
 
 .labels-refresh-btn:hover {
-    background: #d4d4d4;
+    background: #333;
 }
 
 .labels-refresh-btn:active {
-    border-style: inset;
+    background: #000;
 }
 
 .labels-refresh-btn.spinning {
@@ -685,6 +703,17 @@ body {
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* Animation de tremblement pour attirer l'attention */
+.labels-refresh-btn.shake {
+    animation: shuffleShake 0.5s ease-in-out;
+}
+
+@keyframes shuffleShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
 /* ========================================================================
@@ -706,23 +735,25 @@ body {
 /* Label de base */
 .country-label {
     display: inline-block;
-    padding: 4px 10px;
-    background: var(--label-bg);
-    border: 2px solid var(--label-border);
-    border-radius: 3px;
-    font-size: 11px;
+    padding: 6px 14px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 4px;
+    font-size: 13px;
     font-family: var(--font-system);
-    color: var(--label-text);
+    color: #ffffff;
     cursor: pointer;
     user-select: none;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .country-label:hover {
     transform: translateY(-2px);
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    background: #ffffaa;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+    background: #333;
 }
 
 /* Label sélectionné */
