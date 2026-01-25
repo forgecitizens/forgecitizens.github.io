@@ -1093,8 +1093,8 @@ window.addEventListener('keydown', (e) => {
         }
         if (explorerDescEl) {
             explorerDescEl.textContent = lang === 'FR' 
-                ? '25 pays et 5 îles choisis aléatoirement' 
-                : '25 countries and 5 islands randomly selected';
+                ? '30 pays choisis aléatoirement (sans îles)' 
+                : '30 randomly selected countries (no islands)';
         }
         
         // Labels et descriptions
@@ -1176,20 +1176,10 @@ window.addEventListener('keydown', (e) => {
         
         try {
             // Déterminer le chemin du fichier JSON selon langue ET difficulté
-            // Pour explorer, on charge TOUS les pays (hard mode) puis on sélectionne aléatoirement
+            // Explorer et Easy utilisent le même fichier (pays sans îles)
             let jsonPath;
-            let jsonPathIslands = null;
             
-            if (GameState.currentDifficulty === 'explorer') {
-                // Pour Explorer : charger les pays (easy) ET les îles (hard - easy = îles)
-                jsonPath = lang === 'FR' 
-                    ? CONFIG.paths.countriesEasyFR 
-                    : CONFIG.paths.countriesEasyEN;
-                // On charge aussi le mode hard pour avoir les îles
-                jsonPathIslands = lang === 'FR' 
-                    ? CONFIG.paths.countriesFR 
-                    : CONFIG.paths.countriesEN;
-            } else if (GameState.currentDifficulty === 'easy') {
+            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy') {
                 jsonPath = lang === 'FR' 
                     ? CONFIG.paths.countriesEasyFR 
                     : CONFIG.paths.countriesEasyEN;
@@ -1208,24 +1198,15 @@ window.addEventListener('keydown', (e) => {
             }
 
             // Charger en parallèle les pays, la carte SVG et le scoring
-            const loadPromises = [
+            const [countries, svgContent, scoring] = await Promise.all([
                 loadJSON(jsonPath),
                 loadSVG(CONFIG.paths.worldSVG),
                 loadJSON(scoringPath)
-            ];
+            ]);
             
-            // Si mode Explorer, charger aussi les données complètes pour les îles
-            if (jsonPathIslands) {
-                loadPromises.push(loadJSON(jsonPathIslands));
-            }
-            
-            const results = await Promise.all(loadPromises);
-            const [countries, svgContent, scoring] = results;
-            const allCountriesWithIslands = results[3] || null;
-            
-            // Pour le mode Explorer, sélectionner 25 pays + 5 îles aléatoirement
-            if (GameState.currentDifficulty === 'explorer' && allCountriesWithIslands) {
-                const selectedCountries = selectExplorerCountries(countries, allCountriesWithIslands);
+            // Pour le mode Explorer, sélectionner 30 pays aléatoirement
+            if (GameState.currentDifficulty === 'explorer') {
+                const selectedCountries = selectExplorerCountries(countries);
                 GameState.countries = selectedCountries;
             } else {
                 GameState.countries = countries;
@@ -1246,28 +1227,20 @@ window.addEventListener('keydown', (e) => {
     }
     
     /**
-     * Sélectionne 25 pays + 5 îles aléatoirement pour le mode Explorer
+     * Sélectionne 30 pays aléatoirement pour le mode Explorer (sans îles)
      * @param {Object} countriesOnly - Les pays sans les îles
-     * @param {Object} allCountries - Tous les pays incluant les îles
-     * @returns {Object} - 30 éléments sélectionnés (25 pays + 5 îles)
+     * @returns {Object} - 30 pays sélectionnés aléatoirement
      */
-    function selectExplorerCountries(countriesOnly, allCountries) {
-        // Identifier les îles (présentes dans allCountries mais pas dans countriesOnly)
+    function selectExplorerCountries(countriesOnly) {
         const countryOnlyCodes = Object.keys(countriesOnly);
-        const allCodes = Object.keys(allCountries);
         
-        // Les îles sont les codes présents dans allCountries mais pas dans countriesOnly
-        const islandCodes = allCodes.filter(code => !countryOnlyCodes.includes(code));
+        console.log(`🗺️ Mode Explorer: ${countryOnlyCodes.length} pays disponibles`);
         
-        console.log(`🏝️ Mode Explorer: ${countryOnlyCodes.length} pays disponibles, ${islandCodes.length} îles disponibles`);
-        
-        // Mélanger les tableaux (Fisher-Yates)
+        // Mélanger les pays (Fisher-Yates)
         const shuffledCountries = [...countryOnlyCodes].sort(() => Math.random() - 0.5);
-        const shuffledIslands = [...islandCodes].sort(() => Math.random() - 0.5);
         
-        // Sélectionner 25 pays et 5 îles
-        const selectedCountryCodes = shuffledCountries.slice(0, 25);
-        const selectedIslandCodes = shuffledIslands.slice(0, Math.min(5, shuffledIslands.length));
+        // Sélectionner 30 pays
+        const selectedCountryCodes = shuffledCountries.slice(0, 30);
         
         // Créer l'objet résultat
         const result = {};
@@ -1276,11 +1249,7 @@ window.addEventListener('keydown', (e) => {
             result[code] = countriesOnly[code];
         });
         
-        selectedIslandCodes.forEach(code => {
-            result[code] = allCountries[code];
-        });
-        
-        console.log(`🗺️ Mode Explorer: ${selectedCountryCodes.length} pays + ${selectedIslandCodes.length} îles sélectionnés`);
+        console.log(`🗺️ Mode Explorer: ${selectedCountryCodes.length} pays sélectionnés`);
         
         return result;
     }
