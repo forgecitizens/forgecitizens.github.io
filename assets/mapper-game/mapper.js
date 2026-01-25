@@ -578,12 +578,12 @@ window.addEventListener('keydown', (e) => {
             if (lang === 'FR') {
                 rulesContent.innerHTML = `
                     <div class="rules-section">
-                        <h3>Objectif</h3>
+                        <h3><img src="/assets/mapper-game/target.png" alt="" class="rules-icon"> Objectif</h3>
                         <p>Le jeu vous propose trois noms de pays et vous devez correctement les placer sur la carte. Plus le pays est difficile à trouver plus vous gagnez de points.</p>
                     </div>
                     
                     <div class="rules-section">
-                        <h3>Comment jouer</h3>
+                        <h3><img src="/assets/mapper-game/gamepad.png" alt="" class="rules-icon"> Comment jouer</h3>
                         <ul>
                             <li>Sélectionnez un ou plusieurs pays sur les trois proposés par le jeu</li>
                             <li>Placez-les correctement sur la carte du monde</li>
@@ -594,7 +594,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>GEO-COMBO !</h3>
+                        <h3><img src="/assets/mapper-game/summer.png" alt="" class="rules-icon"> GEO-COMBO !</h3>
                         <ul>
                             <li>Vous passez automatiquement en mode GEO-COMBO si vous sélectionnez les trois étiquettes proposées par le jeu.</li>
                             <li>Placez les trois étiquettes sans faire d'erreur pour obtenir <strong>30 secondes au chrono</strong> et un <strong>bonus de points</strong>.</li>
@@ -603,7 +603,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>Système de points</h3>
+                        <h3><img src="/assets/mapper-game/person.png" alt="" class="rules-icon"> Système de points</h3>
                         <ul>
                             <li><span style="color:#00ff00">+1</span> : si vous trouvez un pays facile à identifier sur la carte</li>
                             <li><span style="color:#ff9900">+3</span> : si vous trouvez un pays plutôt difficile à identifier sur la carte</li>
@@ -613,7 +613,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>Touches & raccourcis</h3>
+                        <h3><img src="/assets/mapper-game/keyboard.png" alt="" class="rules-icon"> Touches & raccourcis</h3>
                         <p><strong>PC/Ordinateur :</strong></p>
                         <ul>
                             <li><strong>Espace</strong> : Pause / Reprendre / Règles du jeu</li>
@@ -626,12 +626,12 @@ window.addEventListener('keydown', (e) => {
             } else {
                 rulesContent.innerHTML = `
                     <div class="rules-section">
-                        <h3>Objective</h3>
+                        <h3><img src="/assets/mapper-game/target.png" alt="" class="rules-icon"> Objective</h3>
                         <p>The game offers you three country names and you must correctly place them on the map. The harder the country is to find, the more points you earn.</p>
                     </div>
                     
                     <div class="rules-section">
-                        <h3>How to play</h3>
+                        <h3><img src="/assets/mapper-game/gamepad.png" alt="" class="rules-icon"> How to play</h3>
                         <ul>
                             <li>Select one or more countries from the three offered by the game</li>
                             <li>Place them correctly on the world map</li>
@@ -642,7 +642,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>GEO-COMBO!</h3>
+                        <h3><img src="/assets/mapper-game/summer.png" alt="" class="rules-icon"> GEO-COMBO!</h3>
                         <ul>
                             <li>You automatically enter GEO-COMBO mode if you select all three labels offered by the game.</li>
                             <li>Place all three labels without making an error to get <strong>30 seconds on the timer</strong> and a <strong>point bonus</strong>.</li>
@@ -651,7 +651,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>Point system</h3>
+                        <h3><img src="/assets/mapper-game/person.png" alt="" class="rules-icon"> Point system</h3>
                         <ul>
                             <li><span style="color:#00ff00">+1</span>: if you find a country that is easy to identify on the map</li>
                             <li><span style="color:#ff9900">+3</span>: if you find a country that is somewhat difficult to identify on the map</li>
@@ -661,7 +661,7 @@ window.addEventListener('keydown', (e) => {
                     </div>
                     
                     <div class="rules-section">
-                        <h3>Keys & shortcuts</h3>
+                        <h3><img src="/assets/mapper-game/keyboard.png" alt="" class="rules-icon"> Keys & shortcuts</h3>
                         <p><strong>PC/Computer:</strong></p>
                         <ul>
                             <li><strong>Space</strong>: Pause / Resume / Game rules</li>

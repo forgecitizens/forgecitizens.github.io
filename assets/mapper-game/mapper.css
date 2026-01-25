@@ -2065,9 +2065,18 @@ body {
 }
 
 .rules-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 13px;
     color: #000080;
     margin: 0 0 8px 0;
+}
+
+.rules-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .rules-section p {
