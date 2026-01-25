@@ -121,13 +121,18 @@
             <div class="difficulty-modal-title" id="difficulty-modal-title">Difficulté</div>
             <div class="difficulty-modal-subtitle" id="difficulty-modal-subtitle">Choisissez votre niveau de difficulté</div>
             <div class="difficulty-options">
+                <button class="difficulty-button" id="difficulty-explorer" data-difficulty="explorer">
+                    <img class="difficulty-icon" src="/assets/mapper-game/level_explorer.png" alt="Explorer">
+                    <span class="difficulty-label" id="difficulty-explorer-label">Facile</span>
+                    <span class="difficulty-description" id="difficulty-explorer-desc">25 pays et 5 îles choisis aléatoirement</span>
+                </button>
                 <button class="difficulty-button" id="difficulty-easy" data-difficulty="easy">
-                    <img class="difficulty-icon" src="/assets/mapper-game/lvl_normal.png" alt="Normal">
+                    <img class="difficulty-icon" src="/assets/mapper-game/level_normal.png" alt="Normal">
                     <span class="difficulty-label" id="difficulty-easy-label">Normal</span>
                     <span class="difficulty-description" id="difficulty-easy-desc">Vous ne devez trouver que les pays, pas les îles</span>
                 </button>
                 <button class="difficulty-button" id="difficulty-hard" data-difficulty="hard">
-                    <img class="difficulty-icon" src="/assets/mapper-game/lvl_hard.png" alt="Difficile">
+                    <img class="difficulty-icon" src="/assets/mapper-game/level_hard.png" alt="Difficile">
                     <span class="difficulty-label" id="difficulty-hard-label">Difficile</span>
                     <span class="difficulty-description" id="difficulty-hard-desc">Vous devez trouver les pays et les îles. (PC recommandé ou tablette)</span>
                 </button>
@@ -181,6 +186,40 @@
             <button class="credits-close-btn" id="rules-close-btn" title="Fermer">×</button>
             <div class="credits-title">📖 Règles du jeu</div>
             <div class="credits-content" id="rules-content"></div>
+        </div>
+    </div>
+
+    <!-- Modale de fin de partie -->
+    <div class="endgame-modal-overlay" id="endgame-modal-overlay">
+        <div class="endgame-modal">
+            <div class="endgame-title" id="endgame-title">🎉 Partie terminée !</div>
+            <div class="endgame-stats">
+                <div class="endgame-stat">
+                    <span class="endgame-stat-icon">🎯</span>
+                    <span class="endgame-stat-label" id="endgame-score-label">Score</span>
+                    <span class="endgame-stat-value" id="endgame-score">0/0</span>
+                </div>
+                <div class="endgame-stat">
+                    <span class="endgame-stat-icon">⏱️</span>
+                    <span class="endgame-stat-label" id="endgame-time-label">Temps</span>
+                    <span class="endgame-stat-value" id="endgame-time">00:00</span>
+                </div>
+                <div class="endgame-stat">
+                    <span class="endgame-stat-icon">❌</span>
+                    <span class="endgame-stat-label" id="endgame-errors-label">Erreurs</span>
+                    <span class="endgame-stat-value" id="endgame-errors">0</span>
+                </div>
+            </div>
+            <div class="endgame-actions">
+                <button class="endgame-btn endgame-btn-primary" id="endgame-restart">
+                    <span class="endgame-btn-icon">🔄</span>
+                    <span class="endgame-btn-text" id="endgame-restart-text">Recommencer</span>
+                </button>
+                <button class="endgame-btn endgame-btn-secondary" id="endgame-change-difficulty">
+                    <span class="endgame-btn-icon">🎯</span>
+                    <span class="endgame-btn-text" id="endgame-difficulty-text">Changer de difficulté</span>
+                </button>
+            </div>
         </div>
     </div>
 

@@ -1649,7 +1649,165 @@ body {
 }
 
 /* ========================================================================
-   14. ÉCRAN DE COMPTE À REBOURS
+   14. MODALE DE FIN DE PARTIE
+   ======================================================================== */
+
+.endgame-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.endgame-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.endgame-modal {
+    background: var(--win98-bg);
+    border: 2px outset var(--win98-border-light);
+    padding: 24px 32px;
+    min-width: 320px;
+    max-width: 90vw;
+    text-align: center;
+    animation: modalAppear 0.3s ease;
+}
+
+.endgame-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000080;
+    margin-bottom: 24px;
+    font-family: var(--font-system);
+}
+
+.endgame-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.endgame-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px inset var(--win98-border-dark);
+}
+
+.endgame-stat-icon {
+    font-size: 24px;
+    margin-right: 12px;
+}
+
+.endgame-stat-label {
+    flex: 1;
+    text-align: left;
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: #404040;
+}
+
+.endgame-stat-value {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: bold;
+    color: #000080;
+}
+
+.endgame-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.endgame-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    cursor: pointer;
+    border: 2px outset var(--win98-border-light);
+    transition: all 0.1s ease;
+}
+
+.endgame-btn:hover {
+    background: #d4d4d4;
+}
+
+.endgame-btn:active {
+    border-style: inset;
+}
+
+.endgame-btn-primary {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #333;
+}
+
+.endgame-btn-primary:hover {
+    background: #333;
+}
+
+.endgame-btn-secondary {
+    background: var(--win98-bg);
+    color: #000000;
+}
+
+.endgame-btn-icon {
+    font-size: 18px;
+}
+
+/* Animation de fermeture modale fin */
+.endgame-modal-overlay.closing {
+    opacity: 0;
+}
+
+.endgame-modal-overlay.closing .endgame-modal {
+    animation: modalDisappear 0.2s ease forwards;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 480px) {
+    .endgame-modal {
+        padding: 16px 20px;
+        min-width: 280px;
+    }
+    
+    .endgame-title {
+        font-size: 20px;
+    }
+    
+    .endgame-stat {
+        padding: 10px 12px;
+    }
+    
+    .endgame-stat-icon {
+        font-size: 20px;
+    }
+    
+    .endgame-stat-value {
+        font-size: 16px;
+    }
+}
+
+/* ========================================================================
+   15. ÉCRAN DE COMPTE À REBOURS
    ======================================================================== */
 
 .countdown-overlay {

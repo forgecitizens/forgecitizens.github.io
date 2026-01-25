@@ -395,8 +395,16 @@ window.addEventListener('keydown', (e) => {
             flagEN: document.getElementById('flag-en'),
             // Modale de difficulté
             difficultyModalOverlay: document.getElementById('difficulty-modal-overlay'),
+            difficultyExplorer: document.getElementById('difficulty-explorer'),
             difficultyEasy: document.getElementById('difficulty-easy'),
-            difficultyHard: document.getElementById('difficulty-hard')
+            difficultyHard: document.getElementById('difficulty-hard'),
+            // Modale de fin de partie
+            endgameModalOverlay: document.getElementById('endgame-modal-overlay'),
+            endgameScore: document.getElementById('endgame-score'),
+            endgameTime: document.getElementById('endgame-time'),
+            endgameErrors: document.getElementById('endgame-errors'),
+            endgameRestart: document.getElementById('endgame-restart'),
+            endgameChangeDifficulty: document.getElementById('endgame-change-difficulty')
         };
         
         // Stocker les références
@@ -433,12 +441,25 @@ window.addEventListener('keydown', (e) => {
         }
         
         // Attacher les événements aux boutons de difficulté
+        if (elements.difficultyExplorer) {
+            elements.difficultyExplorer.addEventListener('click', () => selectDifficulty('explorer'));
+        }
+        
         if (elements.difficultyEasy) {
             elements.difficultyEasy.addEventListener('click', () => selectDifficulty('easy'));
         }
         
         if (elements.difficultyHard) {
             elements.difficultyHard.addEventListener('click', () => selectDifficulty('hard'));
+        }
+        
+        // Attacher les événements à la modale de fin de partie
+        if (elements.endgameRestart) {
+            elements.endgameRestart.addEventListener('click', handleEndgameRestart);
+        }
+        
+        if (elements.endgameChangeDifficulty) {
+            elements.endgameChangeDifficulty.addEventListener('click', handleEndgameChangeDifficulty);
         }
         
         // Initialiser la modale des crédits
@@ -767,6 +788,152 @@ window.addEventListener('keydown', (e) => {
         const stats = GameState.stats;
         console.log(`📊 Score: ${stats.correctCount}/${stats.totalCountries}`);
         console.log(`⏱️ Temps: ${formatTime(stats.elapsedTime)}`);
+        
+        // Afficher la modale de fin de partie
+        showEndgameModal();
+    }
+    
+    /**
+     * Affiche la modale de fin de partie
+     */
+    function showEndgameModal() {
+        const lang = GameState.currentLanguage;
+        const stats = GameState.stats;
+        
+        // Mettre à jour les textes selon la langue
+        const titleEl = document.getElementById('endgame-title');
+        const scoreLabelEl = document.getElementById('endgame-score-label');
+        const timeLabelEl = document.getElementById('endgame-time-label');
+        const errorsLabelEl = document.getElementById('endgame-errors-label');
+        const restartTextEl = document.getElementById('endgame-restart-text');
+        const difficultyTextEl = document.getElementById('endgame-difficulty-text');
+        
+        if (titleEl) {
+            titleEl.textContent = lang === 'FR' ? '🎉 Partie terminée !' : '🎉 Game Over!';
+        }
+        if (scoreLabelEl) {
+            scoreLabelEl.textContent = lang === 'FR' ? 'Score' : 'Score';
+        }
+        if (timeLabelEl) {
+            timeLabelEl.textContent = lang === 'FR' ? 'Temps' : 'Time';
+        }
+        if (errorsLabelEl) {
+            errorsLabelEl.textContent = lang === 'FR' ? 'Erreurs' : 'Errors';
+        }
+        if (restartTextEl) {
+            restartTextEl.textContent = lang === 'FR' ? 'Recommencer' : 'Play Again';
+        }
+        if (difficultyTextEl) {
+            difficultyTextEl.textContent = lang === 'FR' ? 'Changer de difficulté' : 'Change Difficulty';
+        }
+        
+        // Mettre à jour les valeurs
+        const scoreEl = GameState.elements?.endgameScore;
+        const timeEl = GameState.elements?.endgameTime;
+        const errorsEl = GameState.elements?.endgameErrors;
+        
+        if (scoreEl) {
+            scoreEl.textContent = `${stats.correctCount}/${stats.totalCountries}`;
+        }
+        if (timeEl) {
+            timeEl.textContent = formatTime(stats.elapsedTime);
+        }
+        if (errorsEl) {
+            errorsEl.textContent = stats.wrongCount.toString();
+        }
+        
+        // Afficher la modale
+        const overlay = GameState.elements?.endgameModalOverlay;
+        if (overlay) {
+            overlay.classList.add('visible');
+        }
+    }
+    
+    /**
+     * Cache la modale de fin de partie
+     */
+    function hideEndgameModal() {
+        const overlay = GameState.elements?.endgameModalOverlay;
+        if (overlay) {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('visible', 'closing');
+            }, 200);
+        }
+    }
+    
+    /**
+     * Gère le clic sur "Recommencer" dans la modale de fin
+     */
+    function handleEndgameRestart() {
+        hideEndgameModal();
+        
+        // Recharger les ressources (pour une nouvelle sélection aléatoire en mode Explorer)
+        const loadingText = GameState.currentLanguage === 'FR' ? 'Chargement...' : 'Loading...';
+        updateStatus(loadingText);
+        
+        loadResourcesForLanguage(GameState.currentLanguage)
+            .then(() => {
+                setTimeout(() => {
+                    startCountdown();
+                }, 300);
+            })
+            .catch(error => {
+                console.error('❌ Mapper: Erreur de chargement', error);
+                showError(error.message);
+            });
+    }
+    
+    /**
+     * Gère le clic sur "Changer de difficulté" dans la modale de fin
+     */
+    function handleEndgameChangeDifficulty() {
+        hideEndgameModal();
+        
+        // Réinitialiser l'interface pour revenir à l'écran de sélection
+        resetGameInterface();
+        
+        // Afficher la modale de difficulté
+        setTimeout(() => {
+            showDifficultyModal();
+        }, 300);
+    }
+    
+    /**
+     * Réinitialise l'interface du jeu
+     */
+    function resetGameInterface() {
+        // Cacher le conteneur de labels
+        const labelsContainer = GameState.elements?.labelsContainer;
+        if (labelsContainer) {
+            labelsContainer.style.display = 'none';
+        }
+        
+        // Réafficher le placeholder
+        const placeholder = GameState.elements?.placeholder;
+        if (placeholder) {
+            placeholder.style.display = 'flex';
+        }
+        
+        // Réinitialiser le statut
+        const statusMessage = GameState.elements?.statusMessage;
+        if (statusMessage) {
+            statusMessage.textContent = GameState.currentLanguage === 'FR' ? 'Chargement...' : 'Loading...';
+        }
+        
+        // Nettoyer la carte SVG
+        const mapContainer = GameState.elements?.mapContainer;
+        if (mapContainer) {
+            const svg = mapContainer.querySelector('svg');
+            if (svg) {
+                // Réinitialiser les classes des pays
+                svg.querySelectorAll('.country-path').forEach(path => {
+                    path.classList.remove('country-correct', 'country-wrong', 'country-hover');
+                });
+                // Supprimer les labels placés
+                svg.querySelectorAll('.placed-label').forEach(label => label.remove());
+            }
+        }
     }
 
     /**
@@ -917,6 +1084,19 @@ window.addEventListener('keydown', (e) => {
                 : 'Choose your difficulty level';
         }
         
+        // Explorer (nouveau niveau facile)
+        const explorerLabelEl = document.getElementById('difficulty-explorer-label');
+        const explorerDescEl = document.getElementById('difficulty-explorer-desc');
+        
+        if (explorerLabelEl) {
+            explorerLabelEl.textContent = lang === 'FR' ? 'Facile' : 'Easy';
+        }
+        if (explorerDescEl) {
+            explorerDescEl.textContent = lang === 'FR' 
+                ? '25 pays et 5 îles choisis aléatoirement' 
+                : '25 countries and 5 islands randomly selected';
+        }
+        
         // Labels et descriptions
         const easyLabelEl = document.getElementById('difficulty-easy-label');
         const easyDescEl = document.getElementById('difficulty-easy-desc');
@@ -943,15 +1123,17 @@ window.addEventListener('keydown', (e) => {
     
     /**
      * Sélection de la difficulté depuis la modale
-     * @param {string} difficulty - 'easy' ou 'hard'
+     * @param {string} difficulty - 'explorer', 'easy' ou 'hard'
      */
     function selectDifficulty(difficulty) {
         console.log(`🗺️ Mapper: Difficulté sélectionnée → ${difficulty}`);
         
         // Marquer le bouton comme sélectionné visuellement
+        const explorerBtn = GameState.elements?.difficultyExplorer;
         const easyBtn = GameState.elements?.difficultyEasy;
         const hardBtn = GameState.elements?.difficultyHard;
         
+        if (explorerBtn) explorerBtn.classList.toggle('selected', difficulty === 'explorer');
         if (easyBtn) easyBtn.classList.toggle('selected', difficulty === 'easy');
         if (hardBtn) hardBtn.classList.toggle('selected', difficulty === 'hard');
         
@@ -994,8 +1176,20 @@ window.addEventListener('keydown', (e) => {
         
         try {
             // Déterminer le chemin du fichier JSON selon langue ET difficulté
+            // Pour explorer, on charge TOUS les pays (hard mode) puis on sélectionne aléatoirement
             let jsonPath;
-            if (GameState.currentDifficulty === 'easy') {
+            let jsonPathIslands = null;
+            
+            if (GameState.currentDifficulty === 'explorer') {
+                // Pour Explorer : charger les pays (easy) ET les îles (hard - easy = îles)
+                jsonPath = lang === 'FR' 
+                    ? CONFIG.paths.countriesEasyFR 
+                    : CONFIG.paths.countriesEasyEN;
+                // On charge aussi le mode hard pour avoir les îles
+                jsonPathIslands = lang === 'FR' 
+                    ? CONFIG.paths.countriesFR 
+                    : CONFIG.paths.countriesEN;
+            } else if (GameState.currentDifficulty === 'easy') {
                 jsonPath = lang === 'FR' 
                     ? CONFIG.paths.countriesEasyFR 
                     : CONFIG.paths.countriesEasyEN;
@@ -1005,28 +1199,42 @@ window.addEventListener('keydown', (e) => {
                     : CONFIG.paths.countriesEN;
             }
             
-            // Charger en parallèle les pays et la carte SVG
-                // Déterminer le chemin du fichier de scoring
-                let scoringPath;
-                if (GameState.currentDifficulty === 'easy') {
-                    scoringPath = '/assets/mapper-game/scoring_easy.json';
-                } else {
-                    scoringPath = '/assets/mapper-game/scoring_hard.json';
-                }
+            // Déterminer le chemin du fichier de scoring
+            let scoringPath;
+            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy') {
+                scoringPath = '/assets/mapper-game/scoring_easy.json';
+            } else {
+                scoringPath = '/assets/mapper-game/scoring_hard.json';
+            }
 
-                // Charger en parallèle les pays, la carte SVG et le scoring
-                const [countries, svgContent, scoring] = await Promise.all([
-                    loadJSON(jsonPath),
-                    loadSVG(CONFIG.paths.worldSVG),
-                    loadJSON(scoringPath)
-                ]);
-
-                // Stocker les données
+            // Charger en parallèle les pays, la carte SVG et le scoring
+            const loadPromises = [
+                loadJSON(jsonPath),
+                loadSVG(CONFIG.paths.worldSVG),
+                loadJSON(scoringPath)
+            ];
+            
+            // Si mode Explorer, charger aussi les données complètes pour les îles
+            if (jsonPathIslands) {
+                loadPromises.push(loadJSON(jsonPathIslands));
+            }
+            
+            const results = await Promise.all(loadPromises);
+            const [countries, svgContent, scoring] = results;
+            const allCountriesWithIslands = results[3] || null;
+            
+            // Pour le mode Explorer, sélectionner 25 pays + 5 îles aléatoirement
+            if (GameState.currentDifficulty === 'explorer' && allCountriesWithIslands) {
+                const selectedCountries = selectExplorerCountries(countries, allCountriesWithIslands);
+                GameState.countries = selectedCountries;
+            } else {
                 GameState.countries = countries;
-                GameState.svgContent = svgContent;
-                GameState.scoring = scoring;
+            }
+            
+            GameState.svgContent = svgContent;
+            GameState.scoring = scoring;
 
-                const countryCount = Object.keys(countries).length;
+            const countryCount = Object.keys(GameState.countries).length;
 
             console.log(`✅ Mapper: ${countryCount} pays chargés (${lang})`);
             console.log('✅ Mapper: Carte SVG chargée');
@@ -1035,6 +1243,46 @@ window.addEventListener('keydown', (e) => {
         } catch (error) {
             throw new Error(`Erreur de chargement: ${error.message}`);
         }
+    }
+    
+    /**
+     * Sélectionne 25 pays + 5 îles aléatoirement pour le mode Explorer
+     * @param {Object} countriesOnly - Les pays sans les îles
+     * @param {Object} allCountries - Tous les pays incluant les îles
+     * @returns {Object} - 30 éléments sélectionnés (25 pays + 5 îles)
+     */
+    function selectExplorerCountries(countriesOnly, allCountries) {
+        // Identifier les îles (présentes dans allCountries mais pas dans countriesOnly)
+        const countryOnlyCodes = Object.keys(countriesOnly);
+        const allCodes = Object.keys(allCountries);
+        
+        // Les îles sont les codes présents dans allCountries mais pas dans countriesOnly
+        const islandCodes = allCodes.filter(code => !countryOnlyCodes.includes(code));
+        
+        console.log(`🏝️ Mode Explorer: ${countryOnlyCodes.length} pays disponibles, ${islandCodes.length} îles disponibles`);
+        
+        // Mélanger les tableaux (Fisher-Yates)
+        const shuffledCountries = [...countryOnlyCodes].sort(() => Math.random() - 0.5);
+        const shuffledIslands = [...islandCodes].sort(() => Math.random() - 0.5);
+        
+        // Sélectionner 25 pays et 5 îles
+        const selectedCountryCodes = shuffledCountries.slice(0, 25);
+        const selectedIslandCodes = shuffledIslands.slice(0, Math.min(5, shuffledIslands.length));
+        
+        // Créer l'objet résultat
+        const result = {};
+        
+        selectedCountryCodes.forEach(code => {
+            result[code] = countriesOnly[code];
+        });
+        
+        selectedIslandCodes.forEach(code => {
+            result[code] = allCountries[code];
+        });
+        
+        console.log(`🗺️ Mode Explorer: ${selectedCountryCodes.length} pays + ${selectedIslandCodes.length} îles sélectionnés`);
+        
+        return result;
     }
     
     /* ========================================================================
