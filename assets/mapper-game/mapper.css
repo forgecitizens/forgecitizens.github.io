@@ -420,6 +420,9 @@ body {
     /* Les dimensions sont définies en JS basées sur le viewBox */
     /* Pas de transition pour éviter le lag du zoom */
     will-change: transform;
+    /* Améliorer le rendu vectoriel lors du zoom */
+    shape-rendering: geometricPrecision;
+    image-rendering: optimizeQuality;
 }
 
 /* Style de base des pays */

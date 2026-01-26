@@ -93,7 +93,7 @@ window.addEventListener('keydown', (e) => {
             countriesEN: '/assets/mapper-game/countries_EN.json',
             countriesEasyFR: '/assets/mapper-game/countries_easy_mode_FR.json',
             countriesEasyEN: '/assets/mapper-game/countries_easy_mode_EN.json',
-            worldSVG: '/assets/mapper-game/world.svg'
+            worldSVG: '/assets/mapper-game/world1.svg'
         },
         
         // Paramètres du jeu
@@ -842,6 +842,10 @@ window.addEventListener('keydown', (e) => {
         const lang = GameState.currentLanguage;
         
         const updates = {
+            'update-0': {
+                FR: "Passage à une carte du monde SVG haute résolution : qualité d'affichage optimale même lors des zooms.",
+                EN: "Switched to a high-resolution world SVG map: optimal display quality even when zooming in."
+            },
             'update-1': {
                 FR: "La carte est maintenant centrée sur l'Afrique/Europe au démarrage d'une partie, au lieu de l'Océan Pacifique.",
                 EN: "The map is now centered on Africa/Europe when starting a game, instead of the Pacific Ocean."
@@ -963,15 +967,15 @@ window.addEventListener('keydown', (e) => {
             svg.style.transformOrigin = '0 0';
             
             // Centrer la carte sur l'Afrique/Europe au lieu du Pacifique
-            // Le SVG fait 2000x857, l'Afrique est environ à 50% horizontal et 40% vertical
+            // Le SVG fait 2000x1001, l'Afrique est environ à 50% horizontal et 35% vertical
             const svgWidth = svg.getBoundingClientRect().width / GameState.zoom.scale || 2000;
-            const svgHeight = svg.getBoundingClientRect().height / GameState.zoom.scale || 857;
+            const svgHeight = svg.getBoundingClientRect().height / GameState.zoom.scale || 1001;
             const containerWidth = mapContainer.clientWidth;
             const containerHeight = mapContainer.clientHeight;
             
-            // Position de l'Afrique dans le SVG (environ 50% X, 40% Y pour être centré sur l'Afrique/Europe)
+            // Position de l'Afrique dans le SVG (environ 50% X, 35% Y pour être centré sur l'Afrique/Europe)
             const africaCenterX = svgWidth * 0.50;
-            const africaCenterY = svgHeight * 0.40;
+            const africaCenterY = svgHeight * 0.35;
             
             // Calculer le scroll pour centrer l'Afrique dans la vue
             const targetScrollLeft = (africaCenterX * GameState.zoom.scale) - (containerWidth / 2);
@@ -3255,53 +3259,15 @@ window.addEventListener('keydown', (e) => {
     
     /**
      * Normalise l'ID d'un pays (convertit les noms de classe en codes ISO)
+     * Avec world1.svg, les IDs sont déjà des codes ISO, donc cette fonction
+     * retourne simplement l'ID tel quel (conservée pour compatibilité)
      * @param {string} countryId - ID ou nom de classe du pays
      * @returns {string} Code ISO du pays
      */
     function normalizeCountryId(countryId) {
-        const classToCodeMap = {
-            // Pays multi-territoires avec classes dans le SVG
-            'Angola': 'AO',
-            'Argentina': 'AR',
-            'Australia': 'AU',
-            'Azerbaijan': 'AZ',
-            'Bahamas': 'BS',
-            'Canada': 'CA',
-            'Cape Verde': 'CV',
-            'Chile': 'CL',
-            'China': 'CN',
-            'Comoros': 'KM',
-            'Cyprus': 'CY',
-            'Denmark': 'DK',
-            'Fiji': 'FJ',
-            'France': 'FR',
-            'Greece': 'GR',
-            'Indonesia': 'ID',
-            'Italy': 'IT',
-            'Japan': 'JP',
-            'Malaysia': 'MY',
-            'Malta': 'MT',
-            'Mauritius': 'MU',
-            'New Zealand': 'NZ',
-            'Norway': 'NO',
-            'Oman': 'OM',
-            'Papua New Guinea': 'PG',
-            'Philippines': 'PH',
-            'Russian Federation': 'RU',
-            'Samoa': 'WS',
-            'Seychelles': 'SC',
-            'Solomon Islands': 'SB',
-            'Tonga': 'TO',
-            'Trinidad and Tobago': 'TT',
-            'Turkey': 'TR',
-            'United Kingdom': 'GB',
-            'United States': 'US',
-            'Vanuatu': 'VU',
-            // Anciens mappings partiels conservés pour compatibilité
-            'USA': 'US',
-            'Russia': 'RU'
-        };
-        return classToCodeMap[countryId] || countryId;
+        // Avec world1.svg, les IDs sont directement des codes ISO
+        // Plus besoin de mapping classe -> code
+        return countryId;
     }
     
     /**
@@ -3448,67 +3414,16 @@ window.addEventListener('keydown', (e) => {
     
     /**
      * Vérifie si le label correspond au pays ciblé
+     * Avec world1.svg, les IDs sont directement des codes ISO, donc
+     * une simple comparaison directe suffit
      * @param {string} labelCode - Code du label
      * @param {string} targetId - ID du pays ciblé
      * @returns {boolean}
      */
     function checkCountryMatch(labelCode, targetId) {
-        // Comparaison directe
-        if (labelCode === targetId) {
-            return true;
-        }
-        
-        // Pour les pays multi-territoires, le targetId peut être le nom du pays (classe SVG)
-        // On doit mapper les noms de classe aux codes ISO
-        const classToCodeMap = {
-            // Pays multi-territoires avec classes dans le SVG
-            'Angola': 'AO',
-            'Argentina': 'AR',
-            'Australia': 'AU',
-            'Azerbaijan': 'AZ',
-            'Bahamas': 'BS',
-            'Canada': 'CA',
-            'Cape Verde': 'CV',
-            'Chile': 'CL',
-            'China': 'CN',
-            'Comoros': 'KM',
-            'Cyprus': 'CY',
-            'Denmark': 'DK',
-            'Fiji': 'FJ',
-            'France': 'FR',
-            'Greece': 'GR',
-            'Indonesia': 'ID',
-            'Italy': 'IT',
-            'Japan': 'JP',
-            'Malaysia': 'MY',
-            'Malta': 'MT',
-            'Mauritius': 'MU',
-            'New Zealand': 'NZ',
-            'Norway': 'NO',
-            'Oman': 'OM',
-            'Papua New Guinea': 'PG',
-            'Philippines': 'PH',
-            'Russian Federation': 'RU',
-            'Samoa': 'WS',
-            'Seychelles': 'SC',
-            'Solomon Islands': 'SB',
-            'Tonga': 'TO',
-            'Trinidad and Tobago': 'TT',
-            'Turkey': 'TR',
-            'United Kingdom': 'GB',
-            'United States': 'US',
-            'Vanuatu': 'VU',
-            // Anciens mappings partiels conservés pour compatibilité
-            'USA': 'US',
-            'Russia': 'RU'
-        };
-        
-        // Vérifier si le targetId est un nom de classe connu
-        if (classToCodeMap[targetId] === labelCode) {
-            return true;
-        }
-        
-        return false;
+        // Avec world1.svg, les IDs sont directement des codes ISO
+        // Comparaison directe suffit
+        return labelCode === targetId;
     }
     
     /**
