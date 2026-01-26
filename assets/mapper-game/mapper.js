@@ -113,7 +113,7 @@ window.addEventListener('keydown', (e) => {
         
         // Paramètres du zoom
         zoom: {
-            min: 1,
+            min: 0.8,
             max: 5,
             step: 0.2,
             default: 1
@@ -475,6 +475,9 @@ window.addEventListener('keydown', (e) => {
         // Initialiser la modale des règles (pause)
         initRulesModal();
         
+        // Initialiser la modale des mises à jour
+        initUpdatesModal();
+        
         // Initialiser le menu Options
         initOptionsMenu();
         
@@ -763,6 +766,118 @@ window.addEventListener('keydown', (e) => {
         }
     }
 
+    /**
+     * Initialise la modale des mises à jour
+     */
+    function initUpdatesModal() {
+        const updatesToolbarBtn = document.getElementById('updates-toolbar-btn');
+        const updatesOverlay = document.getElementById('updates-modal-overlay');
+        const updatesCloseBtn = document.getElementById('updates-close-btn');
+        
+        // Ouvrir la modale depuis le bouton toolbar "Mises à jour"
+        if (updatesToolbarBtn && updatesOverlay) {
+            updatesToolbarBtn.addEventListener('click', () => {
+                showUpdatesModal();
+            });
+        }
+        
+        if (updatesOverlay) {
+            // Fermer via le bouton X
+            if (updatesCloseBtn) {
+                updatesCloseBtn.addEventListener('click', () => {
+                    hideUpdatesModal();
+                });
+            }
+            
+            // Fermer en cliquant sur l'overlay (en dehors de la modale)
+            updatesOverlay.addEventListener('click', (e) => {
+                if (e.target === updatesOverlay) {
+                    hideUpdatesModal();
+                }
+            });
+            
+            // Fermer avec la touche Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && updatesOverlay.classList.contains('visible')) {
+                    hideUpdatesModal();
+                }
+            });
+        }
+    }
+    
+    /**
+     * Affiche la modale des mises à jour
+     */
+    function showUpdatesModal() {
+        const updatesOverlay = document.getElementById('updates-modal-overlay');
+        const updatesTitle = document.getElementById('updates-modal-title');
+        const updatesToolbarBtn = document.getElementById('updates-toolbar-btn');
+        
+        // Mettre à jour le titre selon la langue
+        if (updatesTitle) {
+            updatesTitle.textContent = GameState.currentLanguage === 'FR' ? 'Mises à jour' : 'Updates';
+        }
+        
+        // Mettre à jour le texte du bouton toolbar selon la langue
+        if (updatesToolbarBtn) {
+            updatesToolbarBtn.textContent = GameState.currentLanguage === 'FR' ? 'Mises à jour' : 'Updates';
+        }
+        
+        // Mettre à jour le contenu selon la langue
+        updateUpdatesContent();
+        
+        if (updatesOverlay) {
+            updatesOverlay.classList.add('visible');
+            // Arrêter le son GEO-COMBO si actif
+            if (GameState.geoCombo.active) {
+                stopComboReadySound();
+            }
+        }
+    }
+    
+    /**
+     * Met à jour le contenu de la modale des mises à jour selon la langue
+     */
+    function updateUpdatesContent() {
+        const lang = GameState.currentLanguage;
+        
+        const updates = {
+            'update-1': {
+                FR: "La carte est maintenant centrée sur l'Afrique/Europe au démarrage d'une partie, au lieu de l'Océan Pacifique.",
+                EN: "The map is now centered on Africa/Europe when starting a game, instead of the Pacific Ocean."
+            },
+            'update-2': {
+                FR: "Ajout d'un niveau de dézoom supplémentaire (+20%) pour une meilleure vue d'ensemble.",
+                EN: "Added an additional zoom-out level (+20%) for a better overview."
+            },
+            'update-3': {
+                FR: "L'animation du score lors d'une réponse correcte est plus lente et plus visible, notamment sur mobile.",
+                EN: "The score animation when a correct answer is given is slower and more visible, especially on mobile."
+            }
+        };
+        
+        for (const [id, texts] of Object.entries(updates)) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = texts[lang] || texts.FR;
+            }
+        }
+    }
+    
+    /**
+     * Cache la modale des mises à jour
+     */
+    function hideUpdatesModal() {
+        const updatesOverlay = document.getElementById('updates-modal-overlay');
+        if (updatesOverlay) {
+            updatesOverlay.classList.remove('visible');
+            // Reprendre le son GEO-COMBO si le combo est actif
+            if (GameState.geoCombo.active) {
+                playComboReadySound();
+            }
+        }
+    }
+
     /* ========================================================================
        4. CHARGEMENT DES RESSOURCES
        ======================================================================== */
@@ -836,7 +951,7 @@ window.addEventListener('keydown', (e) => {
     }
     
     /**
-     * Réinitialise le zoom à 100%
+     * Réinitialise le zoom à 100% et centre la carte sur l'Afrique/Europe
      */
     function resetZoom() {
         const mapContainer = GameState.elements?.mapContainer;
@@ -845,8 +960,26 @@ window.addEventListener('keydown', (e) => {
         if (svg && GameState.zoom) {
             GameState.zoom.scale = CONFIG.zoom.default;
             svg.style.transform = `scale(${CONFIG.zoom.default})`;
-            mapContainer.scrollLeft = 0;
-            mapContainer.scrollTop = 0;
+            svg.style.transformOrigin = '0 0';
+            
+            // Centrer la carte sur l'Afrique/Europe au lieu du Pacifique
+            // Le SVG fait 2000x857, l'Afrique est environ à 50% horizontal et 40% vertical
+            const svgWidth = svg.getBoundingClientRect().width / GameState.zoom.scale || 2000;
+            const svgHeight = svg.getBoundingClientRect().height / GameState.zoom.scale || 857;
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = mapContainer.clientHeight;
+            
+            // Position de l'Afrique dans le SVG (environ 50% X, 40% Y pour être centré sur l'Afrique/Europe)
+            const africaCenterX = svgWidth * 0.50;
+            const africaCenterY = svgHeight * 0.40;
+            
+            // Calculer le scroll pour centrer l'Afrique dans la vue
+            const targetScrollLeft = (africaCenterX * GameState.zoom.scale) - (containerWidth / 2);
+            const targetScrollTop = (africaCenterY * GameState.zoom.scale) - (containerHeight / 2);
+            
+            // Appliquer le scroll (avec des valeurs minimales de 0)
+            mapContainer.scrollLeft = Math.max(0, targetScrollLeft);
+            mapContainer.scrollTop = Math.max(0, targetScrollTop);
         }
     }
 
@@ -2629,19 +2762,22 @@ window.addEventListener('keydown', (e) => {
                 anim.style.zIndex = 3000;
                 mapContainer.appendChild(anim);
 
-                // Animation du déplacement
+                // Animation du déplacement (durée augmentée pour meilleure visibilité sur mobile)
                 anim.animate([
-                    { transform: `translate(0, 0) scale(1)`, opacity: 1 },
-                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.3)`, opacity: 1 },
-                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1)`, opacity: 0.2 }
+                    { transform: `translate(0, 0) scale(1.2)`, opacity: 1, offset: 0 },
+                    { transform: `translate(0, -20px) scale(1.5)`, opacity: 1, offset: 0.15 },
+                    { transform: `translate(${(endX - startX) * 0.5}px, ${(endY - startY) * 0.3}px) scale(1.3)`, opacity: 1, offset: 0.5 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.4)`, opacity: 1, offset: 0.85 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1)`, opacity: 0 }
                 ], {
-                    duration: 1800,
-                    easing: 'cubic-bezier(0.4,0.8,0.2,1)'
+                    duration: 2500,
+                    easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+                    fill: 'forwards'
                 });
 
                 setTimeout(() => {
                     anim.remove();
-                }, 1850);
+                }, 2550);
 
                 // Effet shake sur la zone de score si 9 points
                 if (points === 9 && geoComboBonus) {
