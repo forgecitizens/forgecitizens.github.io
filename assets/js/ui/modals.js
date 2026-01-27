@@ -141,7 +141,7 @@ function applyModernWindowSizing(modal, width, height) {
     const modalId = modal.id || '';
     
     // Liste des modales "compactes" qui ne doivent pas prendre toute la hauteur
-    const compactModals = ['contact-modal', 'radio-popup', 'calendar-modal'];
+    const compactModals = ['contact-modal', 'radio-popup', 'calendar-modal', 'ia-articles-modal'];
     const isCompact = compactModals.includes(modalId);
     
     // Mobile (phone): near full-screen sauf pour les modales compactes
@@ -164,23 +164,44 @@ function applyModernWindowSizing(modal, width, height) {
     
     // Large phone / small tablet
     if (screenWidth < 768) {
-        const tabletWidth = Math.floor(screenWidth * 0.95);
-        const tabletHeight = Math.floor(screenHeight * 0.90);
-        modal.style.width = tabletWidth + 'px';
-        modal.style.height = tabletHeight + 'px';
-        modal.style.left = Math.floor((screenWidth - tabletWidth) / 2) + 'px';
-        modal.style.top = Math.floor((screenHeight - tabletHeight) / 2) + 'px';
+        if (isCompact) {
+            // Modale compacte : centré, hauteur auto
+            modal.style.width = '92%';
+            modal.style.height = 'auto';
+            modal.style.maxHeight = (screenHeight - 40) + 'px';
+            modal.style.left = '4%';
+            modal.style.top = '20px';
+            modal.style.transform = 'none';
+        } else {
+            const tabletWidth = Math.floor(screenWidth * 0.95);
+            const tabletHeight = Math.floor(screenHeight * 0.90);
+            modal.style.width = tabletWidth + 'px';
+            modal.style.height = tabletHeight + 'px';
+            modal.style.left = Math.floor((screenWidth - tabletWidth) / 2) + 'px';
+            modal.style.top = Math.floor((screenHeight - tabletHeight) / 2) + 'px';
+        }
         return;
     }
     
     // Tablet / small desktop
     if (screenWidth < 1024) {
-        const smallWidth = Math.floor(screenWidth * 0.90);
-        const smallHeight = Math.floor(screenHeight * 0.85);
-        modal.style.width = smallWidth + 'px';
-        modal.style.height = smallHeight + 'px';
-        modal.style.left = Math.floor((screenWidth - smallWidth) / 2) + 'px';
-        modal.style.top = Math.floor((screenHeight - smallHeight) / 2) + 'px';
+        if (isCompact) {
+            // Modale compacte : centré, hauteur auto
+            modal.style.width = '80%';
+            modal.style.maxWidth = '500px';
+            modal.style.height = 'auto';
+            modal.style.maxHeight = (screenHeight - 60) + 'px';
+            modal.style.left = '50%';
+            modal.style.top = '30px';
+            modal.style.transform = 'translateX(-50%)';
+        } else {
+            const smallWidth = Math.floor(screenWidth * 0.90);
+            const smallHeight = Math.floor(screenHeight * 0.85);
+            modal.style.width = smallWidth + 'px';
+            modal.style.height = smallHeight + 'px';
+            modal.style.left = Math.floor((screenWidth - smallWidth) / 2) + 'px';
+            modal.style.top = Math.floor((screenHeight - smallHeight) / 2) + 'px';
+        }
         return;
     }
     
