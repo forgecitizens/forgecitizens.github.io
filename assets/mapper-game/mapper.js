@@ -93,6 +93,7 @@ window.addEventListener('keydown', (e) => {
             countriesEN: '/assets/mapper-game/countries_EN.json',
             countriesEasyFR: '/assets/mapper-game/countries_easy_mode_FR.json',
             countriesEasyEN: '/assets/mapper-game/countries_easy_mode_EN.json',
+            capitals: '/assets/mapper-game/capitals.json',
             worldSVG: '/assets/mapper-game/world1.svg'
         },
         
@@ -292,6 +293,7 @@ window.addEventListener('keydown', (e) => {
     const GameState = {
         // Données chargées
         countries: null,
+        capitals: null,  // Capitales des pays
         svgDocument: null,
         
         // État actuel
@@ -1627,11 +1629,12 @@ window.addEventListener('keydown', (e) => {
                 scoringPath = '/assets/mapper-game/scoring_hard.json';
             }
 
-            // Charger en parallèle les pays, la carte SVG et le scoring
-            const [countries, svgContent, scoring] = await Promise.all([
+            // Charger en parallèle les pays, la carte SVG, le scoring et les capitales
+            const [countries, svgContent, scoring, capitals] = await Promise.all([
                 loadJSON(jsonPath),
                 loadSVG(CONFIG.paths.worldSVG),
-                loadJSON(scoringPath)
+                loadJSON(scoringPath),
+                loadJSON(CONFIG.paths.capitals)
             ]);
             
             // Pour le mode Explorer, sélectionner 30 pays aléatoirement
@@ -1644,6 +1647,7 @@ window.addEventListener('keydown', (e) => {
             
             GameState.svgContent = svgContent;
             GameState.scoring = scoring;
+            GameState.capitals = capitals;
 
             const countryCount = Object.keys(GameState.countries).length;
 
@@ -2251,7 +2255,7 @@ window.addEventListener('keydown', (e) => {
                 // Afficher le tooltip UNIQUEMENT pour les pays déjà placés (verrouillés)
                 const normalizedId = normalizeCountryId(countryId);
                 if (tooltip && GameState.placedLabels.includes(normalizedId)) {
-                    showTooltip(e, GameState.countries[normalizedId]);
+                    showTooltip(e, normalizedId, GameState.countries[normalizedId]);
                 }
             });
             
@@ -2287,7 +2291,7 @@ window.addEventListener('keydown', (e) => {
                         clientX: touch.clientX,
                         clientY: touch.clientY
                     };
-                    showTooltip(fakeEvent, GameState.countries[normalizedId]);
+                    showTooltip(fakeEvent, normalizedId, GameState.countries[normalizedId]);
                     
                     // Cacher le tooltip après 2 secondes
                     if (GameState.tooltipTimeout) {
@@ -2323,15 +2327,26 @@ window.addEventListener('keydown', (e) => {
     }
     
     /**
-     * Affiche le tooltip
+     * Affiche le tooltip avec nom du pays et capitale
      * @param {MouseEvent} e
-     * @param {string} countryName
+     * @param {string} countryCode - Code ISO du pays (ex: 'FR')
+     * @param {string} countryName - Nom du pays
      */
-    function showTooltip(e, countryName) {
+    function showTooltip(e, countryCode, countryName) {
         const tooltip = GameState.tooltip;
         if (!tooltip) return;
         
-        tooltip.textContent = countryName;
+        // Récupérer la capitale
+        const capital = GameState.capitals ? GameState.capitals[countryCode] : null;
+        const capitalLabel = GameState.currentLanguage === 'FR' ? 'Capitale' : 'Capital';
+        
+        // Construire le contenu du tooltip
+        if (capital) {
+            tooltip.innerHTML = `<strong>${countryName}</strong><br><span style="font-size: 11px;">${capitalLabel} : ${capital}</span>`;
+        } else {
+            tooltip.textContent = countryName;
+        }
+        
         tooltip.style.display = 'block';
         moveTooltip(e);
     }
