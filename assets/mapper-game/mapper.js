@@ -2241,7 +2241,7 @@ window.addEventListener('keydown', (e) => {
             const countryId = path.dataset.countryId;
             if (!countryId) return;
             
-            // Événement d'entrée
+            // Événement d'entrée (souris)
             path.addEventListener('mouseenter', (e) => {
                 // Highlight du pays (sauf si déjà correct)
                 if (!path.classList.contains('country-correct')) {
@@ -2263,7 +2263,7 @@ window.addEventListener('keydown', (e) => {
                 }
             });
             
-            // Événement de sortie
+            // Événement de sortie (souris)
             path.addEventListener('mouseleave', () => {
                 // Enlever le highlight (sauf si correct)
                 if (!path.classList.contains('country-correct')) {
@@ -2273,6 +2273,31 @@ window.addEventListener('keydown', (e) => {
                 // Cacher le tooltip
                 hideTooltip();
             });
+            
+            // === SUPPORT MOBILE : événements tactiles ===
+            // Afficher le tooltip au tap sur un pays déjà placé
+            path.addEventListener('touchstart', (e) => {
+                const normalizedId = normalizeCountryId(countryId);
+                
+                // Seulement pour les pays déjà placés (verrouillés)
+                if (tooltip && GameState.placedLabels.includes(normalizedId)) {
+                    // Créer un faux event avec les coordonnées du touch
+                    const touch = e.touches[0];
+                    const fakeEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    showTooltip(fakeEvent, GameState.countries[normalizedId]);
+                    
+                    // Cacher le tooltip après 2 secondes
+                    if (GameState.tooltipTimeout) {
+                        clearTimeout(GameState.tooltipTimeout);
+                    }
+                    GameState.tooltipTimeout = setTimeout(() => {
+                        hideTooltip();
+                    }, 2000);
+                }
+            }, { passive: true });
         });
     }
     
