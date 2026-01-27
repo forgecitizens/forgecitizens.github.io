@@ -15,6 +15,9 @@ function openModal(modalId, htmlFile = null, title = null, width = null, height 
     console.log('Modal found:', modalId, modal, 'isNewWindow:', isNewWindow);
     
     if (modal) {
+        // ===== AUTO-MINIMIZE: Si une autre modale est déjà ouverte, la minimiser =====
+        autoMinimizeOpenModals(modalId);
+        
         modal.classList.add('show');
         
         // Set display mode based on modal type
@@ -47,6 +50,11 @@ function openModal(modalId, htmlFile = null, title = null, width = null, height 
         
         console.log('Modal opened successfully');
         
+        // Mettre à jour la taskbar pour montrer la modale active
+        if (typeof updateTaskbar === 'function') {
+            updateTaskbar();
+        }
+        
         // Initialiser la galerie si c'est la modale gallery
         if (modalId === 'ia-gallery-modal' && typeof GalleryModule !== 'undefined') {
             setTimeout(() => {
@@ -58,17 +66,99 @@ function openModal(modalId, htmlFile = null, title = null, width = null, height 
     }
 }
 
+/**
+ * Tronque un titre à 8 caractères + "..."
+ */
+function truncateTitle(title) {
+    if (!title) return 'Fenêtre';
+    // Retirer les emojis au début si présent pour le comptage
+    const cleanTitle = title.replace(/^[\p{Emoji}\s]+/u, '').trim();
+    const emoji = title.match(/^[\p{Emoji}\s]+/u)?.[0] || '';
+    
+    if (cleanTitle.length <= 8) {
+        return title; // Pas besoin de tronquer
+    }
+    return emoji + cleanTitle.substring(0, 8) + '...';
+}
+
+/**
+ * Récupère le titre d'une modale
+ */
+function getModalTitle(modal) {
+    if (!modal) return 'Fenêtre';
+    
+    // Essayer plusieurs sélecteurs de titre
+    const titleElement = modal.querySelector('.window-title, .modal-title, [class*="title"]');
+    if (titleElement && titleElement.textContent.trim()) {
+        return truncateTitle(titleElement.textContent.trim());
+    }
+    
+    // Fallback: utiliser l'ID de la modale
+    const id = modal.id || '';
+    const fallbackTitle = id.replace(/-modal$/, '').replace(/-/g, ' ');
+    return truncateTitle(fallbackTitle || 'Fenêtre');
+}
+
+/**
+ * Minimise automatiquement toutes les modales ouvertes (sauf celle qu'on ouvre)
+ */
+function autoMinimizeOpenModals(exceptModalId) {
+    // Trouver toutes les modales actuellement visibles
+    const openModals = document.querySelectorAll('.modal.show, .window.show');
+    
+    openModals.forEach(modal => {
+        if (modal.id !== exceptModalId) {
+            console.log(`📥 Auto-minimize: ${modal.id}`);
+            minimizeModalSilent(modal.id);
+        }
+    });
+}
+
+/**
+ * Minimise une modale sans jouer de son (pour l'auto-minimize)
+ */
+function minimizeModalSilent(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    
+    // Get modal title avec troncature
+    const title = getModalTitle(modal);
+    
+    // Add to minimized windows if not already there
+    if (!minimizedWindows.find(w => w.id === modalId)) {
+        minimizedWindows.push({ id: modalId, title: title });
+        updateTaskbar();
+    }
+}
+
 // Sizing moderne pour .window
 function applyModernWindowSizing(modal, width, height) {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight - 28; // Subtract taskbar
+    const modalId = modal.id || '';
     
-    // Mobile (phone): near full-screen
+    // Liste des modales "compactes" qui ne doivent pas prendre toute la hauteur
+    const compactModals = ['contact-modal', 'radio-popup', 'calendar-modal'];
+    const isCompact = compactModals.includes(modalId);
+    
+    // Mobile (phone): near full-screen sauf pour les modales compactes
     if (screenWidth < 480) {
-        modal.style.left = '0';
-        modal.style.top = '0';
-        modal.style.width = '100%';
-        modal.style.height = screenHeight + 'px';
+        if (isCompact) {
+            // Modale compacte : centré, hauteur auto
+            modal.style.width = '95%';
+            modal.style.height = 'auto';
+            modal.style.maxHeight = (screenHeight - 20) + 'px';
+            modal.style.left = '2.5%';
+            modal.style.top = '10px';
+        } else {
+            modal.style.left = '0';
+            modal.style.top = '0';
+            modal.style.width = '100%';
+            modal.style.height = screenHeight + 'px';
+        }
         return;
     }
     
@@ -336,9 +426,8 @@ function minimizeModal(modalId) {
         modal.style.display = 'none';
         modal.classList.remove('show');
         
-        // Get modal title
-        const titleElement = modal.querySelector('.modal-title');
-        const title = titleElement ? titleElement.textContent : 'Fenêtre';
+        // Get modal title avec troncature
+        const title = getModalTitle(modal);
         
         // Add to minimized windows if not already there
         if (!minimizedWindows.find(w => w.id === modalId)) {
@@ -394,11 +483,19 @@ function createDynamicModal(modalId, htmlFile, title, width = 400, height = 300)
     // Vérifier si la modale existe déjà
     let existingModal = document.getElementById(modalId);
     if (existingModal) {
+        // ===== AUTO-MINIMIZE: Si une autre modale est déjà ouverte, la minimiser =====
+        autoMinimizeOpenModals(modalId);
+        
         // Si elle existe déjà, juste la rouvrir
         existingModal.classList.add('show');
         const isNewWindow = existingModal.classList.contains('window');
         existingModal.style.display = isNewWindow ? 'flex' : 'block';
         bringToFront(existingModal);
+        
+        // Mettre à jour la taskbar pour montrer la modale active
+        if (typeof updateTaskbar === 'function') {
+            updateTaskbar();
+        }
         
         // Cas spécial : remonter le calendrier s'il a été démonté
         if (modalId === 'calendar-modal') {
@@ -413,6 +510,9 @@ function createDynamicModal(modalId, htmlFile, title, width = 400, height = 300)
         
         return;
     }
+    
+    // ===== AUTO-MINIMIZE: Avant de créer une nouvelle modale =====
+    autoMinimizeOpenModals(modalId);
     
     // Créer la structure HTML avec nouveau système .window pour meilleure UX
     const modalHTML = `
@@ -499,6 +599,11 @@ function createDynamicModal(modalId, htmlFile, title, width = 400, height = 300)
     
     // Accessibilité
     setupModalAccessibility(modal, true);
+    
+    // Mettre à jour la taskbar pour montrer la modale active
+    if (typeof updateTaskbar === 'function') {
+        updateTaskbar();
+    }
     
     console.log(`🪟 Modale dynamique créée: ${modalId} (${width}x${height})`);
 }

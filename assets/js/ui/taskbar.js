@@ -67,6 +67,8 @@ function initializeGlobalHandlers() {
         const startMenu = document.getElementById('startMenu');
         const startButton = document.getElementById('startButton');
         const contextMenu = document.getElementById('contextMenu');
+        const moreMenu = document.getElementById('taskbarMoreMenu');
+        const moreButton = document.getElementById('taskbarMoreButton');
         
         // Close start menu
         if (!startButton.contains(e.target)) {
@@ -78,32 +80,193 @@ function initializeGlobalHandlers() {
         if (!contextMenu.contains(e.target)) {
             contextMenu.classList.remove('show');
         }
+        
+        // Close "More" menu
+        if (moreMenu && moreButton && !moreButton.contains(e.target) && !moreMenu.contains(e.target)) {
+            moreMenu.classList.remove('show');
+            moreButton.classList.remove('active');
+        }
     });
 }
 
+// ===== TASKBAR AVEC SUPPORT "PLUS/MORE" =====
 function updateTaskbar() {
     const taskbarWindows = document.getElementById('taskbarWindows');
     taskbarWindows.innerHTML = '';
     
-    minimizedWindows.forEach(window => {
-        const button = document.createElement('div');
-        button.className = 'taskbar-window';
-        button.textContent = window.title;
-        button.onclick = () => restoreWindow(window.id);
-        taskbarWindows.appendChild(button);
+    // Construire la liste complète : modale active + modales minimisées
+    const allWindows = [];
+    
+    // Trouver la modale active (visible)
+    const activeModal = document.querySelector('.modal.show, .window.show');
+    if (activeModal && activeModal.id) {
+        const title = typeof getModalTitle === 'function' ? getModalTitle(activeModal) : activeModal.id;
+        allWindows.push({ id: activeModal.id, title: title, isActive: true });
+    }
+    
+    // Ajouter les modales minimisées
+    minimizedWindows.forEach(w => {
+        allWindows.push({ ...w, isActive: false });
     });
+    
+    if (allWindows.length === 0) return;
+    
+    const isMobile = window.innerWidth < 768;
+    const maxVisibleOnMobile = 1; // Seulement 1 modale visible dans la taskbar sur mobile
+    
+    if (isMobile && allWindows.length > maxVisibleOnMobile) {
+        // ===== MODE MOBILE: 1 visible + bouton "Plus" =====
+        
+        // Afficher la première fenêtre (priorité à l'active)
+        const firstWindow = allWindows[0];
+        const button = document.createElement('div');
+        button.className = 'taskbar-window' + (firstWindow.isActive ? ' active' : '');
+        button.textContent = firstWindow.title;
+        button.onclick = () => {
+            if (firstWindow.isActive) {
+                // Cliquer sur la modale active la met au premier plan
+                bringToFront(document.getElementById(firstWindow.id));
+            } else {
+                restoreWindow(firstWindow.id);
+            }
+        };
+        taskbarWindows.appendChild(button);
+        
+        // Créer le bouton "Plus" avec le nombre de modales cachées
+        const hiddenCount = allWindows.length - maxVisibleOnMobile;
+        if (hiddenCount > 0) {
+            const moreButton = document.createElement('div');
+            moreButton.className = 'taskbar-more-button';
+            moreButton.id = 'taskbarMoreButton';
+            
+            // Détecter la langue (FR par défaut)
+            const lang = document.documentElement.lang || 'fr';
+            const isFrench = lang.toLowerCase().startsWith('fr');
+            moreButton.textContent = isFrench ? `Plus (${hiddenCount})` : `More (${hiddenCount})`;
+            
+            moreButton.onclick = (e) => {
+                e.stopPropagation();
+                toggleMoreMenu();
+            };
+            taskbarWindows.appendChild(moreButton);
+            
+            // Créer le menu déroulant "Plus"
+            createMoreMenu(allWindows.slice(maxVisibleOnMobile));
+        }
+        
+    } else {
+        // ===== MODE DESKTOP ou peu de modales: affichage normal =====
+        allWindows.forEach(window => {
+            const button = document.createElement('div');
+            button.className = 'taskbar-window' + (window.isActive ? ' active' : '');
+            button.textContent = window.title;
+            button.onclick = () => {
+                if (window.isActive) {
+                    bringToFront(document.getElementById(window.id));
+                } else {
+                    restoreWindow(window.id);
+                }
+            };
+            taskbarWindows.appendChild(button);
+        });
+    }
+}
+
+/**
+ * Crée le menu déroulant pour les modales cachées
+ */
+function createMoreMenu(hiddenWindows) {
+    // Supprimer l'ancien menu s'il existe
+    let existingMenu = document.getElementById('taskbarMoreMenu');
+    if (existingMenu) {
+        existingMenu.remove();
+    }
+    
+    if (!hiddenWindows || hiddenWindows.length === 0) return;
+    
+    const menu = document.createElement('div');
+    menu.className = 'taskbar-more-menu';
+    menu.id = 'taskbarMoreMenu';
+    
+    // Ajouter les modales cachées
+    hiddenWindows.forEach(window => {
+        const item = document.createElement('div');
+        item.className = 'taskbar-more-menu-item' + (window.isActive ? ' active' : '');
+        item.textContent = window.title;
+        item.onclick = (e) => {
+            e.stopPropagation();
+            if (window.isActive) {
+                closeMoreMenu();
+                bringToFront(document.getElementById(window.id));
+            } else {
+                restoreWindowFromMore(window.id);
+            }
+        };
+        menu.appendChild(item);
+    });
+    
+    document.body.appendChild(menu);
+}
+
+/**
+ * Affiche/masque le menu "Plus"
+ */
+function toggleMoreMenu() {
+    const menu = document.getElementById('taskbarMoreMenu');
+    const button = document.getElementById('taskbarMoreButton');
+    
+    if (menu) {
+        if (menu.classList.contains('show')) {
+            menu.classList.remove('show');
+            if (button) button.classList.remove('active');
+        } else {
+            // Positionner le menu au-dessus du bouton
+            if (button) {
+                const rect = button.getBoundingClientRect();
+                menu.style.left = rect.left + 'px';
+                menu.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+                button.classList.add('active');
+            }
+            menu.classList.add('show');
+        }
+    }
+}
+
+/**
+ * Ferme le menu "Plus"
+ */
+function closeMoreMenu() {
+    const menu = document.getElementById('taskbarMoreMenu');
+    const button = document.getElementById('taskbarMoreButton');
+    if (menu) menu.classList.remove('show');
+    if (button) button.classList.remove('active');
+}
+
+/**
+ * Restaure une fenêtre depuis le menu "Plus"
+ * La modale actuellement affichée (s'il y en a une) sera auto-minimisée par openModal
+ */
+function restoreWindowFromMore(modalId) {
+    closeMoreMenu();
+    
+    // Retirer de la liste des minimisées AVANT d'appeler openModal
+    // (pour éviter qu'elle soit re-minimisée par autoMinimizeOpenModals)
+    minimizedWindows = minimizedWindows.filter(w => w.id !== modalId);
+    
+    // Ouvrir la modale (autoMinimize les autres si nécessaire)
+    openModal(modalId);
 }
 
 function restoreWindow(modalId) {
+    closeMoreMenu();
+    
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'block';
-        modal.classList.add('show');
-        bringToFront(modal);
-        
-        // Remove from minimized windows
+        // Retirer de la liste des minimisées AVANT d'appeler openModal
         minimizedWindows = minimizedWindows.filter(w => w.id !== modalId);
-        updateTaskbar();
+        
+        // Ouvrir la modale (autoMinimize les autres si nécessaire)
+        openModal(modalId);
     }
 }
 

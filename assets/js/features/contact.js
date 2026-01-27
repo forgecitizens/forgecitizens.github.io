@@ -1,19 +1,28 @@
 // Contact form functionality
+// Utilise Formspree pour l'envoi d'emails (gratuit pour sites statiques)
+// Créer un compte sur https://formspree.io et remplacer l'endpoint ci-dessous
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mdagbgdp'; // Remplacer par ton endpoint Formspree
+
 function initializeContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
     
-    form.addEventListener('submit', function(e) {
+    console.log('📧 Initializing contact form...');
+    
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log('📧 Form submitted');
         
-        // Get form data
-        const formData = new FormData(form);
+        // Get form data directly from inputs
         const data = {
-            nom: formData.get('nom'),
-            email: formData.get('email'),
-            sujet: formData.get('sujet'),
-            message: formData.get('message')
+            firstName: document.getElementById('firstName')?.value || '',
+            lastName: document.getElementById('lastName')?.value || '',
+            email: document.getElementById('email')?.value || '',
+            message: document.getElementById('message')?.value || ''
         };
+        
+        console.log('📧 Form data:', data);
         
         // Validate form
         if (!validateContactForm(data)) {
@@ -26,24 +35,106 @@ function initializeContactForm() {
         submitBtn.textContent = 'Envoi en cours...';
         submitBtn.disabled = true;
         
-        // Simulate sending (replace with actual API call)
-        setTimeout(() => {
-            // Success
-            showContactSuccess();
-            form.reset();
+        try {
+            // Envoyer via Formspree
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: `${data.firstName} ${data.lastName}`,
+                    email: data.email,
+                    message: data.message,
+                    _subject: `Message de ${data.firstName} ${data.lastName} via le site`
+                })
+            });
             
-            // Reset button
+            if (response.ok) {
+                console.log('📧 Email sent successfully');
+                showContactSuccessMessage();
+                form.reset();
+                
+                // Mettre à jour le footer de la modale
+                const statusText = document.querySelector('#contact-modal .status-text');
+                if (statusText) {
+                    statusText.textContent = '✅ Message envoyé !';
+                    setTimeout(() => {
+                        statusText.textContent = 'Prêt à envoyer';
+                    }, 10000);
+                }
+            } else {
+                const errorData = await response.json();
+                console.error('📧 Formspree error:', errorData);
+                showContactErrorMessage('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
+            }
+        } catch (error) {
+            console.error('📧 Network error:', error);
+            showContactErrorMessage('Erreur de connexion. Vérifiez votre connexion internet.');
+        } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
-        }, 2000);
+        }
     });
+}
+
+/**
+ * Affiche le message de succès dans la modale (disparaît après 10s)
+ */
+function showContactSuccessMessage() {
+    const messageDiv = document.getElementById('contactMessage');
+    if (messageDiv) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = '#90ee90';
+        messageDiv.style.borderColor = '#008000';
+        messageDiv.innerHTML = '✅ Votre message a été envoyé avec succès ! Je vous répondrai dans les plus brefs délais.';
+        
+        // Masquer après 10 secondes
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 10000);
+    }
+    
+    // Jouer un son de succès si disponible
+    if (typeof playSuccessSound === 'function') {
+        playSuccessSound();
+    }
+}
+
+/**
+ * Affiche un message d'erreur dans la modale (disparaît après 10s)
+ */
+function showContactErrorMessage(errorText) {
+    const messageDiv = document.getElementById('contactMessage');
+    if (messageDiv) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = '#ffcccc';
+        messageDiv.style.borderColor = '#cc0000';
+        messageDiv.innerHTML = '❌ ' + errorText;
+        
+        // Masquer après 10 secondes
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 10000);
+    }
+    
+    // Jouer un son d'erreur si disponible
+    if (typeof playErrorSound === 'function') {
+        playErrorSound();
+    }
 }
 
 function validateContactForm(data) {
     const errors = [];
     
-    // Validate name
-    if (!data.nom || data.nom.trim().length < 2) {
+    // Validate first name
+    if (!data.firstName || data.firstName.trim().length < 2) {
+        errors.push('Le prénom doit contenir au moins 2 caractères');
+    }
+    
+    // Validate last name
+    if (!data.lastName || data.lastName.trim().length < 2) {
         errors.push('Le nom doit contenir au moins 2 caractères');
     }
     
@@ -53,18 +144,14 @@ function validateContactForm(data) {
         errors.push('Veuillez entrer une adresse email valide');
     }
     
-    // Validate subject
-    if (!data.sujet || data.sujet.trim().length < 5) {
-        errors.push('Le sujet doit contenir au moins 5 caractères');
-    }
-    
     // Validate message
     if (!data.message || data.message.trim().length < 10) {
         errors.push('Le message doit contenir au moins 10 caractères');
     }
     
     if (errors.length > 0) {
-        showContactError(errors);
+        // Afficher les erreurs dans la modale
+        showContactErrorMessage(errors.join(' • '));
         return false;
     }
     

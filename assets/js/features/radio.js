@@ -159,6 +159,11 @@ function openRadio() {
         playClickSound();
     }
     
+    // ===== AUTO-MINIMIZE: Si une autre modale est ouverte, la minimiser =====
+    if (typeof autoMinimizeOpenModals === 'function') {
+        autoMinimizeOpenModals('radio-popup');
+    }
+    
     // Check if popup already exists
     let popup = document.getElementById('radio-popup');
     
@@ -167,6 +172,10 @@ function openRadio() {
         popup.style.display = 'flex';
         if (typeof bringToFront === 'function') {
             bringToFront(popup);
+        }
+        // Mettre à jour la taskbar pour montrer la radio active
+        if (typeof updateTaskbar === 'function') {
+            updateTaskbar();
         }
         return;
     }
@@ -208,10 +217,19 @@ function openRadio() {
     popup.classList.add('show');
     popup.style.display = 'flex';
     
-    // Position near the cassette icon (bottom left)
-    popup.style.left = '20px';
-    popup.style.bottom = '120px';
-    popup.style.top = 'auto';
+    // Position : centré en bas sur mobile, coin gauche sur desktop
+    const isMobile = window.innerWidth < 480;
+    if (isMobile) {
+        popup.style.left = '50%';
+        popup.style.transform = 'translateX(-50%)';
+        popup.style.bottom = '80px';
+        popup.style.top = 'auto';
+    } else {
+        popup.style.left = '20px';
+        popup.style.bottom = '120px';
+        popup.style.top = 'auto';
+        popup.style.transform = '';
+    }
     
     // Initialize dragging
     if (typeof initializeSingleModalDragging === 'function') {
@@ -221,6 +239,11 @@ function openRadio() {
     // Bring to front
     if (typeof bringToFront === 'function') {
         bringToFront(popup);
+    }
+    
+    // Mettre à jour la taskbar pour montrer la radio active
+    if (typeof updateTaskbar === 'function') {
+        updateTaskbar();
     }
 }
 
@@ -246,6 +269,15 @@ function minimizeRadio() {
         popup.classList.remove('show');
         popup.style.display = 'none';
         // Keep playing in background
+        
+        // Add to taskbar with truncated title
+        if (typeof minimizedWindows !== 'undefined' && typeof updateTaskbar === 'function') {
+            const title = typeof getModalTitle === 'function' ? getModalTitle(popup) : '📻 Radio';
+            if (!minimizedWindows.find(w => w.id === 'radio-popup')) {
+                minimizedWindows.push({ id: 'radio-popup', title: title });
+                updateTaskbar();
+            }
+        }
     }
 }
 
