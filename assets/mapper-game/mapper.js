@@ -846,25 +846,47 @@ window.addEventListener('keydown', (e) => {
         const lang = GameState.currentLanguage;
         
         const updates = {
-            'update-0': {
+            // 27.01.2026
+            'update-27-01-a': {
+                FR: "Tooltip sur les pays identifiés affiche maintenant le nom du pays et sa capitale.",
+                EN: "Tooltip on identified countries now displays the country name and its capital."
+            },
+            'update-27-01-b': {
+                FR: "Support mobile : tap sur un pays identifié affiche le tooltip pendant 2 secondes.",
+                EN: "Mobile support: tap on an identified country shows the tooltip for 2 seconds."
+            },
+            'update-27-01-c': {
                 FR: "Nouveau système de zoom natif SVG : la carte reste parfaitement nette à tous les niveaux de zoom.",
                 EN: "New native SVG zoom system: the map stays perfectly sharp at all zoom levels."
             },
-            'update-1': {
+            'update-27-01-d': {
                 FR: "Ajout d'un indicateur visuel du niveau de zoom sur le côté droit de la carte.",
                 EN: "Added a visual zoom level indicator on the right side of the map."
             },
-            'update-2': {
+            'update-27-01-e': {
                 FR: "Les labels verrouillés disparaissent maintenant après 1 seconde au lieu de 20.",
                 EN: "Locked labels now disappear after 1 second instead of 20."
             },
-            'update-3': {
+            'update-27-01-f': {
                 FR: "Les animations d'avions suivent désormais la carte lors du déplacement et du zoom.",
                 EN: "Plane animations now follow the map during panning and zooming."
             },
-            'update-4': {
+            'update-27-01-g': {
                 FR: "Correction des trajectoires des avions qui suivent maintenant un chemin logique entre les pays.",
                 EN: "Fixed plane trajectories that now follow a logical path between countries."
+            },
+            // 26.01.2026
+            'update-26-01-a': {
+                FR: "Lancement initial de Mapper avec 3 modes de difficulté.",
+                EN: "Initial launch of Mapper with 3 difficulty modes."
+            },
+            'update-26-01-b': {
+                FR: "Système GEO-COMBO avec bonus de temps et de points.",
+                EN: "GEO-COMBO system with time and point bonuses."
+            },
+            'update-26-01-c': {
+                FR: "Support multilingue Français / Anglais.",
+                EN: "Multilingual support French / English."
             }
         };
         
