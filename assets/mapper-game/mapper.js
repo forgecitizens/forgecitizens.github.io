@@ -113,9 +113,9 @@ window.addEventListener('keydown', (e) => {
         
         // Paramètres du zoom
         zoom: {
-            min: 0.8,
-            max: 5,
-            step: 0.2,
+            min: 0.5,
+            max: 8,
+            step: 0.15,
             default: 1
         }
     };
@@ -317,14 +317,16 @@ window.addEventListener('keydown', (e) => {
         // Timer
         timerInterval: null,
         
-        // Zoom & Pan
+        // Zoom & Pan (basé sur viewBox pour qualité optimale)
         zoom: {
-            scale: 1,
+            scale: 1,           // Niveau de zoom actuel (1 = 100%)
             isPanning: false,
             startX: 0,
             startY: 0,
-            scrollLeft: 0,
-            scrollTop: 0
+            // viewBox original du SVG (stocké à l'init)
+            originalViewBox: { x: 0, y: 0, width: 2000, height: 1001 },
+            // viewBox courant (modifié par zoom/pan)
+            currentViewBox: { x: 0, y: 0, width: 2000, height: 1001 }
         },
         
         // Sélection de labels (nouveau système clic)
@@ -843,20 +845,24 @@ window.addEventListener('keydown', (e) => {
         
         const updates = {
             'update-0': {
-                FR: "Passage à une carte du monde SVG haute résolution : qualité d'affichage optimale même lors des zooms.",
-                EN: "Switched to a high-resolution world SVG map: optimal display quality even when zooming in."
+                FR: "Nouveau système de zoom natif SVG : la carte reste parfaitement nette à tous les niveaux de zoom.",
+                EN: "New native SVG zoom system: the map stays perfectly sharp at all zoom levels."
             },
             'update-1': {
-                FR: "La carte est maintenant centrée sur l'Afrique/Europe au démarrage d'une partie, au lieu de l'Océan Pacifique.",
-                EN: "The map is now centered on Africa/Europe when starting a game, instead of the Pacific Ocean."
+                FR: "Ajout d'un indicateur visuel du niveau de zoom sur le côté droit de la carte.",
+                EN: "Added a visual zoom level indicator on the right side of the map."
             },
             'update-2': {
-                FR: "Ajout d'un niveau de dézoom supplémentaire (+20%) pour une meilleure vue d'ensemble.",
-                EN: "Added an additional zoom-out level (+20%) for a better overview."
+                FR: "Les labels verrouillés disparaissent maintenant après 1 seconde au lieu de 20.",
+                EN: "Locked labels now disappear after 1 second instead of 20."
             },
             'update-3': {
-                FR: "L'animation du score lors d'une réponse correcte est plus lente et plus visible, notamment sur mobile.",
-                EN: "The score animation when a correct answer is given is slower and more visible, especially on mobile."
+                FR: "Les animations d'avions suivent désormais la carte lors du déplacement et du zoom.",
+                EN: "Plane animations now follow the map during panning and zooming."
+            },
+            'update-4': {
+                FR: "Correction des trajectoires des avions qui suivent maintenant un chemin logique entre les pays.",
+                EN: "Fixed plane trajectories that now follow a logical path between countries."
             }
         };
         
@@ -956,34 +962,52 @@ window.addEventListener('keydown', (e) => {
     
     /**
      * Réinitialise le zoom à 100% et centre la carte sur l'Afrique/Europe
+     * Utilise la manipulation du viewBox pour une qualité optimale
      */
     function resetZoom() {
         const mapContainer = GameState.elements?.mapContainer;
         const svg = mapContainer?.querySelector('svg');
         
         if (svg && GameState.zoom) {
-            GameState.zoom.scale = CONFIG.zoom.default;
-            svg.style.transform = `scale(${CONFIG.zoom.default})`;
-            svg.style.transformOrigin = '0 0';
+            const zoomState = GameState.zoom;
+            const original = zoomState.originalViewBox;
             
-            // Centrer la carte sur l'Afrique/Europe au lieu du Pacifique
-            // Le SVG fait 2000x1001, l'Afrique est environ à 50% horizontal et 35% vertical
-            const svgWidth = svg.getBoundingClientRect().width / GameState.zoom.scale || 2000;
-            const svgHeight = svg.getBoundingClientRect().height / GameState.zoom.scale || 1001;
+            // Reset au scale 1 (viewBox = original)
+            zoomState.scale = CONFIG.zoom.default;
+            zoomState.currentViewBox = { ...original };
+            
+            // Appliquer le viewBox original
+            svg.setAttribute('viewBox', `${original.x} ${original.y} ${original.width} ${original.height}`);
+            
+            // Supprimer toute transformation CSS résiduelle
+            svg.style.transform = '';
+            
+            // Centrer sur l'Afrique/Europe
+            // Le SVG viewBox est centré sur 0,0 donc on calcule le décalage
             const containerWidth = mapContainer.clientWidth;
             const containerHeight = mapContainer.clientHeight;
             
-            // Position de l'Afrique dans le SVG (environ 50% X, 35% Y pour être centré sur l'Afrique/Europe)
-            const africaCenterX = svgWidth * 0.50;
-            const africaCenterY = svgHeight * 0.35;
+            // Calculer le viewBox pour centrer sur l'Afrique/Europe (50% X, 35% Y du monde)
+            const targetCenterX = original.width * 0.50;
+            const targetCenterY = original.height * 0.35;
             
-            // Calculer le scroll pour centrer l'Afrique dans la vue
-            const targetScrollLeft = (africaCenterX * GameState.zoom.scale) - (containerWidth / 2);
-            const targetScrollTop = (africaCenterY * GameState.zoom.scale) - (containerHeight / 2);
+            // Calculer la taille visible en coordonnées SVG
+            const visibleWidth = original.width;
+            const visibleHeight = original.height;
             
-            // Appliquer le scroll (avec des valeurs minimales de 0)
-            mapContainer.scrollLeft = Math.max(0, targetScrollLeft);
-            mapContainer.scrollTop = Math.max(0, targetScrollTop);
+            // Centrer le viewBox sur la cible
+            const newX = targetCenterX - visibleWidth / 2;
+            const newY = targetCenterY - visibleHeight / 2;
+            
+            // Clamper pour ne pas sortir des limites
+            zoomState.currentViewBox.x = Math.max(0, Math.min(newX, 0));
+            zoomState.currentViewBox.y = Math.max(0, Math.min(newY, 0));
+            
+            // Reset le scroll du conteneur
+            mapContainer.scrollLeft = 0;
+            mapContainer.scrollTop = 0;
+            
+            console.log('🔄 Zoom reset: viewBox =', zoomState.currentViewBox);
         }
     }
 
@@ -1815,7 +1839,7 @@ window.addEventListener('keydown', (e) => {
     }
     
     /**
-     * Configure le SVG pour être responsive
+     * Configure le SVG pour être responsive et prépare le système de zoom viewBox
      * @param {SVGElement} svg
      */
     function configureSVG(svg) {
@@ -1826,24 +1850,31 @@ window.addEventListener('keydown', (e) => {
             svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
         }
         
-        // Récupérer les dimensions du viewBox
-        const viewBox = svg.getAttribute('viewBox').split(' ').map(Number);
-        const vbWidth = viewBox[2];
-        const vbHeight = viewBox[3];
+        // Récupérer les dimensions du viewBox original
+        const viewBoxAttr = svg.getAttribute('viewBox').split(' ').map(Number);
+        const vbX = viewBoxAttr[0];
+        const vbY = viewBoxAttr[1];
+        const vbWidth = viewBoxAttr[2];
+        const vbHeight = viewBoxAttr[3];
+        
+        // IMPORTANT: Stocker le viewBox original pour le système de zoom
+        GameState.zoom.originalViewBox = { x: vbX, y: vbY, width: vbWidth, height: vbHeight };
+        GameState.zoom.currentViewBox = { x: vbX, y: vbY, width: vbWidth, height: vbHeight };
         
         // Rendre responsive mais avec ratio fixe pour les calculs de zoom
         svg.classList.add('world-map');
         
-        // IMPORTANT: Utiliser 'none' pour que le SVG remplisse exactement ses dimensions
-        // Cela évite les décalages causés par le centrage automatique
-        svg.setAttribute('preserveAspectRatio', 'xMinYMin slice');
+        // IMPORTANT: xMidYMid meet pour centrer et garder le ratio
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         
-        // Définir des dimensions fixes basées sur le viewBox
-        // Ces dimensions seront multipliées par le scale lors du zoom
-        svg.style.width = vbWidth + 'px';
-        svg.style.height = vbHeight + 'px';
-        svg.style.minWidth = vbWidth + 'px';
-        svg.style.minHeight = vbHeight + 'px';
+        // Le SVG remplit 100% du conteneur - le zoom se fait via viewBox
+        // Cela garantit une qualité parfaite à tous les niveaux de zoom
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.minWidth = '';
+        svg.style.minHeight = '';
+        
+        console.log('✅ SVG configuré avec viewBox:', GameState.zoom.originalViewBox);
     }
     
     /**
@@ -1891,70 +1922,192 @@ window.addEventListener('keydown', (e) => {
     }
     
     /**
-     * Configure le zoom et le pan sur la carte
+     * Configure le zoom et le pan sur la carte via viewBox
+     * Optimisé avec requestAnimationFrame pour limiter à 60fps
+     * 
      * @param {HTMLElement} container - Le conteneur de la carte
      * @param {SVGElement} svg - L'élément SVG
      */
     function setupZoomPan(container, svg) {
         const zoomState = GameState.zoom;
         
+        // ===== THROTTLE AVEC RAF =====
+        let rafPending = false;
+        
+        // ===== INDICATEUR DE ZOOM =====
+        let zoomIndicator = null;
+        let zoomIndicatorTimeout = null;
+        
+        /**
+         * Crée l'indicateur de zoom s'il n'existe pas
+         */
+        function createZoomIndicator() {
+            if (zoomIndicator) return zoomIndicator;
+            
+            zoomIndicator = document.createElement('div');
+            zoomIndicator.className = 'zoom-indicator';
+            zoomIndicator.textContent = 'Zoom: 100%';
+            container.appendChild(zoomIndicator);
+            
+            return zoomIndicator;
+        }
+        
+        /**
+         * Affiche l'indicateur de zoom avec le niveau actuel
+         */
+        function showZoomIndicator(scale) {
+            const indicator = createZoomIndicator();
+            const percentage = Math.round(scale * 100);
+            indicator.textContent = `Zoom: ${percentage}%`;
+            
+            // Afficher avec fade in
+            indicator.classList.remove('fading');
+            indicator.classList.add('visible');
+            
+            // Annuler le précédent timer de disparition
+            if (zoomIndicatorTimeout) {
+                clearTimeout(zoomIndicatorTimeout);
+            }
+            
+            // Programmer la disparition après 3 secondes
+            zoomIndicatorTimeout = setTimeout(() => {
+                indicator.classList.add('fading');
+                setTimeout(() => {
+                    indicator.classList.remove('visible', 'fading');
+                }, 300);
+            }, 3000);
+        }
+        
+        /**
+         * Applique le viewBox de manière throttlée (max 1 par frame)
+         */
+        function applyViewBox() {
+            if (rafPending) return;
+            rafPending = true;
+            
+            requestAnimationFrame(() => {
+                const vb = zoomState.currentViewBox;
+                svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.width} ${vb.height}`);
+                rafPending = false;
+            });
+        }
+        
+        /**
+         * Convertit les coordonnées écran en coordonnées SVG viewBox
+         */
+        function screenToSVG(screenX, screenY) {
+            const svgRect = svg.getBoundingClientRect();
+            const vb = zoomState.currentViewBox;
+            
+            // Ratio entre les dimensions écran et viewBox
+            const ratioX = vb.width / svgRect.width;
+            const ratioY = vb.height / svgRect.height;
+            
+            // Coordonnées relatives au SVG à l'écran
+            const relX = screenX - svgRect.left;
+            const relY = screenY - svgRect.top;
+            
+            // Convertir en coordonnées viewBox
+            return {
+                x: vb.x + relX * ratioX,
+                y: vb.y + relY * ratioY
+            };
+        }
+        
         /**
          * Applique le zoom en conservant un point fixe (sous le curseur/centre du pinch)
-         * Utilise translate + scale pour un contrôle précis
          */
-        function applyZoom(newScale, focalX, focalY) {
+        function applyZoom(newScale, focalScreenX, focalScreenY) {
             const oldScale = zoomState.scale;
             if (!oldScale || oldScale <= 0) {
                 console.warn('⚠️ oldScale invalide, reset à 1');
                 zoomState.scale = 1;
-                return applyZoom(newScale, focalX, focalY);
+                return applyZoom(newScale, focalScreenX, focalScreenY);
             }
             
-            // Clamp newScale
+            // Clamp newScale entre min et max
             newScale = Math.max(CONFIG.zoom.min, Math.min(CONFIG.zoom.max, newScale));
-            if (newScale === oldScale) return;
+            if (Math.abs(newScale - oldScale) < 0.001) return;
             
-            // Position du point focal dans le conteneur (relative au scroll)
-            const containerRect = container.getBoundingClientRect();
-            const pointInContainerX = focalX - containerRect.left + container.scrollLeft;
-            const pointInContainerY = focalY - containerRect.top + container.scrollTop;
+            const original = zoomState.originalViewBox;
+            const current = zoomState.currentViewBox;
             
-            // Position du point focal dans le SVG (coordonnées non-scalées)
-            const pointInSvgX = pointInContainerX / oldScale;
-            const pointInSvgY = pointInContainerY / oldScale;
+            // Point focal en coordonnées SVG AVANT le zoom
+            const focalSVG = screenToSVG(focalScreenX, focalScreenY);
             
-            // Nouvelle position du point focal après le nouveau scale
-            const newPointInContainerX = pointInSvgX * newScale;
-            const newPointInContainerY = pointInSvgY * newScale;
+            // Nouvelles dimensions du viewBox (plus petit = plus zoomé)
+            const newWidth = original.width / newScale;
+            const newHeight = original.height / newScale;
             
-            // Différence de scroll nécessaire pour garder le point focal fixe
-            const scrollDiffX = newPointInContainerX - pointInContainerX;
-            const scrollDiffY = newPointInContainerY - pointInContainerY;
+            // Calculer le nouveau X/Y pour garder le point focal fixe
+            // Rapport de la position du focal dans l'ancien viewBox
+            const focalRatioX = (focalSVG.x - current.x) / current.width;
+            const focalRatioY = (focalSVG.y - current.y) / current.height;
             
-            // Appliquer le nouveau scale
+            // Nouveau X/Y pour que le focal reste au même rapport
+            let newX = focalSVG.x - focalRatioX * newWidth;
+            let newY = focalSVG.y - focalRatioY * newHeight;
+            
+            // Clamper pour ne pas sortir des limites du SVG
+            newX = Math.max(0, Math.min(newX, original.width - newWidth));
+            newY = Math.max(0, Math.min(newY, original.height - newHeight));
+            
+            // Appliquer les nouvelles valeurs
             zoomState.scale = newScale;
-            svg.style.transform = `scale(${newScale})`;
-            svg.style.transformOrigin = '0 0';
+            zoomState.currentViewBox = {
+                x: newX,
+                y: newY,
+                width: newWidth,
+                height: newHeight
+            };
             
-            // Ajuster le scroll pour compenser
-            container.scrollLeft += scrollDiffX;
-            container.scrollTop += scrollDiffY;
+            applyViewBox();
             
-            console.log(`🔍 Zoom: ${Math.round(newScale * 100)}%`);
+            // Afficher l'indicateur de zoom
+            showZoomIndicator(newScale);
         }
         
-        // Zoom avec la molette (PC)
+        /**
+         * Applique le pan (déplacement) de la carte
+         */
+        function applyPan(deltaScreenX, deltaScreenY) {
+            const svgRect = svg.getBoundingClientRect();
+            const original = zoomState.originalViewBox;
+            const current = zoomState.currentViewBox;
+            
+            // Convertir le delta écran en delta viewBox
+            const ratioX = current.width / svgRect.width;
+            const ratioY = current.height / svgRect.height;
+            
+            let newX = current.x - deltaScreenX * ratioX;
+            let newY = current.y - deltaScreenY * ratioY;
+            
+            // Clamper pour ne pas sortir des limites
+            newX = Math.max(0, Math.min(newX, original.width - current.width));
+            newY = Math.max(0, Math.min(newY, original.height - current.height));
+            
+            zoomState.currentViewBox.x = newX;
+            zoomState.currentViewBox.y = newY;
+            
+            applyViewBox();
+        }
+        
+        // ===== ZOOM AVEC LA MOLETTE (PC) =====
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             
+            // Direction du zoom : scroll down = zoom out, scroll up = zoom in
             const direction = e.deltaY > 0 ? -1 : 1;
-            const newScale = zoomState.scale + direction * CONFIG.zoom.step;
+            const zoomFactor = 1 + direction * CONFIG.zoom.step;
+            const newScale = zoomState.scale * zoomFactor;
             
             applyZoom(newScale, e.clientX, e.clientY);
             
         }, { passive: false });
         
-        // Pan avec clic gauche maintenu (PC)
+        // ===== PAN AVEC CLIC MAINTENU (PC) =====
+        let panStartX = 0, panStartY = 0;
+        
         container.addEventListener('mousedown', (e) => {
             // Ignorer si on clique sur un label sélectionnable
             if (e.target.closest('.country-label.selectable')) return;
@@ -1968,10 +2121,8 @@ window.addEventListener('keydown', (e) => {
             
             if (isMiddleClick || isLeftClick) {
                 zoomState.isPanning = true;
-                zoomState.startX = e.clientX;
-                zoomState.startY = e.clientY;
-                zoomState.scrollLeft = container.scrollLeft;
-                zoomState.scrollTop = container.scrollTop;
+                panStartX = e.clientX;
+                panStartY = e.clientY;
                 container.style.cursor = 'grabbing';
                 e.preventDefault();
             }
@@ -1981,11 +2132,14 @@ window.addEventListener('keydown', (e) => {
         window.addEventListener('mousemove', (e) => {
             if (!zoomState.isPanning) return;
             
-            const dx = e.clientX - zoomState.startX;
-            const dy = e.clientY - zoomState.startY;
+            const dx = e.clientX - panStartX;
+            const dy = e.clientY - panStartY;
             
-            container.scrollLeft = zoomState.scrollLeft - dx;
-            container.scrollTop = zoomState.scrollTop - dy;
+            applyPan(dx, dy);
+            
+            // Mettre à jour la position de départ pour le prochain mouvement
+            panStartX = e.clientX;
+            panStartY = e.clientY;
         });
         
         // Écouter mouseup sur window pour arrêter le pan même si la souris est hors du container
@@ -1997,18 +2151,15 @@ window.addEventListener('keydown', (e) => {
         });
         
         // ===== SUPPORT TACTILE (MOBILE) =====
-        let touchStartX, touchStartY;
+        let touchStartX = 0, touchStartY = 0;
         let initialPinchDistance = null;
         let initialPinchScale = null;
-        let pinchCenterX, pinchCenterY;
         
         container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
                 // Pan avec 1 doigt
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
-                zoomState.scrollLeft = container.scrollLeft;
-                zoomState.scrollTop = container.scrollTop;
                 initialPinchDistance = null;
             } else if (e.touches.length === 2) {
                 // Début du pinch-to-zoom
@@ -2022,10 +2173,6 @@ window.addEventListener('keydown', (e) => {
                     touch2.clientY - touch1.clientY
                 );
                 initialPinchScale = zoomState.scale;
-                
-                // Centre du pinch (point focal)
-                pinchCenterX = (touch1.clientX + touch2.clientX) / 2;
-                pinchCenterY = (touch1.clientY + touch2.clientY) / 2;
             }
         }, { passive: false });
         
@@ -2035,8 +2182,11 @@ window.addEventListener('keydown', (e) => {
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
                 
-                container.scrollLeft = zoomState.scrollLeft - dx;
-                container.scrollTop = zoomState.scrollTop - dy;
+                applyPan(dx, dy);
+                
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                
             } else if (e.touches.length === 2 && initialPinchDistance !== null) {
                 // Pinch-to-zoom avec 2 doigts
                 e.preventDefault();
@@ -2053,12 +2203,12 @@ window.addEventListener('keydown', (e) => {
                 const scaleRatio = currentDistance / initialPinchDistance;
                 const newScale = initialPinchScale * scaleRatio;
                 
-                // Nouveau centre du pinch
-                const newCenterX = (touch1.clientX + touch2.clientX) / 2;
-                const newCenterY = (touch1.clientY + touch2.clientY) / 2;
+                // Centre du pinch (point focal)
+                const centerX = (touch1.clientX + touch2.clientX) / 2;
+                const centerY = (touch1.clientY + touch2.clientY) / 2;
                 
                 // Appliquer le zoom centré sur le point focal
-                applyZoom(newScale, newCenterX, newCenterY);
+                applyZoom(newScale, centerX, centerY);
             }
         }, { passive: false });
         
@@ -2072,13 +2222,11 @@ window.addEventListener('keydown', (e) => {
                 if (e.touches.length === 1) {
                     touchStartX = e.touches[0].clientX;
                     touchStartY = e.touches[0].clientY;
-                    zoomState.scrollLeft = container.scrollLeft;
-                    zoomState.scrollTop = container.scrollTop;
                 }
             }
         }, { passive: true });
         
-        console.log('✅ Mapper: Zoom/Pan configuré (avec pinch-to-zoom mobile)');
+        console.log('✅ Mapper: Zoom/Pan via viewBox (throttlé RAF)');
     }
     
     /**
@@ -3379,14 +3527,13 @@ window.addEventListener('keydown', (e) => {
         labelGroup.appendChild(text);
         svg.appendChild(labelGroup);
         
-        // Faire disparaître le label après 20 secondes
+        // Faire disparaître le label après 1 seconde
         setTimeout(() => {
             labelGroup.classList.add('fading-out');
             setTimeout(() => {
-                labelGroup.classList.add('hidden');
-                labelGroup.classList.remove('fading-out');
-            }, 500); // Durée de l'animation de fade out
-        }, 20000); // 20 secondes
+                labelGroup.remove(); // Supprimer complètement au lieu de juste cacher
+            }, 300); // Durée de l'animation de fade out
+        }, 1000); // 1 seconde
         
         console.log(`🏷️ Label verrouillé placé: ${countryName} sur ${targetId}`);
     }
@@ -3763,67 +3910,48 @@ window.addEventListener('keydown', (e) => {
         // Calculer l'angle de rotation pour orienter l'avion
         const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
         
-        // Créer l'élément petit avion
-        const plane = document.createElement('img');
-        plane.src = '/assets/mapper-game/mapper_small_plane.png';
-        plane.className = 'flying-small-plane';
-        plane.style.cssText = `
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            pointer-events: none;
-            z-index: 999;
-            transform-origin: center center;
-            transform: rotate(${angle}deg);
-        `;
+        // Taille de l'avion
+        const planeSize = 10;
         
-        // Positionner l'avion dans le conteneur SVG
-        const svgRect = svg.getBoundingClientRect();
-        const containerRect = mapContainer.getBoundingClientRect();
-        const viewBox = svg.viewBox.baseVal;
+        // Créer un groupe SVG pour l'avion (facilite les transformations)
+        const planeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        planeGroup.setAttribute('class', 'flying-small-plane');
+        planeGroup.style.pointerEvents = 'none';
         
-        const scaleX = svgRect.width / viewBox.width;
-        const scaleY = svgRect.height / viewBox.height;
+        // Créer l'image de l'avion centrée sur (0,0)
+        const plane = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        plane.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/assets/mapper-game/mapper_small_plane.png');
+        plane.setAttribute('width', planeSize);
+        plane.setAttribute('height', planeSize);
+        plane.setAttribute('x', -planeSize / 2);
+        plane.setAttribute('y', -planeSize / 2);
+        plane.setAttribute('transform', `rotate(${angle})`);
         
-        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
-        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
-        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
-        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        planeGroup.appendChild(plane);
+        svg.appendChild(planeGroup);
         
-        plane.style.left = `${screenStartX}px`;
-        plane.style.top = `${screenStartY}px`;
+        // Durée de l'animation
+        const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        const duration = Math.min(Math.max(distance * 50, 8000), 20000);
         
-        mapContainer.appendChild(plane);
+        // Point milieu (légèrement au-dessus de la ligne droite pour un arc)
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2;
         
-        // Durée de l'animation: 3x plus lent que le grand avion
-        // Grand avion: 6-10s selon distance, petit avion: 18-30s
-        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
-        const baseDuration = Math.min(Math.max(distance * 15, 6000), 10000);
-        const duration = baseDuration * 3; // 3x plus lent
-        
-        // Animation plus simple (pas de montée au milieu car voyage court)
-        const animation = plane.animate([
+        // Animation avec translate sur le groupe
+        const animation = planeGroup.animate([
             { 
-                left: `${screenStartX}px`, 
-                top: `${screenStartY}px`, 
-                width: '6px', 
-                height: '6px',
-                opacity: 0.5
+                transform: `translate(${startX}px, ${startY}px) scale(0.5)`,
+                opacity: 0.4
             },
             { 
-                left: `${(screenStartX + screenEndX) / 2}px`, 
-                top: `${(screenStartY + screenEndY) / 2}px`,
-                width: '20px', 
-                height: '20px',
+                transform: `translate(${midX}px, ${midY}px) scale(1.5)`,
                 opacity: 1,
                 offset: 0.5
             },
             { 
-                left: `${screenEndX}px`, 
-                top: `${screenEndY}px`, 
-                width: '6px', 
-                height: '6px',
-                opacity: 0.5
+                transform: `translate(${endX}px, ${endY}px) scale(0.5)`,
+                opacity: 0.4
             }
         ], {
             duration: duration,
@@ -3832,7 +3960,7 @@ window.addEventListener('keydown', (e) => {
         });
         
         animation.onfinish = () => {
-            plane.remove();
+            planeGroup.remove();
         };
         
         console.log(`🛩️ Petit avion en vol: ${startData.countryId} → ${endCountryId} (voisins terrestres)`);
@@ -3872,69 +4000,53 @@ window.addEventListener('keydown', (e) => {
         const endY = endBBox.y + endBBox.height / 2;
         
         // Calculer l'angle de rotation pour orienter l'avion
-        // L'image de l'avion pointe vers le haut par défaut, donc on ajoute 90° pour l'orienter correctement
         const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI) + 90;
         
-        // Créer l'élément avion
-        const plane = document.createElement('img');
-        plane.src = '/assets/mapper-game/mapper-plane.png';
-        plane.className = 'flying-plane';
-        plane.style.cssText = `
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            pointer-events: none;
-            z-index: 1000;
-            transform-origin: center center;
-            transform: rotate(${angle}deg);
-        `;
+        // Taille de l'avion
+        const planeSize = 8;
         
-        // Positionner l'avion dans le conteneur SVG
-        // Convertir les coordonnées SVG en coordonnées écran
-        const svgRect = svg.getBoundingClientRect();
-        const containerRect = mapContainer.getBoundingClientRect();
-        const viewBox = svg.viewBox.baseVal;
+        // Créer un groupe SVG pour contenir l'avion
+        // Le groupe sera positionné et animé, l'image sera centrée et tournée
+        const planeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        planeGroup.setAttribute('class', 'flying-plane');
+        planeGroup.style.pointerEvents = 'none';
         
-        const scaleX = svgRect.width / viewBox.width;
-        const scaleY = svgRect.height / viewBox.height;
+        // Créer l'image de l'avion, centrée à l'origine du groupe
+        const plane = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        plane.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/assets/mapper-game/mapper-plane.png');
+        plane.setAttribute('width', planeSize);
+        plane.setAttribute('height', planeSize);
+        // Centrer l'image sur (0,0) du groupe
+        plane.setAttribute('x', -planeSize / 2);
+        plane.setAttribute('y', -planeSize / 2);
+        // Appliquer la rotation directement sur l'image (tourne autour de son centre qui est à 0,0)
+        plane.setAttribute('transform', `rotate(${angle})`);
         
-        const screenStartX = startX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
-        const screenStartY = startY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
-        const screenEndX = endX * scaleX + (svgRect.left - containerRect.left) + mapContainer.scrollLeft;
-        const screenEndY = endY * scaleY + (svgRect.top - containerRect.top) + mapContainer.scrollTop;
+        planeGroup.appendChild(plane);
+        svg.appendChild(planeGroup);
         
-        plane.style.left = `${screenStartX}px`;
-        plane.style.top = `${screenStartY}px`;
+        // Durée de l'animation (6-10 secondes selon la distance)
+        const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        const duration = Math.min(Math.max(distance * 30, 6000), 10000);
         
-        mapContainer.appendChild(plane);
+        // Point milieu pour l'effet d'arc
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2 - 20;
         
-        // Durée de l'animation (6-10 secondes selon la distance) - plus lent pour un effet réaliste
-        const distance = Math.sqrt(Math.pow(screenEndX - screenStartX, 2) + Math.pow(screenEndY - screenStartY, 2));
-        const duration = Math.min(Math.max(distance * 15, 6000), 10000); // Entre 6 et 10 secondes
-        
-        // Animation avec Web Animations API
-        const animation = plane.animate([
+        // Animation du groupe (translate positionne le centre du groupe)
+        const animation = planeGroup.animate([
             { 
-                left: `${screenStartX}px`, 
-                top: `${screenStartY}px`, 
-                width: '8px', 
-                height: '8px',
+                transform: `translate(${startX}px, ${startY}px) scale(1)`,
                 opacity: 0.3
             },
             { 
-                left: `${(screenStartX + screenEndX) / 2}px`, 
-                top: `${(screenStartY + screenEndY) / 2 - 30}px`, // Monte un peu au milieu
-                width: '32px', 
-                height: '32px',
+                transform: `translate(${midX}px, ${midY}px) scale(4)`,
                 opacity: 1,
                 offset: 0.5
             },
             { 
-                left: `${screenEndX}px`, 
-                top: `${screenEndY}px`, 
-                width: '8px', 
-                height: '8px',
-                opacity: 0.3
+                transform: `translate(${endX}px, ${endY}px) scale(1)`,
+                opacity: 0.4
             }
         ], {
             duration: duration,
@@ -3943,7 +4055,7 @@ window.addEventListener('keydown', (e) => {
         });
         
         animation.onfinish = () => {
-            plane.remove();
+            planeGroup.remove();
         };
         
         console.log(`✈️ Avion en vol: ${startCountry.dataset?.countryId || 'pays'} → ${endCountry.dataset?.countryId || 'pays'}`);

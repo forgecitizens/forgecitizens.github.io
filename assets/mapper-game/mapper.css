@@ -396,10 +396,40 @@ body {
 .map-container {
     flex: 1;
     position: relative;
-    overflow: auto;
+    overflow: hidden; /* Plus de scroll - le zoom/pan se fait via viewBox SVG */
     background: var(--mapper-ocean);
     min-height: 0;
     cursor: default;
+}
+
+/* Indicateur de niveau de zoom */
+.zoom-indicator {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: var(--font-mono);
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-indicator.visible {
+    opacity: 1;
+}
+
+.zoom-indicator.fading {
+    opacity: 0;
 }
 
 /* Curseur pour le pan quand zoomé */
@@ -416,13 +446,14 @@ body {
    ======================================================================== */
 .world-map {
     display: block;
-    transform-origin: 0 0;
-    /* Les dimensions sont définies en JS basées sur le viewBox */
+    /* Le SVG remplit 100% du conteneur - le zoom se fait via viewBox */
+    width: 100%;
+    height: 100%;
     /* Pas de transition pour éviter le lag du zoom */
-    will-change: transform;
-    /* Améliorer le rendu vectoriel lors du zoom */
+    will-change: auto;
+    /* Améliorer le rendu vectoriel - crisp-edges pour des bordures nettes */
     shape-rendering: geometricPrecision;
-    image-rendering: optimizeQuality;
+    /* Le SVG est re-rendu nativement, pas besoin d'optimisation d'image */
 }
 
 /* Style de base des pays */
@@ -523,7 +554,7 @@ body {
     pointer-events: none;
     animation: labelLock 0.4s ease;
     opacity: 1;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.3s ease;
 }
 
 /* Label en cours de disparition */
