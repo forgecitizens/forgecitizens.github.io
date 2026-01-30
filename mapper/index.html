@@ -126,17 +126,22 @@
                 <button class="difficulty-button" id="difficulty-explorer" data-difficulty="explorer">
                     <img class="difficulty-icon" src="/assets/mapper-game/level_explorer.png" alt="Explorer">
                     <span class="difficulty-label" id="difficulty-explorer-label">Facile</span>
-                    <span class="difficulty-description" id="difficulty-explorer-desc">30 pays choisis aléatoirement (sans îles)</span>
+                    <div class="difficulty-tooltip" id="difficulty-explorer-desc">30 pays choisis aléatoirement (sans îles)</div>
                 </button>
                 <button class="difficulty-button" id="difficulty-easy" data-difficulty="easy">
                     <img class="difficulty-icon" src="/assets/mapper-game/level_normal.png" alt="Normal">
                     <span class="difficulty-label" id="difficulty-easy-label">Normal</span>
-                    <span class="difficulty-description" id="difficulty-easy-desc">Vous ne devez trouver que les pays, pas les îles</span>
+                    <div class="difficulty-tooltip" id="difficulty-easy-desc">Vous ne devez trouver que les pays, pas les îles</div>
                 </button>
                 <button class="difficulty-button" id="difficulty-hard" data-difficulty="hard">
                     <img class="difficulty-icon" src="/assets/mapper-game/level_hard.png" alt="Difficile">
                     <span class="difficulty-label" id="difficulty-hard-label">Difficile</span>
-                    <span class="difficulty-description" id="difficulty-hard-desc">Vous devez trouver les pays et les îles. (PC recommandé ou tablette)</span>
+                    <div class="difficulty-tooltip" id="difficulty-hard-desc">Vous devez trouver les pays et les îles. (PC recommandé ou tablette)</div>
+                </button>
+                <button class="difficulty-button difficulty-button-pursuit" id="difficulty-pursuit" data-difficulty="pursuit">
+                    <img class="difficulty-icon" src="/assets/mapper-game/level_pursuit.png" alt="Géo-Poursuite">
+                    <span class="difficulty-label" id="difficulty-pursuit-label">Géo-Poursuite</span>
+                    <div class="difficulty-tooltip" id="difficulty-pursuit-desc">Le jeu vous poursuit ! Vous avez 20 pays à placer. Toutes les 30 secondes, le jeu efface l'une de vos réponses. Vous perdez si le stock de pays à placer revient à 20.</div>
                 </button>
             </div>
         </div>
@@ -224,6 +229,14 @@
             <button class="credits-close-btn" id="updates-close-btn" title="Fermer">×</button>
             <div class="credits-title" id="updates-modal-title">Mises à jour</div>
             <div class="credits-content" id="updates-content">
+                <!-- 30.01.2026 - Mode Géo-Poursuite -->
+                <div class="credits-section">
+                    <h3>30.01.2026</h3>
+                    <ul class="credits-list">
+                        <li id="update-30-01-a">Nouveau mode de jeu : Géo-Poursuite ! Le jeu vous poursuit et efface vos réponses toutes les 30 secondes.</li>
+                        <li id="update-30-01-b">Interface de sélection de difficulté redesignée pour accueillir plus de modes.</li>
+                    </ul>
+                </div>
                 <!-- 27.01.2026 - Nouvelles fonctionnalités -->
                 <div class="credits-section">
                     <h3>27.01.2026</h3>

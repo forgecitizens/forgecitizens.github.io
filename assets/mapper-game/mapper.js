@@ -345,7 +345,16 @@ window.addEventListener('keydown', (e) => {
         consecutiveErrors: 0,
         
         // Timer d'inactivité (pour effet shake du bouton shuffle)
-        inactivityTimer: null
+        inactivityTimer: null,
+        
+        // GÉO-POURSUITE mode tracking
+        pursuit: {
+            active: false,          // True si le mode Géo-Poursuite est actif
+            timer: null,            // Interval du timer de 30 secondes
+            initialLabelCount: 20,  // Nombre de labels au départ
+            pursuitInterval: 30000, // 30 secondes entre chaque "poursuite"
+            maxErrors: 5            // Nombre d'erreurs avant auto-shuffle en mode poursuite
+        }
     };
 
     /* ========================================================================
@@ -451,18 +460,8 @@ window.addEventListener('keydown', (e) => {
             elements.flagEN.addEventListener('click', () => selectLanguage('EN'));
         }
         
-        // Attacher les événements aux boutons de difficulté
-        if (elements.difficultyExplorer) {
-            elements.difficultyExplorer.addEventListener('click', () => selectDifficulty('explorer'));
-        }
-        
-        if (elements.difficultyEasy) {
-            elements.difficultyEasy.addEventListener('click', () => selectDifficulty('easy'));
-        }
-        
-        if (elements.difficultyHard) {
-            elements.difficultyHard.addEventListener('click', () => selectDifficulty('hard'));
-        }
+        // Attacher les événements aux boutons de difficulté avec support mobile double-tap
+        initDifficultyButtons();
         
         // Attacher les événements à la modale de fin de partie
         if (elements.endgameRestart) {
@@ -541,6 +540,69 @@ window.addEventListener('keydown', (e) => {
                 optionsBtn.classList.remove('menu-open');
             }
         });
+    }
+    
+    /**
+     * Initialise les boutons de difficulté avec support mobile (double-tap)
+     * - PC: clic simple lance le niveau, survol affiche le tooltip
+     * - Mobile: premier tap affiche le tooltip, second tap lance le niveau
+     */
+    function initDifficultyButtons() {
+        const difficultyButtons = document.querySelectorAll('.difficulty-button');
+        let activeTouchButton = null; // Bouton actuellement "pré-sélectionné" sur mobile
+        
+        // Détecter si c'est un appareil tactile
+        const isTouchDevice = () => {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        };
+        
+        difficultyButtons.forEach(button => {
+            const difficulty = button.dataset.difficulty;
+            
+            // Gestionnaire de clic (fonctionne pour PC et comme fallback)
+            button.addEventListener('click', (e) => {
+                // Sur PC (pas de touch), lancer directement
+                if (!isTouchDevice()) {
+                    selectDifficulty(difficulty);
+                    return;
+                }
+                
+                // Sur mobile, vérifier si c'est le second tap
+                if (button.classList.contains('touch-active')) {
+                    // Second tap → lancer le niveau
+                    selectDifficulty(difficulty);
+                    clearTouchActive();
+                } else {
+                    // Premier tap → afficher le tooltip
+                    e.preventDefault();
+                    clearTouchActive();
+                    button.classList.add('touch-active');
+                    activeTouchButton = button;
+                }
+            });
+        });
+        
+        /**
+         * Retire l'état touch-active de tous les boutons
+         */
+        function clearTouchActive() {
+            difficultyButtons.forEach(btn => btn.classList.remove('touch-active'));
+            activeTouchButton = null;
+        }
+        
+        // Fermer le tooltip si on clique ailleurs sur mobile
+        document.addEventListener('click', (e) => {
+            if (activeTouchButton && !e.target.closest('.difficulty-button')) {
+                clearTouchActive();
+            }
+        });
+        
+        // Fermer le tooltip si on touche ailleurs sur mobile
+        document.addEventListener('touchstart', (e) => {
+            if (activeTouchButton && !e.target.closest('.difficulty-button')) {
+                clearTouchActive();
+            }
+        }, { passive: true });
     }
     
     /**
@@ -846,6 +908,15 @@ window.addEventListener('keydown', (e) => {
         const lang = GameState.currentLanguage;
         
         const updates = {
+            // 30.01.2026
+            'update-30-01-a': {
+                FR: "Nouveau mode de jeu : Géo-Poursuite ! Le jeu vous poursuit et efface vos réponses toutes les 30 secondes.",
+                EN: "New game mode: Geo-Pursuit! The game chases you and erases your answers every 30 seconds."
+            },
+            'update-30-01-b': {
+                FR: "Interface de sélection de difficulté redesignée pour accueillir plus de modes.",
+                EN: "Difficulty selection interface redesigned to accommodate more modes."
+            },
             // 27.01.2026
             'update-27-01-a': {
                 FR: "Tooltip sur les pays identifiés affiche maintenant le nom du pays et sa capitale.",
@@ -978,6 +1049,11 @@ window.addEventListener('keydown', (e) => {
         // Démarrer le timer d'inactivité
         resetInactivityTimer();
         
+        // Démarrer le timer de poursuite si le mode est actif
+        if (GameState.pursuit.active) {
+            startPursuitTimer();
+        }
+        
         // Mettre à jour l'interface
         updateGameState('playing');
         
@@ -1046,10 +1122,15 @@ window.addEventListener('keydown', (e) => {
         if (GameState.isPaused) {
             stopTimer();
             stopInactivityTimer();
+            stopPursuitTimer(); // Mettre en pause le timer de poursuite
             updateGameState('paused');
         } else {
             startTimer();
             resetInactivityTimer();
+            // Reprendre le timer de poursuite si le mode est actif
+            if (GameState.pursuit.active) {
+                startPursuitTimer();
+            }
             updateGameState('playing');
         }
     }
@@ -1064,6 +1145,7 @@ window.addEventListener('keydown', (e) => {
         stopTimer();
         stopInactivityTimer();
         stopPlaneAnimations();
+        stopPursuitTimer(); // Arrêter le timer de poursuite
         updateGameState('finished');
         
         // Afficher le score final
@@ -1309,9 +1391,15 @@ window.addEventListener('keydown', (e) => {
                 confettiContainer.innerHTML = '';
             }
             
+            // Nettoyer l'explication de poursuite si présente
+            const pursuitExplanation = overlay.querySelector('.pursuit-explanation');
+            if (pursuitExplanation) {
+                pursuitExplanation.remove();
+            }
+            
             overlay.classList.add('closing');
             setTimeout(() => {
-                overlay.classList.remove('visible', 'closing');
+                overlay.classList.remove('visible', 'closing', 'pursuit-defeat');
             }, 200);
         }
     }
@@ -1343,6 +1431,9 @@ window.addEventListener('keydown', (e) => {
      */
     function handleEndgameChangeDifficulty() {
         hideEndgameModal();
+        
+        // Réinitialiser le mode poursuite
+        GameState.pursuit.active = false;
         
         // Réinitialiser l'interface pour revenir à l'écran de sélection
         resetGameInterface();
@@ -1573,11 +1664,24 @@ window.addEventListener('keydown', (e) => {
                 ? 'Vous devez trouver les pays et les îles. (PC recommandé ou tablette)' 
                 : 'You have to find countries and islands. (PC or tablet recommended)';
         }
+        
+        // Géo-Poursuite (nouveau mode)
+        const pursuitLabelEl = document.getElementById('difficulty-pursuit-label');
+        const pursuitDescEl = document.getElementById('difficulty-pursuit-desc');
+        
+        if (pursuitLabelEl) {
+            pursuitLabelEl.textContent = lang === 'FR' ? 'Géo-Poursuite' : 'Geo-Pursuit';
+        }
+        if (pursuitDescEl) {
+            pursuitDescEl.textContent = lang === 'FR' 
+                ? 'Le jeu vous poursuit ! Vous avez 20 pays à placer. Toutes les 30 secondes, le jeu efface l\'une de vos réponses. Vous perdez si le stock de pays à placer revient à 20.' 
+                : 'The game is chasing you! You have 20 countries to place. Every 30 seconds, the game erases one of your answers. You lose if the stock of countries to place returns to 20.';
+        }
     }
     
     /**
      * Sélection de la difficulté depuis la modale
-     * @param {string} difficulty - 'explorer', 'easy' ou 'hard'
+     * @param {string} difficulty - 'explorer', 'easy', 'hard' ou 'pursuit'
      */
     function selectDifficulty(difficulty) {
         console.log(`🗺️ Mapper: Difficulté sélectionnée → ${difficulty}`);
@@ -1586,13 +1690,18 @@ window.addEventListener('keydown', (e) => {
         const explorerBtn = GameState.elements?.difficultyExplorer;
         const easyBtn = GameState.elements?.difficultyEasy;
         const hardBtn = GameState.elements?.difficultyHard;
+        const pursuitBtn = document.getElementById('difficulty-pursuit');
         
         if (explorerBtn) explorerBtn.classList.toggle('selected', difficulty === 'explorer');
         if (easyBtn) easyBtn.classList.toggle('selected', difficulty === 'easy');
         if (hardBtn) hardBtn.classList.toggle('selected', difficulty === 'hard');
+        if (pursuitBtn) pursuitBtn.classList.toggle('selected', difficulty === 'pursuit');
         
         // Définir la difficulté active
         GameState.currentDifficulty = difficulty;
+        
+        // Activer/désactiver le mode Géo-Poursuite
+        GameState.pursuit.active = (difficulty === 'pursuit');
         
         // Mettre à jour le statut
         const loadingText = GameState.currentLanguage === 'FR' ? 'Chargement...' : 'Loading...';
@@ -1630,10 +1739,10 @@ window.addEventListener('keydown', (e) => {
         
         try {
             // Déterminer le chemin du fichier JSON selon langue ET difficulté
-            // Explorer et Easy utilisent le même fichier (pays sans îles)
+            // Explorer, Easy et Pursuit utilisent le même fichier (pays sans îles)
             let jsonPath;
             
-            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy') {
+            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy' || GameState.currentDifficulty === 'pursuit') {
                 jsonPath = lang === 'FR' 
                     ? CONFIG.paths.countriesEasyFR 
                     : CONFIG.paths.countriesEasyEN;
@@ -1645,7 +1754,7 @@ window.addEventListener('keydown', (e) => {
             
             // Déterminer le chemin du fichier de scoring
             let scoringPath;
-            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy') {
+            if (GameState.currentDifficulty === 'explorer' || GameState.currentDifficulty === 'easy' || GameState.currentDifficulty === 'pursuit') {
                 scoringPath = '/assets/mapper-game/scoring_easy.json';
             } else {
                 scoringPath = '/assets/mapper-game/scoring_hard.json';
@@ -1663,7 +1772,13 @@ window.addEventListener('keydown', (e) => {
             if (GameState.currentDifficulty === 'explorer') {
                 const selectedCountries = selectExplorerCountries(countries);
                 GameState.countries = selectedCountries;
-            } else {
+            } 
+            // Pour le mode Géo-Poursuite, sélectionner 20 pays aléatoirement
+            else if (GameState.currentDifficulty === 'pursuit') {
+                const selectedCountries = selectPursuitCountries(countries);
+                GameState.countries = selectedCountries;
+            } 
+            else {
                 GameState.countries = countries;
             }
             
@@ -1706,6 +1821,34 @@ window.addEventListener('keydown', (e) => {
         });
         
         console.log(`🗺️ Mode Explorer: ${selectedCountryCodes.length} pays sélectionnés`);
+        
+        return result;
+    }
+    
+    /**
+     * Sélectionne 20 pays aléatoirement pour le mode Géo-Poursuite (sans îles)
+     * @param {Object} countriesOnly - Les pays sans les îles
+     * @returns {Object} - 20 pays sélectionnés aléatoirement
+     */
+    function selectPursuitCountries(countriesOnly) {
+        const countryOnlyCodes = Object.keys(countriesOnly);
+        
+        console.log(`🏃 Mode Géo-Poursuite: ${countryOnlyCodes.length} pays disponibles`);
+        
+        // Mélanger les pays (Fisher-Yates)
+        const shuffledCountries = [...countryOnlyCodes].sort(() => Math.random() - 0.5);
+        
+        // Sélectionner 20 pays pour le mode poursuite
+        const selectedCountryCodes = shuffledCountries.slice(0, GameState.pursuit.initialLabelCount);
+        
+        // Créer l'objet résultat
+        const result = {};
+        
+        selectedCountryCodes.forEach(code => {
+            result[code] = countriesOnly[code];
+        });
+        
+        console.log(`🏃 Mode Géo-Poursuite: ${selectedCountryCodes.length} pays sélectionnés`);
         
         return result;
     }
@@ -3129,11 +3272,14 @@ window.addEventListener('keydown', (e) => {
             
             // Incrémenter le compteur d'erreurs consécutives
             GameState.consecutiveErrors++;
-            console.log(`⚠️ Erreurs consécutives: ${GameState.consecutiveErrors}/10`);
             
-            // Auto-shuffle après 10 erreurs consécutives
-            if (GameState.consecutiveErrors >= 10) {
-                console.log('🔄 Auto-shuffle déclenché après 10 erreurs consécutives!');
+            // Déterminer le seuil d'erreurs (5 en mode poursuite, 10 sinon)
+            const maxErrors = GameState.pursuit.active ? GameState.pursuit.maxErrors : 10;
+            console.log(`⚠️ Erreurs consécutives: ${GameState.consecutiveErrors}/${maxErrors}`);
+            
+            // Auto-shuffle après le seuil d'erreurs consécutives
+            if (GameState.consecutiveErrors >= maxErrors) {
+                console.log(`🔄 Auto-shuffle déclenché après ${maxErrors} erreurs consécutives!`);
                 GameState.consecutiveErrors = 0;
                 showAutoShuffleNotification();
                 
@@ -4121,6 +4267,278 @@ window.addEventListener('keydown', (e) => {
         };
         
         console.log(`✈️ Avion en vol: ${startCountry.dataset?.countryId || 'pays'} → ${endCountry.dataset?.countryId || 'pays'}`);
+    }
+
+    /* ========================================================================
+       10. MODE GÉO-POURSUITE
+       ======================================================================== */
+    
+    /**
+     * Démarre le timer de poursuite (toutes les 30 secondes)
+     */
+    function startPursuitTimer() {
+        if (GameState.pursuit.timer) {
+            clearInterval(GameState.pursuit.timer);
+        }
+        
+        console.log('🏃 Géo-Poursuite: Timer démarré (30s)');
+        
+        // Premier tick après 30 secondes
+        GameState.pursuit.timer = setInterval(() => {
+            if (!GameState.isPlaying || isPaused) return;
+            
+            pursuitTick();
+        }, GameState.pursuit.pursuitInterval);
+    }
+    
+    /**
+     * Arrête le timer de poursuite
+     */
+    function stopPursuitTimer() {
+        if (GameState.pursuit.timer) {
+            clearInterval(GameState.pursuit.timer);
+            GameState.pursuit.timer = null;
+            console.log('🏃 Géo-Poursuite: Timer arrêté');
+        }
+    }
+    
+    /**
+     * Tick du timer de poursuite - efface un pays trouvé et le remet dans le pool
+     */
+    function pursuitTick() {
+        // Vérifier qu'il y a des pays placés
+        if (GameState.placedLabels.length === 0) {
+            console.log('🏃 Géo-Poursuite: Aucun pays à effacer');
+            return;
+        }
+        
+        // Choisir un pays au hasard parmi ceux placés
+        const randomIndex = Math.floor(Math.random() * GameState.placedLabels.length);
+        const countryCode = GameState.placedLabels[randomIndex];
+        const countryName = GameState.countries[countryCode];
+        
+        console.log(`🏃 Géo-Poursuite: Le jeu efface "${countryName}" (${countryCode})`);
+        
+        // Retirer le pays de la liste des pays placés
+        GameState.placedLabels.splice(randomIndex, 1);
+        
+        // Remettre le pays dans la liste des labels restants
+        GameState.remainingLabels.push(countryCode);
+        
+        // Remettre le pays dans allLabels s'il n'y est plus
+        if (!GameState.allLabels.some(([code]) => code === countryCode)) {
+            GameState.allLabels.push([countryCode, countryName]);
+        }
+        
+        // Effacer visuellement le pays sur la carte
+        resetCountryOnMap(countryCode);
+        
+        // Afficher une notification
+        showPursuitCatchNotification(countryName);
+        
+        // Jouer un son de poursuite
+        playPursuitCatchSound();
+        
+        // Vérifier si le joueur a perdu (stock revient à 20)
+        checkPursuitGameOver();
+    }
+    
+    /**
+     * Réinitialise un pays sur la carte (enlève la couleur verte)
+     * Passage instantané sans animation
+     * @param {string} countryCode - Code du pays
+     */
+    function resetCountryOnMap(countryCode) {
+        const mapContainer = GameState.elements?.mapContainer;
+        if (!mapContainer) return;
+        
+        const svg = mapContainer.querySelector('svg');
+        if (!svg) return;
+        
+        // Trouver tous les paths du pays
+        const paths = svg.querySelectorAll(`path[data-country-id="${countryCode}"]`);
+        
+        paths.forEach(path => {
+            // Retirer toutes les classes d'état (correct, hover, etc.)
+            path.classList.remove('country-correct', 'country-hover', 'country-wrong', 'country-neighbor');
+        });
+        
+        // Supprimer le label verrouillé s'il existe encore
+        const lockedLabel = svg.querySelector(`.country-label-svg[data-country="${countryCode}"]`);
+        if (lockedLabel) {
+            lockedLabel.remove();
+        }
+        
+        console.log(`🗺️ Pays ${countryCode} remis à l'état initial sur la carte`);
+    }
+    
+    /**
+     * Affiche la notification quand le jeu rattrape le joueur
+     * @param {string} countryName - Nom du pays effacé
+     */
+    function showPursuitCatchNotification(countryName) {
+        const container = GameState.elements?.gameContainer;
+        if (!container) return;
+        
+        const notification = document.createElement('div');
+        notification.className = 'pursuit-notification';
+        
+        const isFR = GameState.currentLanguage === 'FR';
+        notification.innerHTML = `
+            <div class="pursuit-icon">🏃💨</div>
+            <div class="pursuit-text">${isFR ? 'Le jeu vous rattrape !' : 'The game is catching up!'}</div>
+            <div class="pursuit-country">${countryName} ${isFR ? 'est effacé !' : 'has been erased!'}</div>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Animation d'entrée
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+        
+        // Supprimer après l'animation
+        setTimeout(() => {
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 500);
+        }, 2000);
+    }
+    
+    /**
+     * Joue le son de poursuite
+     */
+    function playPursuitCatchSound() {
+        try {
+            // Utiliser le son too_bad pour l'instant
+            const pursuitSound = new Audio('/sounds/mapper%20sounds/too_bad.wav');
+            pursuitSound.volume = 0.4;
+            pursuitSound.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son de poursuite:', err);
+            });
+        } catch (err) {
+            console.warn('⚠️ Erreur audio poursuite:', err);
+        }
+    }
+    
+    /**
+     * Vérifie si le joueur a perdu en mode Géo-Poursuite
+     * (le stock de labels revient à 20)
+     */
+    function checkPursuitGameOver() {
+        if (!GameState.pursuit.active) return;
+        
+        const remainingCount = GameState.remainingLabels.length;
+        const initialCount = GameState.pursuit.initialLabelCount;
+        
+        console.log(`🏃 Géo-Poursuite: Stock = ${remainingCount}/${initialCount}`);
+        
+        if (remainingCount >= initialCount) {
+            console.log('💀 Géo-Poursuite: GAME OVER - Le jeu a rattrapé le joueur!');
+            
+            // Arrêter le jeu
+            GameState.isPlaying = false;
+            stopTimer();
+            stopInactivityTimer();
+            stopPlaneAnimations();
+            stopPursuitTimer();
+            
+            // Afficher l'écran de défaite
+            showPursuitGameOverModal();
+        }
+    }
+    
+    /**
+     * Affiche la modale de game over pour le mode Géo-Poursuite
+     */
+    function showPursuitGameOverModal() {
+        const lang = GameState.currentLanguage;
+        const stats = GameState.stats;
+        
+        // Mettre à jour les textes selon la langue
+        const titleTextEl = document.getElementById('endgame-title-text');
+        const scoreLabelEl = document.getElementById('endgame-score-label');
+        const timeLabelEl = document.getElementById('endgame-time-label');
+        const errorsLabelEl = document.getElementById('endgame-errors-label');
+        const restartTextEl = document.getElementById('endgame-restart-text');
+        const difficultyTextEl = document.getElementById('endgame-difficulty-text');
+        
+        // Titre spécial pour la défaite en mode poursuite
+        if (titleTextEl) {
+            titleTextEl.textContent = lang === 'FR' ? '💀 Rattrapé !' : '💀 Caught!';
+        }
+        if (scoreLabelEl) {
+            scoreLabelEl.textContent = lang === 'FR' ? 'Score' : 'Score';
+        }
+        if (timeLabelEl) {
+            timeLabelEl.textContent = lang === 'FR' ? 'Temps' : 'Time';
+        }
+        if (errorsLabelEl) {
+            errorsLabelEl.textContent = lang === 'FR' ? 'Erreurs' : 'Errors';
+        }
+        if (restartTextEl) {
+            restartTextEl.textContent = lang === 'FR' ? 'Réessayer' : 'Try Again';
+        }
+        if (difficultyTextEl) {
+            difficultyTextEl.textContent = lang === 'FR' ? 'Changer de difficulté' : 'Change Difficulty';
+        }
+        
+        // Mettre à jour les valeurs
+        const scoreEl = GameState.elements?.endgameScore;
+        const timeEl = GameState.elements?.endgameTime;
+        const errorsEl = GameState.elements?.endgameErrors;
+        
+        if (scoreEl) {
+            scoreEl.textContent = `${stats.correctCount}`;
+        }
+        if (timeEl) {
+            timeEl.textContent = formatTime(stats.elapsedTime);
+        }
+        if (errorsEl) {
+            errorsEl.textContent = stats.wrongCount.toString();
+        }
+        
+        // Créer ou mettre à jour le message d'explication
+        const overlay = GameState.elements?.endgameModalOverlay;
+        if (overlay) {
+            // Ajouter un message d'explication
+            let explanationEl = overlay.querySelector('.pursuit-explanation');
+            if (!explanationEl) {
+                explanationEl = document.createElement('div');
+                explanationEl.className = 'pursuit-explanation';
+                const modal = overlay.querySelector('.endgame-modal');
+                if (modal) {
+                    const statsContainer = modal.querySelector('.endgame-stats');
+                    if (statsContainer) {
+                        statsContainer.insertAdjacentElement('afterend', explanationEl);
+                    }
+                }
+            }
+            
+            explanationEl.innerHTML = lang === 'FR' 
+                ? '<p class="pursuit-defeat-text">🏃 Le jeu vous a rattrapé !<br>Votre stock de labels est revenu à 20.</p>'
+                : '<p class="pursuit-defeat-text">🏃 The game caught up with you!<br>Your label stock has returned to 20.</p>';
+            
+            overlay.classList.add('visible', 'pursuit-defeat');
+            
+            // Jouer un son de défaite
+            playPursuitDefeatSound();
+        }
+    }
+    
+    /**
+     * Joue le son de défaite en mode poursuite
+     */
+    function playPursuitDefeatSound() {
+        try {
+            // Utiliser le son end_game pour l'instant
+            const defeatSound = new Audio('/sounds/mapper%20sounds/end_game.mp3');
+            defeatSound.volume = 0.6;
+            defeatSound.play().catch(err => {
+                console.warn('⚠️ Impossible de jouer le son de défaite:', err);
+            });
+        } catch (err) {
+            console.warn('⚠️ Erreur audio défaite:', err);
+        }
     }
 
     /* ========================================================================
