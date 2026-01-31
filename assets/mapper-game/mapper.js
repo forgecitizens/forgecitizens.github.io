@@ -908,6 +908,15 @@ window.addEventListener('keydown', (e) => {
         const lang = GameState.currentLanguage;
         
         const updates = {
+            // 31.01.2026
+            'update-31-01-a': {
+                FR: "Correction d'un bug qui bloquait les interactions avec la carte après avoir relancé une partie.",
+                EN: "Fixed a bug that blocked map interactions after restarting a game."
+            },
+            'update-31-01-b': {
+                FR: "La notification \"Le jeu vous rattrape\" en mode Géo-Poursuite est maintenant positionnée au-dessus de la zone des labels.",
+                EN: "The \"The game is catching up\" notification in Geo-Pursuit mode is now positioned above the labels area."
+            },
             // 30.01.2026
             'update-30-01-a': {
                 FR: "Nouveau mode de jeu : Géo-Poursuite ! Le jeu vous poursuit et efface vos réponses toutes les 30 secondes.",
@@ -2100,6 +2109,24 @@ window.addEventListener('keydown', (e) => {
     function setupZoomPan(container, svg) {
         const zoomState = GameState.zoom;
         
+        // ===== NETTOYAGE DES ANCIENS LISTENERS =====
+        // Supprimer les anciens listeners pour éviter les doublons
+        if (GameState._zoomPanHandlers) {
+            const h = GameState._zoomPanHandlers;
+            window.removeEventListener('mousemove', h.mousemove);
+            window.removeEventListener('mouseup', h.mouseup);
+            if (h.container) {
+                h.container.removeEventListener('wheel', h.wheel);
+                h.container.removeEventListener('mousedown', h.mousedown);
+                h.container.removeEventListener('touchstart', h.touchstart);
+                h.container.removeEventListener('touchmove', h.touchmove);
+                h.container.removeEventListener('touchend', h.touchend);
+            }
+        }
+        
+        // Réinitialiser l'état de pan
+        zoomState.isPanning = false;
+        
         // ===== THROTTLE AVEC RAF =====
         let rafPending = false;
         
@@ -2261,8 +2288,18 @@ window.addEventListener('keydown', (e) => {
             applyViewBox();
         }
         
-        // ===== ZOOM AVEC LA MOLETTE (PC) =====
-        container.addEventListener('wheel', (e) => {
+        // ===== Variables pour le pan =====
+        let panStartX = 0, panStartY = 0;
+        
+        // ===== Variables pour le tactile =====
+        let touchStartX = 0, touchStartY = 0;
+        let initialPinchDistance = null;
+        let initialPinchScale = null;
+        
+        // ===== HANDLERS NOMMÉS (pour pouvoir les supprimer) =====
+        
+        // Handler wheel (zoom molette)
+        const handleWheel = (e) => {
             e.preventDefault();
             
             // Direction du zoom : scroll down = zoom out, scroll up = zoom in
@@ -2271,13 +2308,10 @@ window.addEventListener('keydown', (e) => {
             const newScale = zoomState.scale * zoomFactor;
             
             applyZoom(newScale, e.clientX, e.clientY);
-            
-        }, { passive: false });
+        };
         
-        // ===== PAN AVEC CLIC MAINTENU (PC) =====
-        let panStartX = 0, panStartY = 0;
-        
-        container.addEventListener('mousedown', (e) => {
+        // Handler mousedown (début du pan)
+        const handleMouseDown = (e) => {
             // Ignorer si on clique sur un label sélectionnable
             if (e.target.closest('.country-label.selectable')) return;
             
@@ -2295,10 +2329,10 @@ window.addEventListener('keydown', (e) => {
                 container.style.cursor = 'grabbing';
                 e.preventDefault();
             }
-        });
+        };
         
-        // Écouter mousemove sur window pour continuer le pan même si la souris sort du container
-        window.addEventListener('mousemove', (e) => {
+        // Handler mousemove (pan en cours)
+        const handleMouseMove = (e) => {
             if (!zoomState.isPanning) return;
             
             const dx = e.clientX - panStartX;
@@ -2309,22 +2343,18 @@ window.addEventListener('keydown', (e) => {
             // Mettre à jour la position de départ pour le prochain mouvement
             panStartX = e.clientX;
             panStartY = e.clientY;
-        });
+        };
         
-        // Écouter mouseup sur window pour arrêter le pan même si la souris est hors du container
-        window.addEventListener('mouseup', () => {
+        // Handler mouseup (fin du pan)
+        const handleMouseUp = () => {
             if (zoomState.isPanning) {
                 zoomState.isPanning = false;
                 container.style.cursor = '';
             }
-        });
+        };
         
-        // ===== SUPPORT TACTILE (MOBILE) =====
-        let touchStartX = 0, touchStartY = 0;
-        let initialPinchDistance = null;
-        let initialPinchScale = null;
-        
-        container.addEventListener('touchstart', (e) => {
+        // Handler touchstart
+        const handleTouchStart = (e) => {
             if (e.touches.length === 1) {
                 // Pan avec 1 doigt
                 touchStartX = e.touches[0].clientX;
@@ -2343,9 +2373,10 @@ window.addEventListener('keydown', (e) => {
                 );
                 initialPinchScale = zoomState.scale;
             }
-        }, { passive: false });
+        };
         
-        container.addEventListener('touchmove', (e) => {
+        // Handler touchmove
+        const handleTouchMove = (e) => {
             if (e.touches.length === 1 && initialPinchDistance === null) {
                 // Pan avec 1 doigt (pas de pinch en cours)
                 const dx = e.touches[0].clientX - touchStartX;
@@ -2379,9 +2410,10 @@ window.addEventListener('keydown', (e) => {
                 // Appliquer le zoom centré sur le point focal
                 applyZoom(newScale, centerX, centerY);
             }
-        }, { passive: false });
+        };
         
-        container.addEventListener('touchend', (e) => {
+        // Handler touchend
+        const handleTouchEnd = (e) => {
             if (e.touches.length < 2) {
                 // Réinitialiser le pinch
                 initialPinchDistance = null;
@@ -2393,7 +2425,34 @@ window.addEventListener('keydown', (e) => {
                     touchStartY = e.touches[0].clientY;
                 }
             }
-        }, { passive: true });
+        };
+        
+        // ===== STOCKER LES HANDLERS =====
+        GameState._zoomPanHandlers = {
+            container: container,
+            wheel: handleWheel,
+            mousedown: handleMouseDown,
+            mousemove: handleMouseMove,
+            mouseup: handleMouseUp,
+            touchstart: handleTouchStart,
+            touchmove: handleTouchMove,
+            touchend: handleTouchEnd
+        };
+        
+        // ===== ATTACHER LES EVENT LISTENERS =====
+        
+        // Zoom molette
+        container.addEventListener('wheel', handleWheel, { passive: false });
+        
+        // Pan souris
+        container.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        
+        // Support tactile
+        container.addEventListener('touchstart', handleTouchStart, { passive: false });
+        container.addEventListener('touchmove', handleTouchMove, { passive: false });
+        container.addEventListener('touchend', handleTouchEnd, { passive: true });
         
         console.log('✅ Mapper: Zoom/Pan via viewBox (throttlé RAF)');
     }
@@ -4386,8 +4445,10 @@ window.addEventListener('keydown', (e) => {
         const isFR = GameState.currentLanguage === 'FR';
         notification.innerHTML = `
             <div class="pursuit-icon">🏃💨</div>
-            <div class="pursuit-text">${isFR ? 'Le jeu vous rattrape !' : 'The game is catching up!'}</div>
-            <div class="pursuit-country">${countryName} ${isFR ? 'est effacé !' : 'has been erased!'}</div>
+            <div class="pursuit-content">
+                <div class="pursuit-text">${isFR ? 'Le jeu vous rattrape !' : 'The game is catching up!'}</div>
+                <div class="pursuit-country">${countryName} ${isFR ? 'est effacé !' : 'has been erased!'}</div>
+            </div>
         `;
         
         container.appendChild(notification);
