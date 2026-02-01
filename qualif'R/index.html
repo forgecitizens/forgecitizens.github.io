@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Andrei Eleodor Sirbu">
+    <meta name="description" content="Qualif'R - Un nouveau jeu sur ForgeCitizens.">
+    <title>Qualif'R</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/qualif'R/letter-q.png">
+    
+    <!-- Stylesheet -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            min-height: 100vh;
+            background-image: url("/assets/qualif'R/Qualif'R background.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #0d1117;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile: agrandir l'image pour que le contenu soit bien visible */
+        @media (max-width: 768px) {
+            body {
+                background-size: 150% auto;
+                background-position: center center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                background-size: 200% auto;
+                background-position: center center;
+            }
+        }
+
+        .back-link {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            transition: background 0.2s;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .game-icon {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Bouton Charte PDF */
+        .btn-charte {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 13px;
+            padding: 8px 14px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-charte:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-charte-icon {
+            font-size: 16px;
+        }
+
+        /* Conteneur des boutons */
+        .buttons-container {
+            position: fixed;
+            bottom: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        /* Style commun des boutons */
+        .btn {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 60px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Bouton Commencer - vert */
+        .btn-start {
+            background-color: #4ade80;
+            color: #0d1117;
+        }
+
+        .btn-start:hover,
+        .btn-start.active {
+            background-color: #86efac;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(74, 222, 128, 0.4);
+        }
+
+        /* Bouton Ce que c'est - beige/sable */
+        .btn-info {
+            background-color: #e8c49a;
+            color: #0d1117;
+        }
+
+        .btn-info:hover,
+        .btn-info.active {
+            background-color: #f0d4b0;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(232, 196, 154, 0.4);
+        }
+
+        /* Responsive pour les boutons */
+        @media (max-width: 768px) {
+            .buttons-container {
+                bottom: 22%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .buttons-container {
+                bottom: 25%;
+            }
+            
+            .btn {
+                font-size: 14px;
+                padding: 12px 50px;
+                min-width: 180px;
+            }
+        }
+
+        /* =====================================================
+           MODALE "CE QUE C'EST"
+           ===================================================== */
+        
+        /* Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Empêcher le scroll du body */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Modale */
+        .modal {
+            background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: min(560px, 92vw);
+            max-height: 85svh;
+            overflow-y: auto;
+            padding: 28px 32px;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+
+        /* Header de la modale (pour la dernière page) */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+
+        .modal-header .heading {
+            margin: 0;
+        }
+
+        /* Bouton Menu principal (dernière page uniquement) */
+        .btn-menu-principal {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: #f2f2f2;
+            color: #121212;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-menu-principal:hover,
+        .btn-menu-principal:focus {
+            background: #ffffff;
+            transform: scale(1.03);
+        }
+
+        /* Contenu de la page */
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Titre principal (jaune) */
+        .heading {
+            color: #f3d34a;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .heading.accent {
+            color: #f3d34a;
+        }
+
+        .heading.accent .brand-name {
+            color: #f3d34a;
+        }
+
+        .heading.accent .brand-r {
+            color: #dc2626;
+        }
+
+        /* Sous-titre (rouge pour les types) */
+        .subheading {
+            color: #dc2626;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Paragraphes */
+        .paragraphs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .paragraph {
+            color: #f2f2f2;
+            font-size: 15px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* Marqueurs de texte */
+        .em {
+            font-weight: 600;
+        }
+
+        .em.green {
+            color: #44d17a;
+        }
+
+        .em.red {
+            color: #dc2626;
+        }
+
+        /* Zone des boutons CTA */
+        .modal-cta {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Bouton principal (bleu) */
+        .btn-modal-primary {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 24px;
+            background: #86bfe8;
+            color: #121212;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 65%;
+            min-width: 200px;
+            text-align: center;
+            transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-modal-primary:hover,
+        .btn-modal-primary:focus {
+            background: #a3d0f0;
+            transform: scale(1.03);
+            box-shadow: 0 4px 16px rgba(134, 191, 232, 0.3);
+        }
+
+        /* Focus visible */
+        .btn-modal-primary:focus-visible,
+        .btn-menu-principal:focus-visible {
+            outline: 2px solid #f3d34a;
+            outline-offset: 2px;
+        }
+
+        /* Responsive modale */
+        @media (max-width: 600px) {
+            .modal {
+                padding: 24px 20px;
+                max-height: 80svh;
+            }
+
+            .heading {
+                font-size: 16px;
+            }
+
+            .subheading {
+                font-size: 15px;
+            }
+
+            .paragraph {
+                font-size: 14px;
+            }
+
+            .btn-modal-primary {
+                width: 80%;
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+
+            .modal-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn-menu-principal {
+                align-self: flex-end;
+            }
+        }
+
+        /* =====================================================
+           MODALE "CHOISISSEZ LA DIFFICULTÉ"
+           ===================================================== */
+        
+        .difficulty-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .difficulty-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .difficulty-modal {
+            background: linear-gradient(180deg, #171717 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: min(700px, 92vw);
+            max-height: 80svh;
+            overflow-y: auto;
+            padding: 22px 28px;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .difficulty-overlay.open .difficulty-modal {
+            transform: scale(1);
+        }
+
+        .difficulty-title {
+            color: #f3d34a;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .difficulty-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .difficulty-option {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .difficulty-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .difficulty-option:focus-visible {
+            outline: 2px solid #f3d34a;
+            outline-offset: 2px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .difficulty-badge {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 10px;
+            color: #121212;
+            min-width: 120px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .difficulty-badge.normal {
+            background: #86bfe8;
+        }
+
+        .difficulty-badge.hard {
+            background: #e56a6a;
+        }
+
+        .difficulty-desc {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .difficulty-desc-line {
+            color: #f2f2f2;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .difficulty-desc-line.bold {
+            font-weight: 600;
+        }
+
+        /* Responsive modale difficulté */
+        @media (max-width: 600px) {
+            .difficulty-modal {
+                padding: 20px 18px;
+            }
+
+            .difficulty-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .difficulty-option {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 14px;
+            }
+
+            .difficulty-badge {
+                font-size: 16px;
+                padding: 10px 20px;
+                min-width: 100px;
+            }
+
+            .difficulty-desc-line {
+                font-size: 13px;
+            }
+        }
+
+        /* =====================================================
+           ÉCRAN DE JEU
+           ===================================================== */
+        
+        .game-screen {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0f;
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .game-screen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            gap: 40px;
+        }
+
+        /* Phrase / Question */
+        .question-text {
+            color: #f2f2f2;
+            font-size: 22px;
+            line-height: 1.6;
+            text-align: center;
+            padding: 0 20px;
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .question-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Conteneur des boutons de réponse */
+        .answers-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* Boutons de réponse */
+        .answer-btn {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 14px 24px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            width: min(260px, 75vw);
+            text-align: center;
+            color: #121212;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.3s ease, transform 0.3s ease, 
+                        border-color 0.15s ease, box-shadow 0.15s ease, 
+                        background-color 0.15s ease;
+            pointer-events: none;
+        }
+
+        .answer-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .answer-btn.locked {
+            pointer-events: none;
+        }
+
+        .answer-btn:hover:not(.locked):not(.selected):not(.fade-out) {
+            transform: scale(1.03);
+            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
+        }
+
+        .answer-btn:focus-visible {
+            outline: 2px solid #f3d34a;
+            outline-offset: 3px;
+        }
+
+        /* Couleurs des boutons */
+        .answer-btn[data-category="fait"] {
+            background-color: #86bfe8;
+        }
+
+        .answer-btn[data-category="interpretation"] {
+            background-color: #e8c49a;
+        }
+
+        .answer-btn[data-category="jugement"] {
+            background-color: #f0a5a5;
+        }
+
+        .answer-btn[data-category="cadrage"] {
+            background-color: #e86a5a;
+        }
+
+        /* États de sélection */
+        .answer-btn.selected {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+        }
+
+        .answer-btn.correct {
+            background-color: #4ade80 !important;
+            border-color: #22c55e;
+            box-shadow: 0 0 24px rgba(74, 222, 128, 0.5);
+        }
+
+        .answer-btn.incorrect {
+            background-color: #ef4444 !important;
+            border-color: #dc2626;
+            box-shadow: 0 0 24px rgba(239, 68, 68, 0.5);
+        }
+
+        .answer-btn.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+        }
+
+        /* Compteur de progression */
+        .progress-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1600;
+        }
+
+        /* Responsive écran de jeu */
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 18px;
+                padding: 0 15px;
+            }
+
+            .answer-btn {
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+
+            .game-container {
+                gap: 32px;
+            }
+
+            .progress-counter {
+                bottom: 15px;
+                right: 15px;
+                font-size: 13px;
+            }
+        }
+
+        /* =====================================================
+           MODALE DE FIN DE PARTIE
+           ===================================================== */
+        
+        .endgame-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .endgame-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .endgame-modal {
+            background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: min(900px, 94vw);
+            max-height: 85svh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .endgame-overlay.open .endgame-modal {
+            transform: scale(1);
+        }
+
+        /* Header sticky */
+        .endgame-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 90%, transparent 100%);
+            padding: 24px 28px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 10;
+        }
+
+        .endgame-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .endgame-title {
+            color: #f3d34a;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .endgame-subtitle {
+            color: #a0a0a0;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .endgame-header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Contenu scrollable */
+        .endgame-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 28px 28px;
+        }
+
+        /* Sections */
+        .endgame-section {
+            margin-bottom: 28px;
+        }
+
+        .endgame-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            color: #f3d34a;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-description {
+            color: #a0a0a0;
+            font-size: 13px;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        /* Cartes d'info */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info-card-label {
+            color: #f3d34a;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .info-card-text {
+            color: #f2f2f2;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .info-card-tip {
+            color: #86bfe8;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .info-card-note {
+            color: #a0a0a0;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Distribution */
+        .distribution-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .distribution-block {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .distribution-block-title {
+            color: #a0a0a0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .distribution-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .distribution-item:last-child {
+            border-bottom: none;
+        }
+
+        .distribution-label {
+            color: #f2f2f2;
+            font-size: 13px;
+        }
+
+        .distribution-value {
+            color: #f2f2f2;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .distribution-note {
+            color: #a0a0a0;
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* Badges catégorie */
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #121212;
+        }
+
+        .category-badge.fait { background: #86bfe8; }
+        .category-badge.interpretation { background: #e8c49a; }
+        .category-badge.jugement { background: #f0a5a5; }
+        .category-badge.cadrage { background: #e86a5a; }
+
+        /* Accordéon review */
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .review-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: auto;
+        }
+
+        .review-item-header {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .review-item-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .review-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        .review-text-preview {
+            color: #f2f2f2;
+            font-size: 13px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .review-choice-preview {
+            color: #a0a0a0;
+            font-size: 12px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .review-expand-icon {
+            color: #a0a0a0;
+            font-size: 12px;
+            transition: transform 0.2s ease;
+            line-height: 1.4;
+        }
+
+        .review-item.open .review-expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .review-item-content {
+            display: none;
+            padding: 0 14px 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .review-item.open .review-item-content {
+            display: block;
+        }
+
+        .review-full-text {
+            color: #f2f2f2;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            padding-top: 12px;
+        }
+
+        .review-choices {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .review-choice-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-choice-label {
+            color: #a0a0a0;
+            font-size: 12px;
+        }
+
+        .review-why {
+            color: #a0a0a0;
+            font-size: 13px;
+            font-style: italic;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .review-why strong {
+            color: #f2f2f2;
+            font-style: normal;
+        }
+
+        /* Footer */
+        .endgame-footer {
+            padding: 16px 28px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+        }
+
+        .endgame-disclaimer {
+            color: #a0a0a0;
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+
+        .endgame-footer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Boutons */
+        .btn-endgame {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-endgame:hover {
+            transform: scale(1.03);
+        }
+
+        .btn-endgame:focus-visible {
+            outline: 2px solid #f3d34a;
+            outline-offset: 2px;
+        }
+
+        .btn-endgame.primary {
+            background: #86bfe8;
+            color: #121212;
+        }
+
+        .btn-endgame.secondary {
+            background: #f2f2f2;
+            color: #121212;
+        }
+
+        .btn-endgame.small {
+            font-size: 12px;
+            padding: 8px 14px;
+        }
+
+        /* Strengths */
+        .strengths-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .strength-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f2f2f2;
+            font-size: 14px;
+        }
+
+        .strength-item .category-badge {
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .endgame-modal {
+                max-height: 90svh;
+            }
+
+            .endgame-header {
+                padding: 18px 18px 14px;
+            }
+
+            .endgame-content {
+                padding: 16px 18px 20px;
+            }
+
+            .endgame-footer {
+                padding: 14px 18px 20px;
+            }
+
+            .endgame-title {
+                font-size: 20px;
+            }
+
+            .endgame-header-top {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .endgame-header-buttons {
+                align-self: flex-end;
+            }
+
+            .distribution-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .review-choices {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .btn-endgame {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Lien retour vers le bureau -->
+    <a href="/" class="back-link">← Retour vers forgecitizens.com</a>
+
+    <!-- Boutons d'action -->
+    <div class="buttons-container">
+        <button class="btn btn-start" id="btnStart">Commencer</button>
+        <button class="btn btn-info" id="btnInfo">Ce que c'est</button>
+    </div>
+
+    <!-- Icône du jeu -->
+    <img src="/assets/qualif'R/letter-q.png" alt="Qualif'R" class="game-icon">
+
+    <!-- Bouton Charte PDF -->
+    <a href="/assets/qualif'R/Charte%20ForgeCitizens.pdf" target="_blank" class="btn-charte" title="Ouvrir la Charte ForgeCitizens">
+        <span class="btn-charte-icon">📄</span>
+        <span>Charte</span>
+    </a>
+
+    <!-- Modale "Ce que c'est" -->
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalHeading">
+        <div class="modal" id="modal">
+            <div class="modal-content" id="modalContent">
+                <!-- Contenu injecté dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale "Choisissez la difficulté" -->
+    <div class="difficulty-overlay" id="difficultyOverlay" role="dialog" aria-modal="true" aria-labelledby="difficultyTitle">
+        <div class="difficulty-modal" id="difficultyModal">
+            <h2 class="difficulty-title" id="difficultyTitle">Choisissez la difficulté</h2>
+            <div class="difficulty-options">
+                <div class="difficulty-option" tabindex="0" role="button" data-difficulty="normal" aria-label="Difficulté Normal">
+                    <span class="difficulty-badge normal">Normal</span>
+                    <div class="difficulty-desc">
+                        <span class="difficulty-desc-line bold">Des phrases simples à intermédiaires.</span>
+                        <span class="difficulty-desc-line">Pour apprendre à distinguer fait, interprétation, jugement et cadrage.</span>
+                    </div>
+                </div>
+                <div class="difficulty-option" tabindex="0" role="button" data-difficulty="hard" aria-label="Difficulté Difficile">
+                    <span class="difficulty-badge hard">Difficile</span>
+                    <div class="difficulty-desc">
+                        <span class="difficulty-desc-line bold">Des phrases plus ambiguës.</span>
+                        <span class="difficulty-desc-line">Les frontières entre information, opinion et cadrage deviennent plus floues.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Écran de jeu -->
+    <div class="game-screen" id="gameScreen" aria-live="polite">
+        <div class="game-container">
+            <p class="question-text" id="questionText"></p>
+            <div class="answers-container" id="answersContainer">
+                <button class="answer-btn" data-category="fait">Fait</button>
+                <button class="answer-btn" data-category="interpretation">Interprétation</button>
+                <button class="answer-btn" data-category="jugement">Jugement</button>
+                <button class="answer-btn" data-category="cadrage">Cadrage</button>
+            </div>
+        </div>
+        <div class="progress-counter" id="progressCounter">1/20</div>
+    </div>
+
+    <!-- Modale de fin de partie -->
+    <div class="endgame-overlay" id="endgameOverlay" role="dialog" aria-modal="true" aria-labelledby="endgameTitle">
+        <div class="endgame-modal" id="endgameModal">
+            <!-- Header sticky -->
+            <div class="endgame-header">
+                <div class="endgame-header-top">
+                    <div>
+                        <h2 class="endgame-title" id="endgameTitle"></h2>
+                        <p class="endgame-subtitle" id="endgameSubtitle"></p>
+                    </div>
+                    <div class="endgame-header-buttons">
+                        <button class="btn-endgame primary small" id="btnPlayAgainHeader">Rejouer</button>
+                        <button class="btn-endgame secondary small" id="btnBackToMenuHeader">Menu principal</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenu scrollable -->
+            <div class="endgame-content" id="endgameContent">
+                <!-- Rendu dynamiquement par JS -->
+            </div>
+            
+            <!-- Footer -->
+            <div class="endgame-footer">
+                <p class="endgame-disclaimer" id="endgameDisclaimer"></p>
+                <div class="endgame-footer-buttons">
+                    <button class="btn-endgame primary" id="btnPlayAgain">Rejouer</button>
+                    <button class="btn-endgame secondary" id="btnBackToMenu">Menu principal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // MODALE "CE QUE C'EST" - LOGIC
+        // =====================================================
+
+        let modalData = null;
+        let currentPage = 0;
+        let previouslyFocusedElement = null;
+
+        // Éléments DOM
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modalContent');
+        const btnInfo = document.getElementById('btnInfo');
+        const btnStart = document.getElementById('btnStart');
+
+        // Charger le JSON
+        async function loadModalData() {
+            try {
+                const response = await fetch("/assets/qualif'R/qualifr_ce_que_cest_fr.json");
+                modalData = await response.json();
+            } catch (error) {
+                console.error('Erreur chargement JSON:', error);
+            }
+        }
+
+        // Parser les marqueurs {em:...}, {emGreen:...}, {emRed:...}
+        function parseMarkers(text) {
+            return text
+                .replace(/\{em:([^}]+)\}/g, '<span class="em">$1</span>')
+                .replace(/\{emGreen:([^}]+)\}/g, '<span class="em green">$1</span>')
+                .replace(/\{emRed:([^}]+)\}/g, '<span class="em red">$1</span>');
+        }
+
+        // Rendre le heading avec le style Qualif'R
+        function renderHeading(heading) {
+            if (!heading) return '';
+            
+            let text = heading.text;
+            // Styliser "Qualif'R" avec le R en rouge
+            text = text.replace(/Qualif'R/g, '<span class="brand-name">Qualif\'</span><span class="brand-r">R</span>');
+            
+            const toneClass = heading.tone || '';
+            return `<h2 class="heading ${toneClass}" id="modalHeading">${text}</h2>`;
+        }
+
+        // Rendre une page de la modale
+        function renderPage(pageIndex) {
+            if (!modalData || !modalData.modal.pages[pageIndex]) return;
+
+            const page = modalData.modal.pages[pageIndex];
+            const isLastPage = pageIndex === modalData.modal.pages.length - 1;
+            
+            let html = '';
+
+            // Header avec bouton Menu Principal (dernière page)
+            if (isLastPage && page.cta?.secondary) {
+                html += `<div class="modal-header">`;
+                html += renderHeading(page.heading);
+                html += `<button class="btn-menu-principal" id="btnMenuPrincipal">${page.cta.secondary.label}</button>`;
+                html += `</div>`;
+            } else {
+                html += renderHeading(page.heading);
+            }
+
+            // Subheading
+            if (page.subheading) {
+                html += `<p class="subheading">${page.subheading.text}</p>`;
+            }
+
+            // Paragraphes
+            if (page.paragraphs && page.paragraphs.length > 0) {
+                html += '<div class="paragraphs">';
+                for (const para of page.paragraphs) {
+                    html += `<p class="paragraph">${parseMarkers(para)}</p>`;
+                }
+                html += '</div>';
+            }
+
+            // Boutons CTA
+            html += '<div class="modal-cta">';
+            if (page.cta?.primary) {
+                html += `<button class="btn-modal-primary" id="btnModalPrimary">${page.cta.primary.label}</button>`;
+            }
+            html += '</div>';
+
+            modalContent.innerHTML = html;
+
+            // Attacher les événements aux nouveaux boutons
+            const btnModalPrimary = document.getElementById('btnModalPrimary');
+            if (btnModalPrimary) {
+                btnModalPrimary.addEventListener('click', () => {
+                    playSound('mouseclick');
+                    handlePrimaryAction();
+                });
+            }
+
+            const btnMenuPrincipal = document.getElementById('btnMenuPrincipal');
+            if (btnMenuPrincipal) {
+                btnMenuPrincipal.addEventListener('click', () => {
+                    playSound('mouseclick');
+                    closeModal();
+                });
+            }
+
+            // Focus sur le bouton principal
+            setTimeout(() => {
+                if (btnModalPrimary) btnModalPrimary.focus();
+            }, 50);
+        }
+
+        // Gérer l'action du bouton principal
+        function handlePrimaryAction() {
+            if (!modalData) return;
+            
+            const page = modalData.modal.pages[currentPage];
+            const action = page.cta?.primary?.action;
+
+            if (action === 'next') {
+                currentPage++;
+                if (currentPage < modalData.modal.pages.length) {
+                    renderPage(currentPage);
+                }
+            } else if (action === 'startGame') {
+                closeModal();
+                // Ouvrir la modale de sélection de difficulté
+                openDifficultyModal();
+            }
+        }
+
+        // Ouvrir la modale
+        function openModal() {
+            previouslyFocusedElement = document.activeElement;
+            currentPage = 0;
+            renderPage(currentPage);
+            
+            modalOverlay.classList.add('open');
+            document.body.classList.add('modal-open');
+            
+            // Focus trap setup
+            modal.addEventListener('keydown', trapFocus);
+        }
+
+        // Fermer la modale
+        function closeModal() {
+            modalOverlay.classList.remove('open');
+            document.body.classList.remove('modal-open');
+            
+            modal.removeEventListener('keydown', trapFocus);
+            
+            // Rendre le focus au bouton "Ce que c'est"
+            if (previouslyFocusedElement) {
+                previouslyFocusedElement.focus();
+            }
+        }
+
+        // Focus trap
+        function trapFocus(e) {
+            if (e.key !== 'Tab') return;
+
+            const focusableElements = modal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+
+        // Stub de la fonction startGame
+        function startGame(options = {}) {
+            const difficulty = options.difficulty || 'normal';
+            console.log(`🎮 startGame() appelée - Difficulté: ${difficulty}`);
+            initGame(difficulty);
+        }
+
+        // =====================================================
+        // LOGIQUE DU JEU QUALIF'R
+        // =====================================================
+
+        // État du jeu
+        let questionsData = null;
+        let runQuestions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let isAnswerLocked = false;
+        let currentDifficulty = 'normal';
+
+        // Éléments DOM du jeu
+        const gameScreen = document.getElementById('gameScreen');
+        const questionText = document.getElementById('questionText');
+        const answersContainer = document.getElementById('answersContainer');
+        const answerBtns = document.querySelectorAll('.answer-btn');
+        const progressCounter = document.getElementById('progressCounter');
+        const endgameOverlay = document.getElementById('endgameOverlay');
+        const endgameContent = document.getElementById('endgameContent');
+        const endgameTitle = document.getElementById('endgameTitle');
+        const endgameSubtitle = document.getElementById('endgameSubtitle');
+        const endgameDisclaimer = document.getElementById('endgameDisclaimer');
+        const btnPlayAgain = document.getElementById('btnPlayAgain');
+        const btnBackToMenu = document.getElementById('btnBackToMenu');
+        const btnPlayAgainHeader = document.getElementById('btnPlayAgainHeader');
+        const btnBackToMenuHeader = document.getElementById('btnBackToMenuHeader');
+
+        // Données de l'écran de fin
+        let endScreenData = null;
+
+        // =====================================================
+        // GESTION DES SONS
+        // =====================================================
+        
+        const sounds = {
+            mouseclick: new Audio('/sounds/mouseclick.wav'),
+            transition: new Audio('/sounds/qualifR sounds/transition.mp3'),
+            answerGiven: new Audio('/sounds/qualifR sounds/answer_given.mp3')
+        };
+
+        // Précharger les sons
+        Object.values(sounds).forEach(sound => {
+            sound.load();
+            sound.volume = 0.5;
+        });
+
+        function playSound(soundName) {
+            const sound = sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log('Audio play prevented:', e));
+            }
+        }
+
+        // Charger les questions depuis le JSON
+        async function loadQuestionsFromJson() {
+            try {
+                const response = await fetch("/assets/qualif'R/QualifR_questions.json");
+                questionsData = await response.json();
+                console.log('✅ Questions chargées:', questionsData.questions.length);
+            } catch (error) {
+                console.error('❌ Erreur chargement questions:', error);
+            }
+        }
+
+        // Charger les données de l'écran de fin
+        async function loadEndScreenData() {
+            try {
+                const response = await fetch("/assets/qualif'R/endscreen.json");
+                endScreenData = await response.json();
+                console.log('✅ EndScreen data chargé');
+            } catch (error) {
+                console.error('❌ Erreur chargement endscreen:', error);
+            }
+        }
+
+        // Algorithme de sélection des 20 questions (anti-pattern guessing)
+        function buildRunQuestions(difficulty) {
+            if (!questionsData) return [];
+
+            // Mapping difficulté -> allowedDifficulties
+            const allowedDifficulties = difficulty === 'hard' 
+                ? [1, 2, 3, 4, 5, 6] 
+                : [1, 2, 3, 4];
+
+            // Catégories
+            const categories = ['fait', 'interpretation', 'jugement', 'cadrage'];
+            const TOTAL = 20;
+            const MIN_PER_CAT = 3;
+            const MAX_PER_CAT = 7;
+
+            // 1) POOL : filtrer par difficulté autorisée
+            const pool = questionsData.questions.filter(q => 
+                allowedDifficulties.includes(q.difficulty)
+            );
+
+            // Grouper par catégorie
+            const poolByCategory = {};
+            categories.forEach(cat => {
+                poolByCategory[cat] = pool.filter(q => q.category === cat);
+            });
+
+            // 2) Générer des quotas aléatoires (entre 4 et 6, ajusté pour total=20)
+            function generateQuotas() {
+                let quotas = {};
+                let total = 0;
+
+                // Tirage initial aléatoire entre 4 et 6
+                categories.forEach(cat => {
+                    const available = poolByCategory[cat].length;
+                    const base = Math.floor(Math.random() * 3) + 4; // 4, 5, ou 6
+                    quotas[cat] = Math.min(base, available, MAX_PER_CAT);
+                    total += quotas[cat];
+                });
+
+                // Ajuster pour atteindre exactement 20
+                let attempts = 0;
+                while (total !== TOTAL && attempts < 100) {
+                    const cat = categories[Math.floor(Math.random() * 4)];
+                    const available = poolByCategory[cat].length;
+
+                    if (total < TOTAL && quotas[cat] < Math.min(available, MAX_PER_CAT)) {
+                        quotas[cat]++;
+                        total++;
+                    } else if (total > TOTAL && quotas[cat] > MIN_PER_CAT) {
+                        quotas[cat]--;
+                        total--;
+                    }
+                    attempts++;
+                }
+
+                // Vérifier que chaque catégorie a au moins MIN_PER_CAT
+                categories.forEach(cat => {
+                    if (quotas[cat] < MIN_PER_CAT) {
+                        const diff = MIN_PER_CAT - quotas[cat];
+                        quotas[cat] = MIN_PER_CAT;
+                        // Retirer d'une autre catégorie qui a plus que le min
+                        for (const otherCat of categories) {
+                            if (otherCat !== cat && quotas[otherCat] > MIN_PER_CAT) {
+                                const canRemove = Math.min(diff, quotas[otherCat] - MIN_PER_CAT);
+                                quotas[otherCat] -= canRemove;
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                return quotas;
+            }
+
+            const quotas = generateQuotas();
+            console.log('📊 Quotas par catégorie:', quotas);
+
+            // 3) Sélectionner les questions par catégorie
+            const selectedByCategory = {};
+            categories.forEach(cat => {
+                const available = [...poolByCategory[cat]];
+                shuffleArray(available);
+                selectedByCategory[cat] = available.slice(0, quotas[cat]);
+            });
+
+            // 4) Combiner et mélanger avec contrainte "max 2 consécutives"
+            let allSelected = [];
+            categories.forEach(cat => {
+                allSelected = allSelected.concat(selectedByCategory[cat]);
+            });
+
+            // Mélanger en respectant la contrainte
+            const result = shuffleWithConstraint(allSelected, 2);
+
+            console.log('✅ Run généré:', result.length, 'questions');
+            return result;
+        }
+
+        // Fisher-Yates shuffle
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Mélanger avec contrainte de max N consécutives de même catégorie
+        function shuffleWithConstraint(questions, maxConsecutive) {
+            const result = [];
+            const remaining = [...questions];
+            shuffleArray(remaining);
+
+            let attempts = 0;
+            const maxAttempts = 1000;
+
+            while (remaining.length > 0 && attempts < maxAttempts) {
+                // Trouver une question valide
+                let foundIndex = -1;
+
+                for (let i = 0; i < remaining.length; i++) {
+                    const candidate = remaining[i];
+                    
+                    // Vérifier la contrainte de consécutivité
+                    let consecutiveCount = 0;
+                    for (let j = result.length - 1; j >= 0 && j >= result.length - maxConsecutive; j--) {
+                        if (result[j].category === candidate.category) {
+                            consecutiveCount++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if (consecutiveCount < maxConsecutive) {
+                        foundIndex = i;
+                        break;
+                    }
+                }
+
+                // Si aucune question valide trouvée, prendre la première
+                if (foundIndex === -1) {
+                    foundIndex = 0;
+                }
+
+                result.push(remaining[foundIndex]);
+                remaining.splice(foundIndex, 1);
+                attempts++;
+            }
+
+            return result;
+        }
+
+        // Initialiser une partie
+        function initGame(difficulty) {
+            currentDifficulty = difficulty;
+            currentIndex = 0;
+            answers = [];
+            isAnswerLocked = false;
+
+            // Construire les 20 questions
+            runQuestions = buildRunQuestions(difficulty);
+
+            if (runQuestions.length === 0) {
+                console.error('❌ Aucune question disponible');
+                return;
+            }
+
+            // Afficher l'écran de jeu
+            showGameScreen();
+
+            // Afficher la première question
+            renderQuestion(0);
+        }
+
+        // Afficher l'écran de jeu
+        function showGameScreen() {
+            gameScreen.classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+
+        // Masquer l'écran de jeu
+        function hideGameScreen() {
+            gameScreen.classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Afficher une question
+        function renderQuestion(index) {
+            if (index >= runQuestions.length) {
+                endGame();
+                return;
+            }
+
+            const question = runQuestions[index];
+            
+            // Mettre à jour le compteur
+            progressCounter.textContent = `${index + 1}/${runQuestions.length}`;
+
+            // Reset des boutons
+            answerBtns.forEach(btn => {
+                btn.classList.remove('visible', 'selected', 'correct', 'incorrect', 'fade-out', 'locked');
+            });
+
+            // Phase A : Afficher la phrase avec fade-in
+            questionText.textContent = question.text;
+            questionText.classList.remove('visible');
+            
+            // Forcer le reflow pour l'animation
+            void questionText.offsetWidth;
+            
+            setTimeout(() => {
+                questionText.classList.add('visible');
+            }, 50);
+
+            // Phase B : Afficher les boutons après 1.5s
+            setTimeout(() => {
+                showAnswerButtons();
+            }, 1500);
+        }
+
+        // Afficher les boutons de réponse
+        function showAnswerButtons() {
+            isAnswerLocked = false;
+            
+            answerBtns.forEach((btn, i) => {
+                setTimeout(() => {
+                    btn.classList.add('visible');
+                }, i * 80); // Stagger de 80ms entre chaque bouton
+            });
+        }
+
+        // Verrouiller les réponses
+        function lockAnswers() {
+            isAnswerLocked = true;
+            answerBtns.forEach(btn => btn.classList.add('locked'));
+        }
+
+        // Gérer le clic sur une réponse
+        function handleAnswerClick(categoryKey) {
+            if (isAnswerLocked) return;
+            
+            lockAnswers();
+            
+            // Jouer le son de réponse donnée
+            playSound('answerGiven');
+
+            const question = runQuestions[currentIndex];
+            const isCorrect = categoryKey === question.category;
+
+            // Enregistrer la réponse
+            answers.push({
+                questionId: question.id,
+                chosenCategoryKey: categoryKey,
+                correctCategoryKey: question.category,
+                isCorrect
+            });
+
+            // Trouver le bouton sélectionné
+            const selectedBtn = document.querySelector(`.answer-btn[data-category="${categoryKey}"]`);
+            
+            // Marquer comme sélectionné
+            selectedBtn.classList.add('selected');
+
+            // Fade out des autres boutons (sans révéler si correct/incorrect)
+            setTimeout(() => {
+                answerBtns.forEach(btn => {
+                    if (btn !== selectedBtn) {
+                        btn.classList.add('fade-out');
+                    }
+                });
+            }, 100);
+
+            // Passer à la question suivante après le feedback
+            setTimeout(() => {
+                nextQuestion();
+            }, 800);
+        }
+
+        // Passer à la question suivante
+        function nextQuestion() {
+            // Fade out de la phrase
+            questionText.classList.remove('visible');
+
+            setTimeout(() => {
+                currentIndex++;
+                
+                if (currentIndex >= runQuestions.length) {
+                    endGame();
+                } else {
+                    // Jouer le son de transition
+                    playSound('transition');
+                    renderQuestion(currentIndex);
+                }
+            }, 200);
+        }
+
+        // =====================================================
+        // ÉCRAN DE FIN - LOGIQUE ET RENDU
+        // =====================================================
+
+        // Fin de partie
+        function endGame() {
+            // Masquer l'écran de jeu et construire l'écran de fin
+            hideGameScreen();
+            buildEndScreen(answers, runQuestions, endScreenData);
+            openEndgameModal();
+        }
+
+        // Calculer la confusion la plus fréquente
+        function computeConfusionPattern(answersData) {
+            const confusions = {};
+            
+            answersData.filter(a => !a.isCorrect).forEach(a => {
+                const key = `${a.chosenCategoryKey}_${a.correctCategoryKey}`;
+                confusions[key] = (confusions[key] || 0) + 1;
+            });
+            
+            // Trouver la paire la plus fréquente
+            let maxCount = 0;
+            let dominantPair = null;
+            
+            for (const [pair, count] of Object.entries(confusions)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    dominantPair = pair;
+                }
+            }
+            
+            // Mapper vers les patterns du JSON (simplifier les paires)
+            if (!dominantPair) return null;
+            
+            const [chosen, correct] = dominantPair.split('_');
+            const patternMappings = {
+                'fait_cadrage': 'fait_cadrage',
+                'cadrage_fait': 'fait_cadrage',
+                'interpretation_cadrage': 'interpretation_cadrage',
+                'cadrage_interpretation': 'interpretation_cadrage',
+                'fait_interpretation': 'fait_interpretation',
+                'interpretation_fait': 'fait_interpretation',
+                'jugement_cadrage': 'jugement_cadrage',
+                'cadrage_jugement': 'jugement_cadrage'
+            };
+            
+            return patternMappings[dominantPair] || null;
+        }
+
+        // Calculer la tendance de lecture dominante
+        function computeReadingTendency(answersData) {
+            const mistakes = answersData.filter(a => !a.isCorrect);
+            
+            // Compter les patterns spécifiques
+            let cadrageAsFait = 0;   // literal
+            let faitAsCadrage = 0;   // suspicious
+            let jugementOveruse = 0; // evaluative
+            let interpretationOveruse = 0; // explanatory
+            
+            mistakes.forEach(a => {
+                if (a.correctCategoryKey === 'cadrage' && a.chosenCategoryKey === 'fait') {
+                    cadrageAsFait++;
+                }
+                if (a.correctCategoryKey === 'fait' && a.chosenCategoryKey === 'cadrage') {
+                    faitAsCadrage++;
+                }
+            });
+            
+            // Compter les sur-sélections
+            const choiceCounts = {};
+            answersData.forEach(a => {
+                choiceCounts[a.chosenCategoryKey] = (choiceCounts[a.chosenCategoryKey] || 0) + 1;
+            });
+            
+            // Identifier les sur-sélections (> 7 sur 20)
+            if ((choiceCounts['jugement'] || 0) > 7) {
+                jugementOveruse = choiceCounts['jugement'] - 5;
+            }
+            if ((choiceCounts['interpretation'] || 0) > 7) {
+                interpretationOveruse = choiceCounts['interpretation'] - 5;
+            }
+            
+            // Déterminer la tendance dominante
+            const tendencies = [
+                { key: 'literal', score: cadrageAsFait },
+                { key: 'suspicious', score: faitAsCadrage },
+                { key: 'evaluative', score: jugementOveruse },
+                { key: 'explanatory', score: interpretationOveruse }
+            ];
+            
+            tendencies.sort((a, b) => b.score - a.score);
+            
+            return tendencies[0].score > 0 ? tendencies[0].key : null;
+        }
+
+        // Calculer les zones de confort (meilleures catégories)
+        function computeStrengths(answersData) {
+            const categories = ['fait', 'interpretation', 'jugement', 'cadrage'];
+            const stats = {};
+            
+            categories.forEach(cat => {
+                const relevant = answersData.filter(a => a.correctCategoryKey === cat);
+                const correct = relevant.filter(a => a.isCorrect).length;
+                const total = relevant.length;
+                stats[cat] = { correct, total, rate: total > 0 ? correct / total : 0 };
+            });
+            
+            // Trier par taux de réussite et prendre les 2 meilleurs (avec au moins 2 questions)
+            const sorted = Object.entries(stats)
+                .filter(([_, s]) => s.total >= 2 && s.rate >= 0.5)
+                .sort((a, b) => b[1].rate - a[1].rate)
+                .slice(0, 2);
+            
+            return sorted.map(([cat, _]) => cat);
+        }
+
+        // Calculer la distribution
+        function computeDistribution(answersData) {
+            const byCategory = { fait: 0, interpretation: 0, jugement: 0, cadrage: 0 };
+            let correct = 0;
+            let incorrect = 0;
+            
+            answersData.forEach(a => {
+                byCategory[a.chosenCategoryKey] = (byCategory[a.chosenCategoryKey] || 0) + 1;
+                if (a.isCorrect) correct++;
+                else incorrect++;
+            });
+            
+            return { byCategory, correct, incorrect };
+        }
+
+        // Construire l'écran de fin
+        function buildEndScreen(answersData, questions, copy) {
+            if (!copy) {
+                console.error('EndScreen copy not loaded');
+                return;
+            }
+            
+            // Header
+            endgameTitle.textContent = copy.header.title;
+            endgameSubtitle.textContent = copy.header.subtitle;
+            endgameDisclaimer.textContent = copy.footer.disclaimer;
+            
+            // Calculs
+            const confusionPattern = computeConfusionPattern(answersData);
+            const readingTendency = computeReadingTendency(answersData);
+            const strengths = computeStrengths(answersData);
+            const distribution = computeDistribution(answersData);
+            
+            let html = '';
+            
+            // Section 1: Tendances observées
+            html += `
+                <div class="endgame-section">
+                    <h3 class="section-title">${copy.sections.overview.title}</h3>
+                    <p class="section-description">${copy.sections.overview.description}</p>
+            `;
+            
+            // Confusion dominante
+            if (confusionPattern && copy.sections.confusionPatterns.patterns[confusionPattern]) {
+                const pattern = copy.sections.confusionPatterns.patterns[confusionPattern];
+                html += `
+                    <div class="info-card">
+                        <div class="info-card-label">${pattern.label}</div>
+                        <div class="info-card-text">${pattern.description}</div>
+                        <div class="info-card-tip">💡 ${pattern.tip}</div>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            
+            // Section 2: Manière de lire
+            if (readingTendency && copy.sections.readingTendencies.profiles[readingTendency]) {
+                const profile = copy.sections.readingTendencies.profiles[readingTendency];
+                html += `
+                    <div class="endgame-section">
+                        <h3 class="section-title">${copy.sections.readingTendencies.title}</h3>
+                        <div class="info-card">
+                            <div class="info-card-label">${profile.label}</div>
+                            <div class="info-card-text">${profile.description}</div>
+                            <div class="info-card-note">${profile.note}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Section 3: Zones de confort
+            if (strengths.length > 0) {
+                html += `
+                    <div class="endgame-section">
+                        <h3 class="section-title">${copy.sections.strengths.title}</h3>
+                        <div class="strengths-list">
+                `;
+                strengths.forEach(cat => {
+                    const label = getCategoryLabel(cat, copy);
+                    html += `
+                        <div class="strength-item">
+                            <span class="category-badge ${cat}">${label}</span>
+                            <span>${copy.sections.strengths.items[cat]}</span>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+            
+            // Section 4: Répartition
+            html += `
+                <div class="endgame-section">
+                    <h3 class="section-title">${copy.sections.distribution.title}</h3>
+                    <div class="distribution-grid">
+                        <div class="distribution-block">
+                            <div class="distribution-block-title">Par catégorie choisie</div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.fait}</span>
+                                <span class="distribution-value">${distribution.byCategory.fait}</span>
+                            </div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.interpretation}</span>
+                                <span class="distribution-value">${distribution.byCategory.interpretation}</span>
+                            </div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.jugement}</span>
+                                <span class="distribution-value">${distribution.byCategory.jugement}</span>
+                            </div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.cadrage}</span>
+                                <span class="distribution-value">${distribution.byCategory.cadrage}</span>
+                            </div>
+                        </div>
+                        <div class="distribution-block">
+                            <div class="distribution-block-title">Résultat</div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.correct}</span>
+                                <span class="distribution-value">${distribution.correct}</span>
+                            </div>
+                            <div class="distribution-item">
+                                <span class="distribution-label">${copy.sections.distribution.labels.incorrect}</span>
+                                <span class="distribution-value">${distribution.incorrect}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="distribution-note">${copy.sections.distribution.note}</p>
+                </div>
+            `;
+            
+            // Section 5: Revoir les phrases
+            html += `
+                <div class="endgame-section">
+                    <h3 class="section-title">${copy.sections.review.title}</h3>
+                    <div class="review-list">
+            `;
+            
+            answersData.forEach((answer, index) => {
+                const question = questions.find(q => q.id === answer.questionId);
+                const questionText = question ? question.text : 'Question non trouvée';
+                const chosenLabel = getCategoryLabel(answer.chosenCategoryKey, copy);
+                const expectedLabel = getCategoryLabel(answer.correctCategoryKey, copy);
+                const icon = answer.isCorrect ? '✅' : '❌';
+                const explanation = copy.sections.review.explanationsByCategory[answer.correctCategoryKey];
+                
+                html += `
+                    <div class="review-item" data-index="${index}">
+                        <div class="review-item-header" onclick="toggleReviewItem(${index})">
+                            <span class="review-icon">${icon}</span>
+                            <span class="review-text-preview">${questionText}</span>
+                            <span class="review-choice-preview">${chosenLabel} → ${expectedLabel}</span>
+                            <span class="review-expand-icon">▼</span>
+                        </div>
+                        <div class="review-item-content">
+                            <p class="review-full-text">${questionText}</p>
+                            <div class="review-choices">
+                                <div class="review-choice-group">
+                                    <span class="review-choice-label">${copy.sections.review.itemLabels.yourChoice} :</span>
+                                    <span class="category-badge ${answer.chosenCategoryKey}">${chosenLabel}</span>
+                                </div>
+                                <div class="review-choice-group">
+                                    <span class="review-choice-label">${copy.sections.review.itemLabels.expected} :</span>
+                                    <span class="category-badge ${answer.correctCategoryKey}">${expectedLabel}</span>
+                                </div>
+                            </div>
+                            <p class="review-why"><strong>${copy.sections.review.itemLabels.why} :</strong> ${explanation}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            
+            endgameContent.innerHTML = html;
+        }
+
+        // Helper: obtenir le label d'une catégorie
+        function getCategoryLabel(categoryKey, copy) {
+            const labels = {
+                'fait': copy.sections.distribution.labels.fait,
+                'interpretation': copy.sections.distribution.labels.interpretation,
+                'jugement': copy.sections.distribution.labels.jugement,
+                'cadrage': copy.sections.distribution.labels.cadrage
+            };
+            return labels[categoryKey] || categoryKey;
+        }
+
+        // Toggle accordéon review
+        function toggleReviewItem(index) {
+            const item = document.querySelector(`.review-item[data-index="${index}"]`);
+            if (item) {
+                item.classList.toggle('open');
+            }
+        }
+        
+        // Exposer la fonction globalement pour le onclick
+        window.toggleReviewItem = toggleReviewItem;
+
+        // Ouvrir la modale de fin
+        function openEndgameModal() {
+            endgameOverlay.classList.add('open');
+            document.body.classList.add('modal-open');
+            
+            setTimeout(() => {
+                btnBackToMenu.focus();
+            }, 100);
+        }
+
+        // Fermer la modale de fin
+        function closeEndgameModal() {
+            endgameOverlay.classList.remove('open');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Retour au menu principal
+        function backToMenu() {
+            closeEndgameModal();
+            hideGameScreen();
+            btnStart.focus();
+        }
+
+        // Rejouer
+        function playAgain() {
+            closeEndgameModal();
+            openDifficultyModal();
+        }
+
+        // Event listeners pour les boutons de réponse
+        answerBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                handleAnswerClick(btn.dataset.category);
+            });
+
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleAnswerClick(btn.dataset.category);
+                }
+            });
+        });
+
+        // Event listeners modale de fin
+        btnBackToMenu.addEventListener('click', () => {
+            playSound('mouseclick');
+            backToMenu();
+        });
+        btnPlayAgain.addEventListener('click', () => {
+            playSound('mouseclick');
+            playAgain();
+        });
+        btnBackToMenuHeader.addEventListener('click', () => {
+            playSound('mouseclick');
+            backToMenu();
+        });
+        btnPlayAgainHeader.addEventListener('click', () => {
+            playSound('mouseclick');
+            playAgain();
+        });
+
+        // Charger les questions et les données de l'écran de fin au démarrage
+        loadQuestionsFromJson();
+        loadEndScreenData();
+
+        // =====================================================
+        // MODALE "CHOISISSEZ LA DIFFICULTÉ" - LOGIC
+        // =====================================================
+
+        const difficultyOverlay = document.getElementById('difficultyOverlay');
+        const difficultyModal = document.getElementById('difficultyModal');
+        const difficultyOptions = document.querySelectorAll('.difficulty-option');
+        let difficultyPreviousFocus = null;
+
+        // Ouvrir la modale de difficulté
+        function openDifficultyModal() {
+            difficultyPreviousFocus = document.activeElement;
+            difficultyOverlay.classList.add('open');
+            document.body.classList.add('modal-open');
+            
+            // Focus sur la première option
+            setTimeout(() => {
+                difficultyOptions[0].focus();
+            }, 50);
+
+            // Focus trap
+            difficultyModal.addEventListener('keydown', trapDifficultyFocus);
+        }
+
+        // Fermer la modale de difficulté
+        function closeDifficultyModal() {
+            difficultyOverlay.classList.remove('open');
+            document.body.classList.remove('modal-open');
+            
+            difficultyModal.removeEventListener('keydown', trapDifficultyFocus);
+            
+            // Rendre le focus au bouton "Commencer"
+            if (difficultyPreviousFocus) {
+                difficultyPreviousFocus.focus();
+            }
+        }
+
+        // Focus trap pour la modale difficulté
+        function trapDifficultyFocus(e) {
+            if (e.key !== 'Tab') return;
+
+            const focusableElements = difficultyModal.querySelectorAll(
+                '[tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+
+        // Sélectionner une difficulté
+        function selectDifficulty(difficulty) {
+            playSound('mouseclick');
+            closeDifficultyModal();
+            startGame({ difficulty });
+        }
+
+        // Event listeners pour les options de difficulté
+        difficultyOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                selectDifficulty(option.dataset.difficulty);
+            });
+
+            option.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectDifficulty(option.dataset.difficulty);
+                }
+            });
+        });
+
+        // Fermer modale difficulté avec ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && difficultyOverlay.classList.contains('open')) {
+                closeDifficultyModal();
+            }
+        });
+
+        // Fermer modale difficulté en cliquant sur overlay
+        difficultyOverlay.addEventListener('click', (e) => {
+            if (e.target === difficultyOverlay) {
+                closeDifficultyModal();
+            }
+        });
+
+        // =====================================================
+        // EVENT LISTENERS
+        // =====================================================
+
+        // Bouton "Ce que c'est"
+        btnInfo.addEventListener('click', () => {
+            playSound('mouseclick');
+            openModal();
+        });
+
+        // Bouton "Commencer" de la home -> ouvre modale difficulté
+        btnStart.addEventListener('click', () => {
+            playSound('mouseclick');
+            openDifficultyModal();
+        });
+
+        // Fermer avec ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+                closeModal();
+            }
+        });
+
+        // Fermer en cliquant sur l'overlay
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Gestion du highlight sur mobile (touch) pour les boutons home
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('touchstart', function(e) {
+                this.classList.add('active');
+            });
+            
+            btn.addEventListener('touchend', function(e) {
+                this.classList.remove('active');
+            });
+            
+            btn.addEventListener('touchcancel', function(e) {
+                this.classList.remove('active');
+            });
+        });
+
+        // Charger les données au démarrage
+        loadModalData();
+    </script>
+</body>
+</html>

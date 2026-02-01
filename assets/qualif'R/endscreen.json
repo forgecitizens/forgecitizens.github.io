@@ -1,0 +1,120 @@
+{
+  "id": "qualifr_end_screen_fr",
+  "lang": "fr",
+
+  "header": {
+    "title": "Fin de partie",
+    "subtitle": "Voici ce que cette partie révèle de ta lecture."
+  },
+
+  "sections": {
+
+    "overview": {
+      "title": "Tendances observées",
+      "description": "Ces indications décrivent des tendances de lecture, pas des réussites ou des échecs."
+    },
+
+    "confusionPatterns": {
+      "title": "Confusions fréquentes",
+      "patterns": {
+        "fait_cadrage": {
+          "label": "Fait ↔ Cadrage",
+          "description": "Tu as tendance à lire certaines phrases orientées comme des faits neutres.",
+          "tip": "Repère les mots qui chargent la phrase ou suggèrent un angle implicite."
+        },
+        "interpretation_cadrage": {
+          "label": "Interprétation ↔ Cadrage",
+          "description": "Tu confonds parfois une explication avec une orientation de la perception.",
+          "tip": "Demande-toi si la phrase explique un fait ou si elle guide ton jugement."
+        },
+        "fait_interpretation": {
+          "label": "Fait ↔ Interprétation",
+          "description": "Certaines conclusions te semblent factuelles alors qu’elles proposent une lecture.",
+          "tip": "Un fait décrit. Une interprétation explique."
+        },
+        "jugement_cadrage": {
+          "label": "Jugement ↔ Cadrage",
+          "description": "Tu hésites entre opinion explicite et orientation plus subtile.",
+          "tip": "Un jugement dit clairement “bien” ou “mal”. Le cadrage le suggère."
+        }
+      }
+    },
+
+    "readingTendencies": {
+      "title": "Manières de lire observées",
+      "profiles": {
+        "literal": {
+          "label": "Lecture au premier degré",
+          "description": "Tu tends à prendre les phrases pour ce qu’elles disent explicitement.",
+          "trigger": "cadrage_classed_as_fait",
+          "note": "C’est fréquent quand le cadrage est discret."
+        },
+        "suspicious": {
+          "label": "Lecture soupçonneuse",
+          "description": "Tu tends à voir une orientation là où il y a surtout de l’information.",
+          "trigger": "fait_classed_as_cadrage",
+          "note": "Cela montre une vigilance élevée, parfois excessive."
+        },
+        "evaluative": {
+          "label": "Lecture évaluative",
+          "description": "Tu lis souvent les phrases en termes de jugement ou de prise de position.",
+          "trigger": "high_jugement_choice",
+          "note": "Utile pour repérer les opinions, moins pour isoler les faits."
+        },
+        "explanatory": {
+          "label": "Lecture explicative",
+          "description": "Tu cherches spontanément le sens ou la cause derrière les faits.",
+          "trigger": "high_interpretation_choice",
+          "note": "Cela aide à comprendre, mais peut masquer le cadrage."
+        }
+      }
+    },
+
+    "strengths": {
+      "title": "Zones de confort",
+      "items": {
+        "fait": "Tu identifies bien les phrases factuelles.",
+        "interpretation": "Tu repères correctement les phrases explicatives.",
+        "jugement": "Les jugements explicites sont rarement ambigus pour toi.",
+        "cadrage": "Tu détectes bien les phrases qui orientent la perception."
+      }
+    },
+
+    "distribution": {
+      "title": "Répartition des réponses",
+      "labels": {
+        "fait": "Fait",
+        "interpretation": "Interprétation",
+        "jugement": "Jugement",
+        "cadrage": "Cadrage",
+        "correct": "Correct",
+        "incorrect": "À revoir"
+      },
+      "note": "Il ne s’agit pas d’un score, mais d’un aperçu."
+    },
+
+    "review": {
+      "title": "Revoir les phrases",
+      "itemLabels": {
+        "question": "Phrase",
+        "yourChoice": "Ton choix",
+        "expected": "Attendu",
+        "why": "Pourquoi"
+      },
+      "explanationsByCategory": {
+        "fait": "La phrase décrit une information vérifiable, sans interprétation ni jugement.",
+        "interpretation": "La phrase donne un sens ou une explication à un fait.",
+        "jugement": "La phrase exprime une appréciation ou une opinion.",
+        "cadrage": "La phrase oriente la perception par son vocabulaire ou sa construction."
+      }
+    }
+  },
+
+  "footer": {
+    "disclaimer": "Qualif’R ne mesure pas ton intelligence. Il t’aide à observer ta manière de lire.",
+    "actions": {
+      "replay": "Rejouer",
+      "menu": "Menu principal"
+    }
+  }
+}

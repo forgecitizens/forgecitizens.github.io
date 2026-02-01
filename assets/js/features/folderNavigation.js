@@ -20,6 +20,11 @@ const fileSystem = {
                         type: 'file',
                         icon: '/assets/mapper-game/mapper_icon.png',
                         action: 'openMapper'
+                    },
+                    "Qualif'R": {
+                        type: 'file',
+                        icon: "/assets/qualif'R/letter-q.png",
+                        action: 'openQualifR'
                     }
                 }
             },
@@ -257,9 +262,13 @@ function renderFolderContents() {
             ? `data-file-info='${JSON.stringify(item).replace(/'/g, "&apos;")}'` 
             : '';
         
+        // Escape single quotes in names to prevent breaking the JavaScript string
+        const escapedName = name.replace(/'/g, "\\'");
+        const escapedPath = `${currentPath.join('/')}/${name}`.replace(/'/g, "\\'");
+        
         const onClick = item.type === 'folder' 
-            ? `ondblclick="navigateToFolder('${name}')"` 
-            : `ondblclick="handleFileOpen(this, '${currentPath.join('/')}/${name}')"`;
+            ? `ondblclick="navigateToFolder('${escapedName}')"` 
+            : `ondblclick="handleFileOpen(this, '${escapedPath}')"`;
         
         html += `
             <div class="${itemClass}" ${onClick} ${itemDataAttr} tabindex="0" role="button" aria-label="${name}">
@@ -421,6 +430,14 @@ function openMapper() {
     window.location.href = '/mapper/';
 }
 
+/**
+ * Open the Qualif'R game in a new tab
+ */
+function openQualifR() {
+    console.log("🎯 Opening Qualif'R game...");
+    window.open("/qualif'R/", '_blank');
+}
+
 // Expose functions globally for cross-module access IMMEDIATELY
 // This runs at script load time, before DOMContentLoaded
 console.log('📁 FolderNavigation: Exposing functions to window...');
@@ -434,6 +451,7 @@ window.addFile = addFile;
 window.handleFileOpen = handleFileOpen;
 window.openFile = openFile;
 window.openMapper = openMapper;
+window.openQualifR = openQualifR;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
 
 // Initialize on DOM ready

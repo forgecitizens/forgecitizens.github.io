@@ -1,0 +1,107 @@
+{
+  "id": "qualifr_ce_que_cest_fr",
+  "lang": "fr",
+  "modal": {
+    "title": "Ce que c’est",
+    "pages": [
+      {
+        "key": "intro",
+        "heading": {
+          "text": "Qualif’R est un jeu de lecture.",
+          "tone": "accent"
+        },
+        "paragraphs": [
+          "Il ne s’agit pas de savoir si une phrase est vraie ou fausse, mais de comprendre ce qu’elle fait.",
+          "Une phrase peut informer, interpréter, juger ou orienter la perception.",
+          "Ces différences sont souvent subtiles et pourtant essentielles."
+        ],
+        "cta": {
+          "primary": { "label": "Suivant >", "action": "next" }
+        }
+      },
+      {
+        "key": "fait",
+        "heading": { "text": "Les quatre natures de phrases", "tone": "heading" },
+        "subheading": { "text": "1. Le ‘Fait’", "tone": "typeRed" },
+        "paragraphs": [
+          "Une {em:phrase factuelle} décrit un événement, une donnée ou une situation.",
+          "Elle peut être vérifiée indépendamment de celui qui la lit.",
+          "{emGreen:Exemple :}",
+          "« Le taux de chômage est de 8,1 %. »",
+          "Ici, la phrase informe.",
+          "Elle ne donne pas d’explication, ne prend pas position."
+        ],
+        "cta": {
+          "primary": { "label": "Suivant >", "action": "next" }
+        }
+      },
+      {
+        "key": "interpretation",
+        "heading": { "text": "Les quatre natures de phrases", "tone": "heading" },
+        "subheading": { "text": "2. Interprétation", "tone": "typeRed" },
+        "paragraphs": [
+          "Une {em:phrase d’interprétation} donne un sens à un fait.",
+          "Elle explique, relie, ou tire une conclusion.",
+          "{emGreen:Exemple :}",
+          "« Cette hausse du chômage s’explique par un ralentissement économique. »",
+          "La phrase ne se contente plus d’informer.",
+          "Elle propose une lecture possible de la situation."
+        ],
+        "cta": {
+          "primary": { "label": "Suivant >", "action": "next" }
+        }
+      },
+      {
+        "key": "jugement",
+        "heading": { "text": "Les quatre natures de phrases", "tone": "heading" },
+        "subheading": { "text": "3. Jugement", "tone": "typeRed" },
+        "paragraphs": [
+          "Une {em:phrase de jugement} évalue.",
+          "Elle introduit une appréciation, positive ou négative.",
+          "{emGreen:Exemple :}",
+          "« Cette mesure est injuste. »",
+          "La phrase exprime une opinion.",
+          "Elle dit ce qui est bien, mal, souhaitable ou inacceptable."
+        ],
+        "cta": {
+          "primary": { "label": "Suivant >", "action": "next" }
+        }
+      },
+      {
+        "key": "cadrage",
+        "heading": { "text": "Les quatre natures de phrases", "tone": "heading" },
+        "subheading": { "text": "4. Cadrage", "tone": "typeRed" },
+        "paragraphs": [
+          "Une {em:phrase de cadrage} oriente la perception sans l’annoncer clairement.",
+          "Elle peut mélanger faits, interprétations et jugements, ou utiliser des mots chargés qui suggèrent un angle.",
+          "{emGreen:Exemple :}",
+          "« Une réforme controversée a été imposée aux citoyens. »",
+          "La phrase ne dit pas seulement ce qui s’est passé.",
+          "Elle guide la manière dont on est invité à le comprendre."
+        ],
+        "cta": {
+          "primary": { "label": "Suivant >", "action": "next" }
+        }
+      },
+      {
+        "key": "why",
+        "heading": { "text": "Pourquoi ce jeu ?", "tone": "heading" },
+        "paragraphs": [
+          "Dans la vie quotidienne, ces types de phrases sont souvent mélangés.",
+          "Sur les réseaux sociaux, le cadrage est omniprésent.",
+          "On confond facilement information, opinion et orientation.",
+          "Qualif’R entraîne à repérer ces différences.",
+          "{emRed:Il n’y a pas de score public.}",
+          "{emRed:Pas de classement.}",
+          "{emRed:Pas de comparaison.}",
+          "Ce jeu ne mesure pas votre intelligence.",
+          "Il vous aide à observer votre manière de lire."
+        ],
+        "cta": {
+          "secondary": { "label": "Menu principal", "action": "close" },
+          "primary": { "label": "Commencer", "action": "startGame" }
+        }
+      }
+    ]
+  }
+}
