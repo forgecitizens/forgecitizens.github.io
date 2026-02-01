@@ -927,17 +927,16 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
             padding-right: 8px;
         }
 
         .review-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #1e1e1e;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 8px;
             overflow: hidden;
             min-height: auto;
+            isolation: isolate;
         }
 
         .review-item-header {
@@ -961,10 +960,11 @@
         }
 
         .review-text-preview {
-            color: #f2f2f2;
+            color: #ffffff;
             font-size: 13px;
             line-height: 1.4;
             word-break: break-word;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .review-choice-preview {
@@ -988,7 +988,8 @@
         .review-item-content {
             display: none;
             padding: 0 14px 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: #1a1a1a;
         }
 
         .review-item.open .review-item-content {
@@ -996,11 +997,12 @@
         }
 
         .review-full-text {
-            color: #f2f2f2;
+            color: #ffffff;
             font-size: 14px;
             line-height: 1.5;
             margin-bottom: 12px;
             padding-top: 12px;
+            font-weight: 500;
         }
 
         .review-choices {
