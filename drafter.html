@@ -102,32 +102,64 @@
         .typewriter-floating-toggle {
             position: fixed;
             top: calc(50% - 300px + 8px);
-            right: calc(50% - 400px - 32px);
-            width: 24px;
-            height: 24px;
+            right: calc(50% - 400px - 50px);
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.4);
-            border: none;
-            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
             z-index: 200;
             transition: all 0.2s ease;
             opacity: 1;
         }
 
         .typewriter-floating-toggle:hover {
-            background: rgba(0, 0, 0, 0.6);
-            color: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 1);
             opacity: 1;
         }
 
         .typewriter-floating-toggle.hidden {
             display: none;
         }
+
+        /* ===== CHARTER BUTTON ===== */
+        .btn-charte {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            font-size: 13px;
+            padding: 8px 14px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-charte:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-charte-icon {
+            font-size: 16px;
+        }
+
             background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
         }
 
@@ -302,6 +334,8 @@
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
             transition: height 0.15s ease-out;
+            pointer-events: auto;
+            cursor: not-allowed;
         }
 
         .typewriter-clear-zone {
@@ -327,6 +361,8 @@
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
             transition: height 0.15s ease-out, top 0.15s ease-out;
+            pointer-events: auto;
+            cursor: not-allowed;
         }
 
         /* Shake animation */
@@ -603,6 +639,63 @@
             overflow: hidden;
         }
 
+        /* ===== HELP MODAL ===== */
+        .help-modal {
+            width: 520px;
+            max-width: 95vw;
+            max-height: 85vh;
+            background: #c0c0c0 url('img/Drafter_texture.png');
+            background-size: cover;
+            border: 2px outset #dfdfdf;
+            box-shadow: 
+                inset 1px 1px 0 #ffffff,
+                inset -1px -1px 0 #808080,
+                4px 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .help-modal .modal-content {
+            overflow-y: auto;
+            max-height: calc(85vh - 60px);
+        }
+
+        .help-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000080;
+            margin-bottom: 16px;
+            text-align: center;
+            border-bottom: 2px solid #808080;
+            padding-bottom: 10px;
+        }
+
+        .help-section {
+            margin-bottom: 16px;
+            padding: 10px;
+            background: #f0f0e8;
+            border: 1px solid #d0d0c8;
+        }
+
+        .help-section-title {
+            font-weight: bold;
+            color: #000080;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .help-section ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .help-section li {
+            margin-bottom: 4px;
+        }
+
         .sound-row {
             display: flex;
             align-items: center;
@@ -849,9 +942,15 @@
             display: flex;
             flex-direction: row;
             align-items: flex-end;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.5s ease, filter 0.5s ease;
             z-index: 500;
             box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .session-stats-panel.typing-hidden {
+            opacity: 0;
+            filter: blur(8px);
+            pointer-events: none;
         }
 
         .session-stats-panel.expanded {
@@ -931,7 +1030,13 @@
             transform: translateX(100%) translateY(-100%);
             z-index: 9999;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, opacity 0.5s ease, filter 0.5s ease;
+        }
+
+        .buymeacoffee-btn.typing-hidden {
+            opacity: 0;
+            filter: blur(8px);
+            pointer-events: none;
         }
 
         .buymeacoffee-btn:hover {
@@ -958,9 +1063,15 @@
             border-radius: 0 4px 4px 0;
             display: flex;
             flex-direction: row;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.5s ease, filter 0.5s ease;
             z-index: 500;
             box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .credits-panel.typing-hidden {
+            opacity: 0;
+            filter: blur(8px);
+            pointer-events: none;
         }
 
         .credits-panel.expanded {
@@ -1339,6 +1450,9 @@
             <button class="typewriter-btn typewriter-btn-action" onclick="openColorOptions()" title="Couleurs">
                 🎨
             </button>
+            <button class="typewriter-btn typewriter-btn-action" onclick="openHelpModal()" title="Aide">
+                ❓
+            </button>
             <button class="typewriter-toggle-btn" id="toggle-toolbar-btn" onclick="toggleToolbar()" title="Réduire le menu">
                 ▲
             </button>
@@ -1422,6 +1536,12 @@
         </div>
     </div>
 
+    <!-- Charter Button -->
+    <a href="/assets/qualif'R/Charte%20ForgeCitizens.pdf" target="_blank" class="btn-charte" title="Ouvrir la Charte ForgeCitizens">
+        <span class="btn-charte-icon">📄</span>
+        <span>Charte</span>
+    </a>
+
     <!-- Options Panel (Mobile) -->
     <div class="options-panel" id="options-panel">
         <div class="options-toggle" onclick="toggleOptionsPanel()" title="Options">
@@ -1484,10 +1604,10 @@
                     <div class="sound-row-icon">⌨️</div>
                     <div class="sound-row-label">Touches</div>
                     <select class="sound-row-select" id="sound-select-type">
-                        <option value="sounds/typekey_1B.mp3" selected>Reno</option>
+                        <option value="sounds/typekey_1B.mp3">Reno</option>
                         <option value="sounds/typekey.wav">Jack</option>
                         <option value="sounds/typekey_1.wav">Oslo</option>
-                        <option value="sounds/typekey_1A.wav">Antibes</option>
+                        <option value="sounds/typekey_1A.wav" selected>Antibes</option>
                     </select>
                     <div class="sound-row-volume">
                         <input type="range" id="volume-type" min="0" max="100" value="50" oninput="updateVolumeSlider(this)">
@@ -1518,10 +1638,14 @@
                     <div class="sound-row-icon">␣</div>
                     <div class="sound-row-label">Espace</div>
                     <select class="sound-row-select" id="sound-select-space">
-                        <option value="sounds/spacebarkey5.mp3" selected>Moon</option>
+                        <option value="sounds/spacebarkey5.mp3">Moon</option>
                         <option value="sounds/spacebarkey4.mp3">Unfair</option>
                         <option value="sounds/spacebarkey3.wav">Serious</option>
                         <option value="sounds/spacebarkey.mp3">Justice</option>
+                        <option value="sounds/typekey_1B.mp3">Reno</option>
+                        <option value="sounds/typekey.wav">Jack</option>
+                        <option value="sounds/typekey_1.wav">Oslo</option>
+                        <option value="sounds/typekey_1A.wav" selected>Antibes</option>
                     </select>
                     <div class="sound-row-volume">
                         <input type="range" id="volume-space" min="0" max="100" value="50" oninput="updateVolumeSlider(this)">
@@ -1536,8 +1660,12 @@
                     <div class="sound-row-icon">⌫</div>
                     <div class="sound-row-label">Ret. Arr.</div>
                     <select class="sound-row-select" id="sound-select-backspace">
-                        <option value="sounds/typekey_1C.mp3" selected>Max</option>
+                        <option value="sounds/typekey_1C.mp3">Max</option>
                         <option value="sounds/typekey.wav">Claude</option>
+                        <option value="sounds/typekey_1B.mp3">Reno</option>
+                        <option value="sounds/typekey.wav">Jack</option>
+                        <option value="sounds/typekey_1.wav">Oslo</option>
+                        <option value="sounds/typekey_1A.wav" selected>Antibes</option>
                     </select>
                     <div class="sound-row-volume">
                         <input type="range" id="volume-backspace" min="0" max="100" value="50" oninput="updateVolumeSlider(this)">
@@ -1628,6 +1756,64 @@
         </div>
     </div>
 
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="help-modal">
+            <div class="modal-titlebar">
+                <span>❓ Aide - Drafter</span>
+                <button class="modal-close-btn" onclick="closeHelpModal()">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="help-title">DRAFTER v.1.0 (jan. 2026)</div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📝 Utilisation</div>
+                    <ul>
+                        <li>Utilisez les touches de votre clavier pour saisir du texte.</li>
+                        <li>Utilisez les flèches directionnelles pour déplacer le curseur.</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">⚠️ Contraintes imposées</div>
+                    <ul>
+                        <li>Vous ne pouvez pas copier/coller du texte.</li>
+                        <li>Vous ne pouvez effacer qu'un caractère lettré toutes les trois secondes.</li>
+                        <li>Vous ne pouvez pas effacer des blocs de texte.</li>
+                        <li>La zone de texte se focalise uniquement sur la ligne active et la ligne précédente.</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📊 Comptage du nombre de mots saisis</div>
+                    <ul>
+                        <li>L'onglet "Statistiques de la session" à droite de l'écran affiche le nombre de mots que vous avez saisi lors de la session précédente (si vous venez d'importer un fichier .mae précédemment exporté) et le nombre de mots saisis durant la session active.</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">💾 Export</div>
+                    <ul>
+                        <li>Vous pouvez exporter votre document au format .mae ou .pdf</li>
+                        <li>En exportant au format .mae vous exportez également vos options sonores et visuelles.</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📂 Import</div>
+                    <ul>
+                        <li>Vous pouvez importer un fichier .mae</li>
+                        <li>En important un fichier au format .mae vous importez également vos options sonores et visuelles.</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="modal-accept-btn" onclick="closeHelpModal()">J'ai une histoire à raconter maintenant !</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========================================================================
         // MACHINE À ÉCRIRE - Fullscreen Version
@@ -1640,12 +1826,12 @@
             space: null
         };
 
-        // Sound preferences - typekey_1B.mp3 as default
+        // Sound preferences - typekey_1A.wav (Antibes) as default for all except Enter
         let soundPreferences = {
-            type: 'sounds/typekey_1B.mp3',
+            type: 'sounds/typekey_1A.wav',
             enter: 'sounds/enterkey.wav',
-            space: 'sounds/spacebarkey5.mp3',
-            backspace: 'sounds/typekey_1C.mp3'
+            space: 'sounds/typekey_1A.wav',
+            backspace: 'sounds/typekey_1A.wav'
         };
 
         // Volume preferences (0-100)
@@ -1691,6 +1877,10 @@
         let sessionStatsExpanded = false;
         const PIXELS_PER_100_WORDS = 15; // Height in pixels for 100 words
         const MAX_BAR_HEIGHT = 140; // Maximum bar height in pixels
+
+        // Typing blur effect
+        let typingBlurTimeout = null;
+        const TYPING_BLUR_DELAY = 5000; // Time in ms before elements reappear after typing stops (5 seconds)
 
         // Background system
         const MAX_BACKGROUNDS = 9; // bg01.png to bg09.png
@@ -2089,6 +2279,52 @@
             }
         }
 
+        /**
+         * Hide UI elements with blur effect when typing
+         */
+        function hideUIWhileTyping() {
+            const creditsPanel = document.getElementById('credits-panel');
+            const statsPanel = document.getElementById('session-stats-panel');
+            const coffeeBtn = document.querySelector('.buymeacoffee-btn');
+            
+            // Add typing-hidden class to all elements
+            if (creditsPanel) creditsPanel.classList.add('typing-hidden');
+            if (statsPanel) statsPanel.classList.add('typing-hidden');
+            if (coffeeBtn) coffeeBtn.classList.add('typing-hidden');
+            
+            // Clear existing timeout
+            if (typingBlurTimeout) {
+                clearTimeout(typingBlurTimeout);
+            }
+            
+            // Set timeout to show elements again after typing stops
+            typingBlurTimeout = setTimeout(function() {
+                if (creditsPanel) creditsPanel.classList.remove('typing-hidden');
+                if (statsPanel) statsPanel.classList.remove('typing-hidden');
+                if (coffeeBtn) coffeeBtn.classList.remove('typing-hidden');
+            }, TYPING_BLUR_DELAY);
+        }
+
+        /**
+         * Show UI elements immediately (when clicking outside editor)
+         */
+        function showUIElements() {
+            const creditsPanel = document.getElementById('credits-panel');
+            const statsPanel = document.getElementById('session-stats-panel');
+            const coffeeBtn = document.querySelector('.buymeacoffee-btn');
+            
+            // Clear any pending timeout
+            if (typingBlurTimeout) {
+                clearTimeout(typingBlurTimeout);
+                typingBlurTimeout = null;
+            }
+            
+            // Remove typing-hidden class from all elements
+            if (creditsPanel) creditsPanel.classList.remove('typing-hidden');
+            if (statsPanel) statsPanel.classList.remove('typing-hidden');
+            if (coffeeBtn) coffeeBtn.classList.remove('typing-hidden');
+        }
+
         // Options panel state
         let optionsPanelExpanded = false;
 
@@ -2214,6 +2450,54 @@
             editor.addEventListener('focus', updateBlurViewport);
             editor.addEventListener('scroll', updateBlurViewport);
             
+            // Prevent mouse clicks from repositioning cursor - only allow arrow keys
+            // This ensures the blur effect cannot be bypassed by clicking on blurred lines
+            editor.addEventListener('mousedown', function(e) {
+                // If editor doesn't have focus, allow the click to give focus
+                if (document.activeElement !== editor) {
+                    // Let focus happen, cursor will be at end by default
+                    setTimeout(function() {
+                        // Move cursor to end after focus
+                        const selection = window.getSelection();
+                        const range = document.createRange();
+                        range.selectNodeContents(editor);
+                        range.collapse(false); // false = collapse to end
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        updateBlurViewport();
+                    }, 0);
+                    return;
+                }
+                // If already focused, prevent cursor repositioning via mouse
+                e.preventDefault();
+            });
+            
+            // Show error popup when clicking on blurred zones
+            const blurTop = document.querySelector('.typewriter-blur-top');
+            const blurBottom = document.querySelector('.typewriter-blur-bottom');
+            
+            if (blurTop) {
+                blurTop.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Only show error if there's text in the editor
+                    if (editor.textContent.length > 0) {
+                        showErrorPopup("Le curseur ne peut être déplacé que via les flèches du clavier.");
+                    }
+                });
+            }
+            
+            if (blurBottom) {
+                blurBottom.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Only show error if there's text in the editor
+                    if (editor.textContent.length > 0) {
+                        showErrorPopup("Le curseur ne peut être déplacé que via les flèches du clavier.");
+                    }
+                });
+            }
+            
             // Auto-collapse toolbar when clicking in editor
             editor.addEventListener('focus', hideToolbar);
             editor.addEventListener('click', hideToolbar);
@@ -2224,6 +2508,8 @@
             });
             editor.addEventListener('blur', function() {
                 if (container) container.classList.remove('editor-focused');
+                // Show UI elements when clicking outside the editor
+                showUIElements();
             });
             
             // Handle paste - BLOCKED
@@ -2407,12 +2693,15 @@
             if (e.key === 'Enter') {
                 playSound('enter');
                 setTimeout(updateBlurViewport, 10);
+                hideUIWhileTyping();
             } else if (e.key === ' ') {
                 playSound('space');
                 // Check word count after space (word completed)
                 setTimeout(checkWordCount, 10);
+                hideUIWhileTyping();
             } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
                 playSound('type');
+                hideUIWhileTyping();
             }
             
             // Navigation keys
@@ -3079,6 +3368,22 @@
             text: '#FFFFFF',
             blur: 'adaptive'
         };
+
+        /**
+         * Open help modal
+         */
+        function openHelpModal() {
+            const modal = document.getElementById('help-modal');
+            if (modal) modal.classList.add('show');
+        }
+
+        /**
+         * Close help modal
+         */
+        function closeHelpModal() {
+            const modal = document.getElementById('help-modal');
+            if (modal) modal.classList.remove('show');
+        }
 
         /**
          * Open color options modal
