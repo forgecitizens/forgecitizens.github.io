@@ -472,6 +472,89 @@
             font-weight: bold;
             color: #ffffff;
         }
+
+        /* Slider de timeline */
+        .timeline-slider-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 600px;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .timeline-slider-container:hover {
+            opacity: 0.9;
+        }
+
+        .timeline-slider-container.hidden {
+            display: none;
+        }
+
+        .timeline-slider-label {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #666666;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, rgba(80, 80, 80, 0.6), rgba(147, 112, 219, 0.4));
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: rgba(147, 112, 219, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(180, 150, 240, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        .timeline-slider::-webkit-slider-thumb:hover {
+            background: rgba(180, 150, 240, 1);
+            transform: scale(1.2);
+        }
+
+        .timeline-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: rgba(147, 112, 219, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(180, 150, 240, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        .timeline-slider::-moz-range-thumb:hover {
+            background: rgba(180, 150, 240, 1);
+        }
+
+        .timeline-dates {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #555555;
+        }
     </style>
 </head>
 <body>
@@ -482,6 +565,16 @@
     <div class="chart-tooltip" id="chart-tooltip">
         <div class="chart-tooltip-day"></div>
         <div class="chart-tooltip-value"></div>
+    </div>
+
+    <!-- Slider de timeline -->
+    <div class="timeline-slider-container hidden" id="timeline-slider-container">
+        <div class="timeline-slider-label" id="timeline-label">30 derniers jours</div>
+        <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="100" value="100">
+        <div class="timeline-dates">
+            <span id="timeline-start"></span>
+            <span id="timeline-end"></span>
+        </div>
     </div>
 
     <a href="/" class="back-link">← Retour</a>
@@ -807,32 +900,55 @@
             loadIGI();
 
             // ========== GRAPHIQUE EN ARRIÈRE-PLAN ==========
-            function renderBackgroundChart() {
+            const WINDOW_DAYS = 30;
+            let allRawData = []; // Données brutes stockées globalement
+            
+            function renderBackgroundChart(endDate = null) {
                 const chartContainer = document.getElementById('background-chart');
                 if (!chartContainer) return;
+                
+                // Vider le conteneur
+                chartContainer.innerHTML = '';
 
                 // Récupérer l'historique depuis le JSON chargé
-                let igiData = [];
-                if (igiJsonData && igiJsonData.history && Array.isArray(igiJsonData.history)) {
-                    // Convertir le format { date: "2026-01-01", value: 365 } en { day: 1, value: 365 }
-                    igiData = igiJsonData.history.map(entry => {
-                        const date = new Date(entry.date);
-                        return {
-                            day: date.getDate(),
-                            value: entry.value
-                        };
-                    });
+                if (allRawData.length === 0 && igiJsonData && igiJsonData.history && Array.isArray(igiJsonData.history)) {
+                    allRawData = igiJsonData.history.map(entry => ({
+                        date: new Date(entry.date),
+                        dateStr: entry.date,
+                        value: entry.value
+                    }));
+                    // Trier par date
+                    allRawData.sort((a, b) => a.date - b.date);
                 }
                 
                 // Si pas de données, ne pas afficher le graphique
-                if (igiData.length === 0) {
+                if (allRawData.length === 0) {
                     console.warn('Aucune donnée historique IGI disponible');
                     return;
                 }
 
-                // Jours du mois en cours (janvier = 31 jours)
-                const daysInMonth = 31;
-                const currentDay = new Date().getDate();
+                // Date de fin de la fenêtre (par défaut aujourd'hui)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const windowEnd = endDate ? new Date(endDate) : today;
+                windowEnd.setHours(0, 0, 0, 0);
+                
+                // Date de début de la fenêtre (30 jours avant la fin)
+                const windowStart = new Date(windowEnd);
+                windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
+                
+                // Filtrer les données pour la fenêtre
+                const igiData = allRawData.filter(d => d.date >= windowStart && d.date <= windowEnd);
+                
+                // Si pas de données dans la fenêtre, ne pas afficher
+                if (igiData.length === 0) {
+                    console.warn('Aucune donnée dans la fenêtre de 30 jours');
+                    return;
+                }
+                
+                // Configurer le slider
+                setupTimelineSlider(windowEnd);
 
                 // Dimensions du graphique
                 const padding = { top: 30, right: 30, bottom: 40, left: 50 };
@@ -912,8 +1028,8 @@
                 const chartWidth = 1000 - padding.left - padding.right;
                 const chartHeight = 600 - padding.top - padding.bottom;
 
-                // Fonctions de mise à l'échelle
-                const xScale = (day) => padding.left + ((day - 1) / (daysInMonth - 1)) * chartWidth;
+                // Fonction pour calculer la position X basée sur l'index dans la fenêtre
+                const xScale = (index) => padding.left + (index / (WINDOW_DAYS - 1)) * chartWidth;
                 const yScale = (value) => padding.top + ((maxValue - value) / (maxValue - minValue)) * chartHeight;
 
                 // Lignes de grille horizontales (paliers calculés dynamiquement)
@@ -939,16 +1055,21 @@
                     }
                 });
 
-                // Labels X (jours) - afficher quelques jours
-                const xTickDays = [1, 5, 10, 15, 20, 25, 31];
-                xTickDays.forEach(day => {
-                    const x = xScale(day);
+                // Générer les dates pour l'axe X (afficher ~6 repères)
+                const xTickPositions = [0, 5, 10, 15, 20, 25, WINDOW_DAYS - 1];
+                xTickPositions.forEach(dayOffset => {
+                    if (dayOffset >= WINDOW_DAYS) return;
+                    
+                    const tickDate = new Date(windowStart);
+                    tickDate.setDate(tickDate.getDate() + dayOffset);
+                    
+                    const x = xScale(dayOffset);
                     const label = document.createElementNS(svgNS, 'text');
                     label.setAttribute('x', x);
                     label.setAttribute('y', 600 - padding.bottom + 20);
                     label.setAttribute('text-anchor', 'middle');
                     label.setAttribute('class', 'chart-axis-label');
-                    label.textContent = day;
+                    label.textContent = tickDate.getDate();
                     svg.appendChild(label);
                 });
 
@@ -956,9 +1077,15 @@
                 let pathD = '';
                 let areaD = '';
                 
+                // Calculer l'index de chaque point dans la fenêtre de 30 jours
                 igiData.forEach((point, index) => {
-                    const x = xScale(point.day);
+                    // Calculer le nombre de jours depuis le début de la fenêtre
+                    const dayIndex = Math.round((point.date - windowStart) / (1000 * 60 * 60 * 24));
+                    const x = xScale(dayIndex);
                     const y = yScale(point.value);
+                    
+                    // Stocker l'index pour les points
+                    point.dayIndex = dayIndex;
                     
                     if (index === 0) {
                         pathD += `M ${x} ${y}`;
@@ -971,7 +1098,8 @@
 
                 // Fermer l'aire
                 const lastPoint = igiData[igiData.length - 1];
-                areaD += ` L ${xScale(lastPoint.day)} ${600 - padding.bottom} Z`;
+                const lastDayIndex = lastPoint.dayIndex;
+                areaD += ` L ${xScale(lastDayIndex)} ${600 - padding.bottom} Z`;
 
                 // Aire sous la courbe
                 const area = document.createElementNS(svgNS, 'path');
@@ -992,7 +1120,7 @@
 
                 // Points sur la courbe
                 igiData.forEach((point, index) => {
-                    const x = xScale(point.day);
+                    const x = xScale(point.dayIndex);
                     const y = yScale(point.value);
                     const circle = document.createElementNS(svgNS, 'circle');
                     circle.setAttribute('cx', x);
@@ -1001,18 +1129,20 @@
                     circle.setAttribute('class', index === igiData.length - 1 ? 'chart-dot-current' : 'chart-dot');
                     
                     // Stocker les données sur l'élément
-                    circle.dataset.day = point.day;
+                    circle.dataset.dateStr = point.dateStr;
                     circle.dataset.value = point.value;
 
                     // Événements de survol
                     circle.addEventListener('mouseenter', function(e) {
-                        const day = this.dataset.day;
+                        const dateStr = this.dataset.dateStr;
                         const value = this.dataset.value;
                         
                         // Formater la date
-                        const dayNum = parseInt(day);
-                        const suffix = dayNum === 1 ? 'er' : '';
-                        tooltipDay.textContent = `${dayNum}${suffix} janvier 2026`;
+                        const date = new Date(dateStr);
+                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                        const formattedDate = date.toLocaleDateString('fr-FR', options);
+                        
+                        tooltipDay.textContent = formattedDate;
                         tooltipValue.textContent = value;
                         
                         // Positionner la tooltip
@@ -1035,16 +1165,124 @@
                     svg.appendChild(circle);
                 });
 
-                // Label "Janvier 2026"
+                // Label du mois (afficher le mois de fin de la fenêtre)
+                const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
                 const monthLabel = document.createElementNS(svgNS, 'text');
                 monthLabel.setAttribute('x', 1000 - padding.right);
                 monthLabel.setAttribute('y', 600 - padding.bottom + 35);
                 monthLabel.setAttribute('text-anchor', 'end');
                 monthLabel.setAttribute('class', 'chart-axis-label');
-                monthLabel.textContent = 'Janvier 2026';
+                monthLabel.textContent = `${monthNames[windowEnd.getMonth()]} ${windowEnd.getFullYear()}`;
                 svg.appendChild(monthLabel);
 
                 chartContainer.appendChild(svg);
+            }
+            
+            // ========== SLIDER DE TIMELINE ==========
+            function setupTimelineSlider(currentEndDate) {
+                const sliderContainer = document.getElementById('timeline-slider-container');
+                const slider = document.getElementById('timeline-slider');
+                const sliderLabel = document.getElementById('timeline-label');
+                const timelineStart = document.getElementById('timeline-start');
+                const timelineEnd = document.getElementById('timeline-end');
+                
+                if (!sliderContainer || !slider || allRawData.length === 0) return;
+                
+                // Dates extrêmes des données
+                const dataStartDate = allRawData[0].date;
+                const dataEndDate = allRawData[allRawData.length - 1].date;
+                
+                // Calculer le nombre de jours total dans les données
+                const totalDays = Math.round((dataEndDate - dataStartDate) / (1000 * 60 * 60 * 24));
+                
+                // Si moins de 30 jours de données, cacher le slider
+                if (totalDays < WINDOW_DAYS) {
+                    sliderContainer.classList.add('hidden');
+                    return;
+                }
+                
+                // Afficher le slider
+                sliderContainer.classList.remove('hidden');
+                
+                // Le slider va de 0 (données les plus anciennes) à 100 (aujourd'hui)
+                // La valeur représente la position de la fenêtre de 30 jours
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Calculer la position actuelle du slider
+                const daysFromEnd = Math.round((today - currentEndDate) / (1000 * 60 * 60 * 24));
+                const maxOffset = totalDays - WINDOW_DAYS + 1;
+                const sliderValue = maxOffset > 0 ? Math.round(((maxOffset - daysFromEnd) / maxOffset) * 100) : 100;
+                
+                slider.value = sliderValue;
+                
+                // Formater les dates pour l'affichage
+                const formatShortDate = (date) => {
+                    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+                };
+                
+                // Afficher les dates extrêmes
+                const earliestWindowEnd = new Date(dataStartDate);
+                earliestWindowEnd.setDate(earliestWindowEnd.getDate() + WINDOW_DAYS - 1);
+                
+                timelineStart.textContent = formatShortDate(dataStartDate);
+                timelineEnd.textContent = formatShortDate(today);
+                
+                // Mettre à jour le label
+                const isToday = currentEndDate.getTime() === today.getTime();
+                if (isToday) {
+                    sliderLabel.textContent = '30 derniers jours';
+                } else {
+                    const windowStart = new Date(currentEndDate);
+                    windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
+                    sliderLabel.textContent = `${formatShortDate(windowStart)} — ${formatShortDate(currentEndDate)}`;
+                }
+                
+                // Événement de changement du slider
+                slider.onchange = function() {
+                    const value = parseInt(this.value);
+                    const offset = Math.round((1 - value / 100) * maxOffset);
+                    
+                    const newEndDate = new Date(today);
+                    newEndDate.setDate(newEndDate.getDate() - offset);
+                    
+                    // Ne pas aller avant la date minimale possible
+                    const minEndDate = new Date(dataStartDate);
+                    minEndDate.setDate(minEndDate.getDate() + WINDOW_DAYS - 1);
+                    
+                    if (newEndDate < minEndDate) {
+                        newEndDate.setTime(minEndDate.getTime());
+                    }
+                    
+                    renderBackgroundChart(newEndDate);
+                };
+                
+                // Mise à jour en temps réel pendant le glissement
+                slider.oninput = function() {
+                    const value = parseInt(this.value);
+                    const offset = Math.round((1 - value / 100) * maxOffset);
+                    
+                    const newEndDate = new Date(today);
+                    newEndDate.setDate(newEndDate.getDate() - offset);
+                    
+                    const minEndDate = new Date(dataStartDate);
+                    minEndDate.setDate(minEndDate.getDate() + WINDOW_DAYS - 1);
+                    
+                    if (newEndDate < minEndDate) {
+                        newEndDate.setTime(minEndDate.getTime());
+                    }
+                    
+                    const windowStart = new Date(newEndDate);
+                    windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
+                    
+                    const isNow = newEndDate.getTime() === today.getTime();
+                    if (isNow) {
+                        sliderLabel.textContent = '30 derniers jours';
+                    } else {
+                        sliderLabel.textContent = `${formatShortDate(windowStart)} — ${formatShortDate(newEndDate)}`;
+                    }
+                };
             }
 
             // Gestion de la modale Aujourd'hui
