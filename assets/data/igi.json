@@ -1,14 +1,12 @@
 {
   "global_instability_index": {
-    "value": 528,
+    "value": 530,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-01-31",
-    "last_updated": "2026-01-31T21:00:00Z",
-    "version": "1.15",
-    "note": "Progression très graduelle depuis le seuil des 500. Hausse modérée aujourd'hui due à l'intensification des frappes israéliennes sur le Hezbollah (plus de 120 raids en 48h, lourdes pertes, évacuation massive sud-Liban) et à la persistance de la crise USA-Iran (armada toujours en position, annulations vols prolongées, menaces réciproques sans frappe ouverte). Tensions transatlantiques stables mais tendues (tarifs Canada-Chine toujours sur la table). Crises chroniques inchangées au Soudan. Justification du score : Moyen-Orient en surchauffe avec Israël-Hezbollah ; Iran reste à haut risque de dérapage ; Groenland/OTAN toujours fracturé ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas d'événement majeur changeant la donne aujourd'hui (pas de frappe US-Iran, pas de crise systémique marchés, pas de mobilisation continentale). Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
-  },
-
-  "history": [
+    "calculation_date": "2026-02-04",
+    "last_updated": "2026-02-04T21:00:00Z",
+    "version": "1.16",
+    "note": "Hausse légère et graduelle due à la tension accrue USA-Iran (négociations en préparation pour le 6 février en Oman, mais menaces Trump intensifiées avec déclaration 'Iran's Supreme Leader should be worried', désaccords majeurs sur missiles balistiques et proxies, risque d'arrêt ou échec élevé). Attaques Israël-Hezbollah persistent (raids intenses). Tensions transatlantiques stables. Justification du score : Iran reste moteur principal (menaces Trump renforcent risque d'échec des pourparlers) ; Moyen-Orient surchauffe avec Israël-Hezbollah ; Groenland/OTAN toujours fracturé ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas d'événement majeur changeant la donne (pas d'arrêt officiel des négos, mais tensions extrêmes). Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -39,32 +37,34 @@
     { "date": "2026-01-28", "value": 524 },
     { "date": "2026-01-29", "value": 526 },
     { "date": "2026-01-30", "value": 527 },
-    { "date": "2026-01-31", "value": 528 }
-  ],
-
-  "major_contributors": [
+    { "date": "2026-01-31", "value": 528 },
+    { "date": "2026-02-01", "value": 520 },
+    { "date": "2026-02-02", "value": 523 },
+    { "date": "2026-02-03", "value": 525 },
+    { "date": "2026-02-04", "value": 530 }
+  ],  "major_contributors": [
+    {
+      "country_or_region": "Iran",
+      "fig_weight": 0.074,
+      "daily_instability_score": 13,
+      "weighted_contribution": 0.962,
+      "events": "Tension USA-Iran toujours au bord de la confrontation : négociations en préparation pour le 6 février en Oman, mais menaces Trump intensifiées ('Iran's Supreme Leader should be worried'), désaccords majeurs sur missiles balistiques et proxies, Iran exige retrait US préalable, menaces réciproques persistantes sans frappe ouverte, annulations vols prolongées, répression interne brutale continue",
+      "gravity": "Très élevé (Fibonacci 13 : risque échec négos + confrontation directe + instabilité régime/nucléaire)"
+    },
     {
       "country_or_region": "Israël / Hezbollah / Moyen-Orient",
       "fig_weight": 0.068,
       "daily_instability_score": 13,
       "weighted_contribution": 0.884,
-      "events": "Escalade persistante : plus de 120 raids israéliens en 48h sur le Hezbollah (Liban sud + Syrie), lourdes pertes côté Hezbollah, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d'embrasement régional toujours très élevé",
+      "events": "Escalade persistante : frappes israéliennes quotidiennes intenses sur Hezbollah (Liban sud + Syrie), lourdes pertes, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d'embrasement régional toujours très élevé",
       "gravity": "Très élevé (Fibonacci 13 : escalade militaire régionale + risque propagation)"
-    },
-    {
-      "country_or_region": "Iran",
-      "fig_weight": 0.072,
-      "daily_instability_score": 13,
-      "weighted_contribution": 0.936,
-      "events": "Tension USA-Iran toujours au bord de la confrontation : armada navale US positionnée, Iran maintient fermeture airspace prolongée et annulations vols massives, menaces réciproques sans frappe ouverte, répression interne brutale continue",
-      "gravity": "Très élevé (Fibonacci 13 : risque confrontation directe + instabilité régime/nucléaire)"
     },
     {
       "country_or_region": "Groenland / Danemark / Tensions transatlantiques",
       "fig_weight": 0.052,
       "daily_instability_score": 8,
       "weighted_contribution": 0.416,
-      "events": "Fracture OTAN toujours vive : menaces Trump sur Canada (tarifs 100 % sur commerce Chine) non retirées, pause Groenland mais tensions économiques et diplomatiques persistantes, réactions UE fermes, marchés volatils",
+      "events": "Fracture OTAN toujours vive : menaces Trump sur Canada (tarifs 100 % sur commerce Chine) non retirées, pause Groenland mais tensions économiques/diplomatiques persistantes, réactions UE fermes, marchés volatils",
       "gravity": "Élevé (Fibonacci 5 + 3 : menace économique + fracture alliance)"
     },
     {
@@ -88,23 +88,19 @@
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Tensions régionales stables, exercices récents simulant blocus, rhétorique expansionniste chinoise, menace continue sans nouveau développement explosif le 26 janvier",
+      "events": "Tensions régionales stables, exercices récents simulant blocus, rhétorique expansionniste chinoise, menace continue sans nouveau développement explosif le 4 février",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],
-
-  "summary": {
-    "total_weighted_sum": 7.92,
+  ],  "summary": {
+    "total_weighted_sum": 7.95,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée – progression lente mais inexorable au-dessus de 500. Israël-Hezbollah en surchauffe continue ; USA-Iran toujours au bord de la confrontation sans déclenchement ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas de rupture majeure aujourd'hui. 900 reste le seuil nucléaire critique."
-  },
-
-  "metadata": {
+    "interpretation": "Instabilité très élevée – progression lente au-dessus de 500. USA-Iran : négociations en cours de préparation malgré menaces Trump accrues ('Supreme Leader should be worried') et risque d'échec élevé ; Israël-Hezbollah en surchauffe continue ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas de rupture majeure aujourd'hui. 900 reste le seuil nucléaire critique."
+  },  "metadata": {
     "sources": [
+      "Reuters, Al Jazeera, AP News, Axios, ISW (USA-Iran : négociations Oman, menaces Trump, désaccords missiles/proxies, armada, annulations vols)",
       "Times of Israel, Al Jazeera, Reuters (Israël-Hezbollah : frappes quotidiennes, pertes, déplacés)",
-      "Reuters, AP News, Al Jazeera (USA-Iran : armada, fermeture airspace, annulations vols)",
-      "Bloomberg, POLITICO, France24 (Davos, menaces Canada, fracture OTAN)",
+      "Bloomberg, POLITICO, France24 (tensions transatlantiques, menaces Canada)",
       "UN OCHA, WFP (Soudan famine)",
       "Reuters, The Guardian (Ukraine énergie)",
       "US State Dept, Reuters (Chine/Taïwan tensions)",
@@ -112,6 +108,7 @@
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
-    "next_update_planned": "2026-02-01"
+    "next_update_planned": "2026-02-05"
   }
 }
+
