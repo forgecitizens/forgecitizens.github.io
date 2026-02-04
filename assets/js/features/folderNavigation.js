@@ -54,14 +54,8 @@ let historyIndex = -1;
 function initializeFolderNavigation() {
     console.log('📁 Initialisation du système de navigation...');
     
-    // Add click handler for desktop icons with folder-path
-    document.querySelectorAll('.desktop-icon[data-folder-path]').forEach(icon => {
-        icon.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-            const folderPath = this.dataset.folderPath;
-            openFolderExplorer(folderPath);
-        });
-    });
+    // Note: Desktop icon click handlers are managed in modals.js initializeDesktopIcons()
+    // to avoid duplicate event listeners
     
     console.log('✅ Système de navigation initialisé');
 }
@@ -267,8 +261,8 @@ function renderFolderContents() {
         const escapedPath = `${currentPath.join('/')}/${name}`.replace(/'/g, "\\'");
         
         const onClick = item.type === 'folder' 
-            ? `ondblclick="navigateToFolder('${escapedName}')"` 
-            : `ondblclick="handleFileOpen(this, '${escapedPath}')"`;
+            ? `onclick="navigateToFolder('${escapedName}')"` 
+            : `onclick="handleFileOpen(this, '${escapedPath}')"`;
         
         html += `
             <div class="${itemClass}" ${onClick} ${itemDataAttr} tabindex="0" role="button" aria-label="${name}">
@@ -286,7 +280,7 @@ function renderFolderContents() {
         item.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                this.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+                this.click();
             }
         });
     });
