@@ -62,6 +62,12 @@ class RetroCalendar {
                 text: 'Mapper est un jeu pour vous aider à réviser de manière ludique les emplacements des pays du monde. La v1 contient un système de combos, un chrono, et support des langues FR et EN.',
                 link: null,
                 linkText: null
+            },
+            '2026-02-05': {
+                title: 'Lancement de Qualif\'R v.1',
+                text: 'Lancement de la v.1 de Qualif\'R, un jeu qui permet d\'entraîner son discernement. Public cible : tous les âges.',
+                link: null,
+                linkText: null
             }
         };
         

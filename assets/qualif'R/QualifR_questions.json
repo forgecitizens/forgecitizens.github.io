@@ -1,44 +1,18 @@
 {
   "game": {
     "id": "qualifR",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "language": "fr",
     "title": "Qualif'R",
     "categories": [
-      {
-        "key": "fait",
-        "label": "Fait",
-        "hint": "Donnée ou événement vérifiable, sans jugement."
-      },
-      {
-        "key": "interpretation",
-        "label": "Interprétation",
-        "hint": "Explication, causalité ou conclusion discutable."
-      },
-      {
-        "key": "jugement",
-        "label": "Jugement",
-        "hint": "Évaluation normative/qualitative (bien/mal, juste/injuste…)."
-      },
-      {
-        "key": "cadrage",
-        "label": "Cadrage",
-        "hint": "Formulation orientée (choix de mots, insinuation, émotion, angle)."
-      }
+      { "key": "fait", "label": "Fait", "hint": "Donnée ou événement vérifiable, sans jugement." },
+      { "key": "interpretation", "label": "Interprétation", "hint": "Explication, causalité ou conclusion discutable." },
+      { "key": "jugement", "label": "Jugement", "hint": "Évaluation normative/qualitative (bien/mal, juste/injuste…)."} ,
+      { "key": "cadrage", "label": "Cadrage", "hint": "Formulation orientée (choix de mots, insinuation, émotion, angle)." }
     ],
     "difficultyLevels": [
-      {
-        "level": 1,
-        "label": "Niveau 1",
-        "rangeDescription": "Phrases de difficulté 1 à 4 uniquement",
-        "allowedDifficulties": [1, 2, 3, 4]
-      },
-      {
-        "level": 2,
-        "label": "Niveau 2",
-        "rangeDescription": "Phrases de difficulté 1 à 6",
-        "allowedDifficulties": [1, 2, 3, 4, 5, 6]
-      }
+      { "level": 1, "label": "Niveau 1", "rangeDescription": "Phrases de difficulté 1 à 4 uniquement", "allowedDifficulties": [1,2,3,4] },
+      { "level": 2, "label": "Niveau 2", "rangeDescription": "Phrases de difficulté 1 à 6", "allowedDifficulties": [1,2,3,4,5,6] }
     ],
     "settings": {
       "questionCountPerRun": 20,
@@ -50,850 +24,180 @@
     }
   },
   "questions": [
-    {
-      "id": "foaf-fr-001",
-      "text": "Le budget annuel annoncé pour le projet est de 2,4 millions d’euros.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-002",
-      "text": "La ligne de métro a été interrompue pendant 37 minutes ce matin.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-003",
-      "text": "Le rapport comporte 186 pages et trois annexes.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-004",
-      "text": "La taxe sera appliquée à partir du 1er avril.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-005",
-      "text": "Le match s’est terminé sur le score de 2 à 1.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "sport"
-    },
-    {
-      "id": "foaf-fr-006",
-      "text": "Le prix moyen du billet a augmenté de 3 % sur un an.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-007",
-      "text": "Le nouveau règlement compte 12 articles.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-008",
-      "text": "Le dispositif concerne les personnes âgées de 18 à 25 ans.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "education"
-    },
-    {
-      "id": "foaf-fr-009",
-      "text": "La campagne de vaccination débute lundi dans cinq centres.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-010",
-      "text": "Le chantier a été reporté de deux semaines.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "logement"
-    },
-    {
-      "id": "foaf-fr-011",
-      "text": "Le service client a reçu 1 200 réclamations en janvier.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-012",
-      "text": "Le taux de réussite annoncé est de 84 %.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "education"
-    },
-    {
-      "id": "foaf-fr-013",
-      "text": "La consommation d’électricité a baissé de 5 % ce trimestre.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "energie"
-    },
-    {
-      "id": "foaf-fr-014",
-      "text": "Le musée a accueilli 410 000 visiteurs l’an dernier.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-015",
-      "text": "La réunion a duré 52 minutes.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-016",
-      "text": "Le produit est vendu en deux formats : 250 ml et 500 ml.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-017",
-      "text": "Le sondage a été réalisé auprès de 1 005 personnes.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-018",
-      "text": "La bibliothèque sera fermée le dimanche pendant deux mois.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-019",
-      "text": "Le délai moyen de livraison est passé de 4 à 6 jours.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-020",
-      "text": "Le contrat a été signé hier soir.",
-      "category": "fait",
-      "difficulty": 1,
-      "theme": "travail"
-    },
+    /* =========================
+       FAIT (50) — majoritairement non-numérique
+       ========================= */
+    { "id": "qr-fr-001", "text": "La bibliothèque est fermée le dimanche.", "category": "fait", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-002", "text": "Le train de 8h12 a été annulé ce matin.", "category": "fait", "difficulty": 1, "theme": "transport" },
+    { "id": "qr-fr-003", "text": "Le règlement intérieur a été mis à jour et publié sur le site.", "category": "fait", "difficulty": 1, "theme": "travail" },
+    { "id": "qr-fr-004", "text": "La réunion a été reportée à la semaine prochaine.", "category": "fait", "difficulty": 1, "theme": "travail" },
+    { "id": "qr-fr-005", "text": "Le musée ouvrira une nouvelle salle d’exposition ce mois-ci.", "category": "fait", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-006", "text": "Le service client est joignable du lundi au vendredi.", "category": "fait", "difficulty": 1, "theme": "technologie" },
+    { "id": "qr-fr-007", "text": "Le formulaire demande une adresse e-mail et un numéro de téléphone.", "category": "fait", "difficulty": 1, "theme": "technologie" },
+    { "id": "qr-fr-008", "text": "La séance commence à 20h00.", "category": "fait", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-009", "text": "Le chantier est terminé.", "category": "fait", "difficulty": 1, "theme": "logement" },
+    { "id": "qr-fr-010", "text": "Le produit est disponible en deux couleurs.", "category": "fait", "difficulty": 1, "theme": "economie" },
 
-    {
-      "id": "foaf-fr-021",
-      "text": "La hausse des prix s’explique en partie par des coûts de transport plus élevés.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-022",
-      "text": "Cette baisse de fréquentation montre un désintérêt croissant du public.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-023",
-      "text": "Le retard du chantier est dû à une mauvaise planification.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "logement"
-    },
-    {
-      "id": "foaf-fr-024",
-      "text": "La réforme vise à simplifier un système devenu trop complexe.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-025",
-      "text": "La progression du service prouve que la stratégie commence à fonctionner.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-026",
-      "text": "La diminution des accidents traduit une meilleure prévention.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-027",
-      "text": "L’augmentation des inscriptions est le résultat d’une communication plus efficace.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "education"
-    },
-    {
-      "id": "foaf-fr-028",
-      "text": "Le nouveau protocole a été choisi pour réduire les risques.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-029",
-      "text": "Le taux d’absentéisme reflète une fatigue générale des équipes.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-030",
-      "text": "Cette décision cherche surtout à rassurer les usagers.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-031",
-      "text": "La baisse des émissions indique que les mesures commencent à produire des effets.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "environnement"
-    },
-    {
-      "id": "foaf-fr-032",
-      "text": "Le recrutement massif révèle une volonté d’accélérer le développement.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-033",
-      "text": "Le changement d’horaires a été pensé pour fluidifier le trafic.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-034",
-      "text": "La réduction du budget traduit une priorisation différente des objectifs.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-035",
-      "text": "Ce nouveau service répond à une demande croissante de simplicité.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-036",
-      "text": "Les résultats confirment que l’approche actuelle est la plus efficace.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-037",
-      "text": "La hausse du prix de l’énergie est principalement liée à une tension sur l’offre.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "energie"
-    },
-    {
-      "id": "foaf-fr-038",
-      "text": "Les retours négatifs proviennent surtout d’un manque d’accompagnement.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-039",
-      "text": "Cette initiative a été lancée pour restaurer la confiance.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-040",
-      "text": "Le choix de ce fournisseur s’explique par une recherche de stabilité.",
-      "category": "interpretation",
-      "difficulty": 2,
-      "theme": "economie"
-    },
+    { "id": "qr-fr-011", "text": "La salle est complète : il n’y a plus de places.", "category": "fait", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-012", "text": "Le site affiche un message d’erreur quand on valide le formulaire.", "category": "fait", "difficulty": 2, "theme": "technologie" },
+    { "id": "qr-fr-013", "text": "Le document est signé et daté.", "category": "fait", "difficulty": 2, "theme": "justice" },
+    { "id": "qr-fr-014", "text": "L’application demande l’autorisation d’accéder à la localisation.", "category": "fait", "difficulty": 2, "theme": "technologie" },
+    { "id": "qr-fr-015", "text": "La consigne indique de porter un casque sur le chantier.", "category": "fait", "difficulty": 2, "theme": "travail" },
+    { "id": "qr-fr-016", "text": "La conférence est diffusée en direct.", "category": "fait", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-017", "text": "Le colis a été livré au point relais.", "category": "fait", "difficulty": 2, "theme": "economie" },
+    { "id": "qr-fr-018", "text": "La note de service précise les horaires d’ouverture.", "category": "fait", "difficulty": 2, "theme": "travail" },
+    { "id": "qr-fr-019", "text": "Le programme mentionne trois intervenants.", "category": "fait", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-020", "text": "Le rapport est consultable en libre accès.", "category": "fait", "difficulty": 2, "theme": "societe" },
 
-    {
-      "id": "foaf-fr-041",
-      "text": "Cette mesure est injuste pour les familles modestes.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-042",
-      "text": "Ce plan est une excellente nouvelle pour les usagers.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-043",
-      "text": "La décision prise est irresponsable.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-044",
-      "text": "Ce service est clairement de mauvaise qualité.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-045",
-      "text": "La réforme proposée est nécessaire et urgente.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-046",
-      "text": "C’est une initiative admirable.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-047",
-      "text": "Cette politique est inefficace.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-048",
-      "text": "Le nouveau système est trop intrusif.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-049",
-      "text": "Cette décision est un mauvais signal.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-050",
-      "text": "Le dispositif est inutile.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-051",
-      "text": "Cette règle est absurde.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-052",
-      "text": "Le résultat est décevant.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "sport"
-    },
-    {
-      "id": "foaf-fr-053",
-      "text": "C’est une victoire méritée.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "sport"
-    },
-    {
-      "id": "foaf-fr-054",
-      "text": "Le choix est scandaleux.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-055",
-      "text": "Le projet est trop risqué.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-056",
-      "text": "La situation est intolérable.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-057",
-      "text": "Cette mesure est un progrès.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-058",
-      "text": "Le dispositif est dangereux.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-059",
-      "text": "C’est une réponse insuffisante.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "environnement"
-    },
-    {
-      "id": "foaf-fr-060",
-      "text": "Cette annonce est rassurante.",
-      "category": "jugement",
-      "difficulty": 3,
-      "theme": "societe"
-    },
+    { "id": "qr-fr-021", "text": "La consigne interdit de filmer à l’intérieur du bâtiment.", "category": "fait", "difficulty": 3, "theme": "justice" },
+    { "id": "qr-fr-022", "text": "Le journal a publié un rectificatif.", "category": "fait", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-023", "text": "Le service a été interrompu pendant une maintenance.", "category": "fait", "difficulty": 3, "theme": "technologie" },
+    { "id": "qr-fr-024", "text": "Une alerte météo est en cours dans le département.", "category": "fait", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-025", "text": "Le responsable a envoyé un e-mail à toute l’équipe.", "category": "fait", "difficulty": 3, "theme": "travail" },
+    { "id": "qr-fr-026", "text": "Le vote a eu lieu à main levée.", "category": "fait", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-027", "text": "Le contrat prévoit une période d’essai.", "category": "fait", "difficulty": 3, "theme": "travail" },
+    { "id": "qr-fr-028", "text": "Le service est accessible sans créer de compte.", "category": "fait", "difficulty": 3, "theme": "technologie" },
+    { "id": "qr-fr-029", "text": "Le règlement précise que les animaux sont acceptés.", "category": "fait", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-030", "text": "Le dossier a été transmis au service concerné.", "category": "fait", "difficulty": 3, "theme": "justice" },
 
-    {
-      "id": "foaf-fr-061",
-      "text": "Une hausse brutale des prix frappe les ménages.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-062",
-      "text": "Un nouveau dispositif controversé est imposé aux usagers.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-063",
-      "text": "Les autorités ferment les yeux sur un problème bien connu.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-064",
-      "text": "Encore une promesse qui risque de rester lettre morte.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-065",
-      "text": "Un plan présenté comme historique divise déjà l’opinion.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-066",
-      "text": "Une décision prise à la hâte inquiète les observateurs.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-067",
-      "text": "Un système opaque s’installe dans l’indifférence générale.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-068",
-      "text": "Les usagers paient encore le prix d’une organisation défaillante.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-069",
-      "text": "Un virage risqué est engagé sans garanties suffisantes.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "energie"
-    },
-    {
-      "id": "foaf-fr-070",
-      "text": "Une réforme vendue comme simple complexifie la vie des citoyens.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-071",
-      "text": "Un projet ambitieux cache des failles évidentes.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-072",
-      "text": "Les responsables minimisent un signal pourtant alarmant.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-073",
-      "text": "Une mesure discrète change déjà la donne pour des milliers de personnes.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-074",
-      "text": "La situation se dégrade pendant que les décisions tardent.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-075",
-      "text": "Des chiffres inquiétants mettent en lumière une réalité ignorée.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-076",
-      "text": "Un changement passé sous silence aura des conséquences durables.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-077",
-      "text": "Une annonce spectaculaire masque des détails dérangeants.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-078",
-      "text": "Les citoyens découvrent une facture qui s’alourdit sans explication claire.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "energie"
-    },
-    {
-      "id": "foaf-fr-079",
-      "text": "Une stratégie qui divise continue malgré les avertissements.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-080",
-      "text": "Un service présenté comme moderne suscite déjà la méfiance.",
-      "category": "cadrage",
-      "difficulty": 4,
-      "theme": "technologie"
-    },
+    { "id": "qr-fr-031", "text": "La plainte a été déposée au commissariat.", "category": "fait", "difficulty": 4, "theme": "justice" },
+    { "id": "qr-fr-032", "text": "Le comité a validé la proposition.", "category": "fait", "difficulty": 4, "theme": "travail" },
+    { "id": "qr-fr-033", "text": "La publication indique que l’étude n’a pas été relue par des pairs.", "category": "fait", "difficulty": 4, "theme": "science" },
+    { "id": "qr-fr-034", "text": "Le communiqué mentionne une enquête en cours.", "category": "fait", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-035", "text": "Le service fonctionne actuellement en mode dégradé.", "category": "fait", "difficulty": 4, "theme": "technologie" },
+    { "id": "qr-fr-036", "text": "Le règlement impose une pièce d’identité à l’entrée.", "category": "fait", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-037", "text": "Le compte a été suspendu pour non-respect des conditions d’utilisation.", "category": "fait", "difficulty": 4, "theme": "technologie" },
+    { "id": "qr-fr-038", "text": "Le site affiche une page “maintenance” depuis ce matin.", "category": "fait", "difficulty": 4, "theme": "technologie" },
+    { "id": "qr-fr-039", "text": "Le document cite ses sources en annexe.", "category": "fait", "difficulty": 4, "theme": "science" },
+    { "id": "qr-fr-040", "text": "Le match a été interrompu à cause de la pluie.", "category": "fait", "difficulty": 4, "theme": "sport" },
 
-    {
-      "id": "foaf-fr-081",
-      "text": "Le prix du ticket augmentera de 2 %, une mesure jugée pénalisante par certaines associations.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "transport"
-    },
-    {
-      "id": "foaf-fr-082",
-      "text": "Le taux d’absentéisme atteint 9 %, signe d’un malaise grandissant selon plusieurs salariés.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "travail"
-    },
-    {
-      "id": "foaf-fr-083",
-      "text": "Le plan prévoit 300 postes supplémentaires, mais laisse des zones d’ombre sur le financement.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-084",
-      "text": "Le dispositif a été adopté, malgré des critiques sur son manque de transparence.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-085",
-      "text": "La consommation d’énergie recule de 4 %, un résultat présenté comme encourageant.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "energie"
-    },
-    {
-      "id": "foaf-fr-086",
-      "text": "Le nouveau service est disponible dans 12 villes, mais son utilité reste discutée.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-087",
-      "text": "La réforme entre en vigueur lundi, une date jugée précipitée par des professionnels du secteur.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-088",
-      "text": "Les délais de traitement passent à 10 jours, une attente jugée excessive par de nombreux usagers.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-089",
-      "text": "Le rapport confirme une baisse de 6 %, tout en soulignant des risques persistants.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "environnement"
-    },
-    {
-      "id": "foaf-fr-090",
-      "text": "Le projet annonce des gains de performance, mais suscite des inquiétudes sur la protection des données.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-091",
-      "text": "La mesure coûtera 18 millions d’euros, une somme jugée disproportionnée par l’opposition interne.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-092",
-      "text": "Le programme a été prolongé de six mois, une décision saluée comme pragmatique par ses partisans.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-093",
-      "text": "La fréquentation remonte de 8 %, mais reste inférieure aux niveaux d’avant-crise.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-094",
-      "text": "Le système réduit les coûts de 12 %, au prix d’une procédure plus stricte.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-095",
-      "text": "Le dispositif touche 40 000 personnes, tout en laissant de côté certaines situations atypiques.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-096",
-      "text": "La campagne débute demain, sans réponse claire sur la question des moyens.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-097",
-      "text": "Le taux de réussite atteint 84 %, un chiffre qui cache de fortes disparités selon les établissements.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "education"
-    },
-    {
-      "id": "foaf-fr-098",
-      "text": "La mesure réduit les files d’attente, mais déplace le problème vers d’autres guichets.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-099",
-      "text": "Le service ouvre une nouvelle fonctionnalité, tout en supprimant des options jugées utiles par certains utilisateurs.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "technologie"
-    },
-    {
-      "id": "foaf-fr-100",
-      "text": "Le chantier est terminé, mais la qualité des finitions fait déjà débat.",
-      "category": "cadrage",
-      "difficulty": 5,
-      "theme": "logement"
-    },
+    { "id": "qr-fr-041", "text": "Le site a été mis à jour sans préavis.", "category": "fait", "difficulty": 5, "theme": "technologie" },
+    { "id": "qr-fr-042", "text": "La consigne a changé entre deux versions du document.", "category": "fait", "difficulty": 5, "theme": "travail" },
+    { "id": "qr-fr-043", "text": "Le communiqué retire une affirmation présente dans une version précédente.", "category": "fait", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-044", "text": "Le rapport contient une section “limites”.", "category": "fait", "difficulty": 5, "theme": "science" },
+    { "id": "qr-fr-045", "text": "La procédure prévoit un recours possible.", "category": "fait", "difficulty": 5, "theme": "justice" },
 
-    {
-      "id": "foaf-fr-101",
-      "text": "Les chiffres confirment une tendance préoccupante.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-102",
-      "text": "Une décision présentée comme technique pourrait avoir des implications politiques fortes.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-103",
-      "text": "Selon plusieurs experts, la situation serait sous-estimée.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-104",
-      "text": "Un dispositif qui se veut protecteur risque de créer de nouveaux problèmes.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-105",
-      "text": "Cette annonce relance un débat qui couvait depuis des mois.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-106",
-      "text": "La réforme pourrait fragiliser un équilibre déjà précaire.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-107",
-      "text": "Les autorités semblent envoyer un message contradictoire.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-108",
-      "text": "Une amélioration en apparence pourrait masquer une dégradation ailleurs.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-109",
-      "text": "Les retards laissent penser que le projet n’est pas sous contrôle.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "logement"
-    },
-    {
-      "id": "foaf-fr-110",
-      "text": "De nouvelles données invitent à revoir les conclusions précédentes.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "science"
-    },
-    {
-      "id": "foaf-fr-111",
-      "text": "La confiance semble s’éroder, sans qu’on en identifie clairement la cause.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-112",
-      "text": "Cette mesure est perçue comme un tournant par une partie du public.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-113",
-      "text": "Le dispositif donne l’impression d’être conçu pour décourager les demandes.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "justice"
-    },
-    {
-      "id": "foaf-fr-114",
-      "text": "Le discours officiel insiste sur les bénéfices, tout en restant vague sur les contraintes.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-115",
-      "text": "Une baisse ponctuelle ne suffit pas à prouver une amélioration durable.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "economie"
-    },
-    {
-      "id": "foaf-fr-116",
-      "text": "Le choix des mots laisse entendre une volonté de dramatiser la situation.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-117",
-      "text": "Les résultats seraient encourageants, mais la prudence reste de mise.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "sante"
-    },
-    {
-      "id": "foaf-fr-118",
-      "text": "Cette évolution pourrait être interprétée comme un aveu de faiblesse.",
-      "category": "interpretation",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-119",
-      "text": "Le consensus affiché paraît fragile dès qu’on examine les détails.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    },
-    {
-      "id": "foaf-fr-120",
-      "text": "Il est difficile de ne pas y voir une tentative de détourner l’attention.",
-      "category": "cadrage",
-      "difficulty": 6,
-      "theme": "societe"
-    }
+    { "id": "qr-fr-046", "text": "Le texte utilise le conditionnel dans plusieurs passages.", "category": "fait", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-047", "text": "Le document ne précise pas la méthode de collecte des données.", "category": "fait", "difficulty": 6, "theme": "science" },
+    { "id": "qr-fr-048", "text": "L’article cite des “sources proches du dossier” sans les nommer.", "category": "fait", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-049", "text": "Le titre et le contenu ne portent pas sur la même idée principale.", "category": "fait", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-050", "text": "Le texte mélange des citations directes et des paraphrases sans les distinguer.", "category": "fait", "difficulty": 6, "theme": "societe" },
+
+    /* =========================
+       INTERPRÉTATION (50)
+       ========================= */
+    { "id": "qr-fr-051", "text": "Ce retard montre que l’organisation manque de moyens.", "category": "interpretation", "difficulty": 1, "theme": "travail" },
+    { "id": "qr-fr-052", "text": "Cette décision vise surtout à rassurer les usagers.", "category": "interpretation", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-053", "text": "La baisse de fréquentation s’explique par un manque de communication.", "category": "interpretation", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-054", "text": "Si le service est instable, c’est probablement à cause de la maintenance.", "category": "interpretation", "difficulty": 1, "theme": "technologie" },
+    { "id": "qr-fr-055", "text": "Cette réaction indique une perte de confiance.", "category": "interpretation", "difficulty": 1, "theme": "societe" },
+
+    { "id": "qr-fr-056", "text": "Le changement de ton laisse penser que la situation s’est tendue.", "category": "interpretation", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-057", "text": "Le fait de simplifier le formulaire devrait réduire les abandons.", "category": "interpretation", "difficulty": 2, "theme": "technologie" },
+    { "id": "qr-fr-058", "text": "Cette nouvelle règle cherche à éviter les abus.", "category": "interpretation", "difficulty": 2, "theme": "justice" },
+    { "id": "qr-fr-059", "text": "La hausse des plaintes révèle une insatisfaction plus large.", "category": "interpretation", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-060", "text": "Le désordre observé est le signe d’une coordination insuffisante.", "category": "interpretation", "difficulty": 2, "theme": "travail" },
+
+    { "id": "qr-fr-061", "text": "Ce communiqué ressemble à une tentative de reprendre le contrôle du récit.", "category": "interpretation", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-062", "text": "Le silence sur ce point suggère qu’il est sensible.", "category": "interpretation", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-063", "text": "L’insistance sur les bénéfices montre ce que l’auteur veut mettre en avant.", "category": "interpretation", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-064", "text": "Le choix de ce fournisseur s’explique par une recherche de stabilité.", "category": "interpretation", "difficulty": 3, "theme": "economie" },
+    { "id": "qr-fr-065", "text": "Cette formulation tend à minimiser la gravité du problème.", "category": "interpretation", "difficulty": 3, "theme": "societe" },
+
+    { "id": "qr-fr-066", "text": "Cette amélioration ponctuelle ne suffit pas à conclure à un progrès durable.", "category": "interpretation", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-067", "text": "Le fait de repousser l’annonce indique qu’ils ne sont pas prêts.", "category": "interpretation", "difficulty": 4, "theme": "travail" },
+    { "id": "qr-fr-068", "text": "Ce résultat peut s’expliquer par un effet de saisonnalité.", "category": "interpretation", "difficulty": 4, "theme": "economie" },
+    { "id": "qr-fr-069", "text": "La divergence entre sources laisse penser que l’information n’est pas stabilisée.", "category": "interpretation", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-070", "text": "Le ton alarmiste vise probablement à provoquer une réaction rapide.", "category": "interpretation", "difficulty": 4, "theme": "societe" },
+
+    { "id": "qr-fr-071", "text": "Le cadrage choisi peut être interprété comme une manière de déplacer la responsabilité.", "category": "interpretation", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-072", "text": "La sélection de ces exemples donne l’impression d’une généralisation.", "category": "interpretation", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-073", "text": "Le recours au conditionnel sert ici à se protéger d’une contestation.", "category": "interpretation", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-074", "text": "Le fait d’éviter les détails suggère une communication maîtrisée.", "category": "interpretation", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-075", "text": "La mise en avant d’un cas extrême cherche à influencer la perception du problème.", "category": "interpretation", "difficulty": 5, "theme": "societe" },
+
+    { "id": "qr-fr-076", "text": "Cette phrase transforme une hypothèse en conclusion implicite.", "category": "interpretation", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-077", "text": "L’absence de méthode détaillée affaiblit la portée de l’affirmation.", "category": "interpretation", "difficulty": 6, "theme": "science" },
+    { "id": "qr-fr-078", "text": "Ce passage suggère un lien de cause à effet sans le démontrer.", "category": "interpretation", "difficulty": 6, "theme": "science" },
+    { "id": "qr-fr-079", "text": "Le choix des mots oriente l’interprétation vers une seule lecture.", "category": "interpretation", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-080", "text": "Cette formulation laisse entendre qu’il n’y a pas d’alternative crédible.", "category": "interpretation", "difficulty": 6, "theme": "societe" },
+
+    /* =========================
+       JUGEMENT (50)
+       ========================= */
+    { "id": "qr-fr-081", "text": "Cette décision est injuste.", "category": "jugement", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-082", "text": "C’est une excellente initiative.", "category": "jugement", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-083", "text": "Cette règle est absurde.", "category": "jugement", "difficulty": 1, "theme": "justice" },
+    { "id": "qr-fr-084", "text": "Ce service est de mauvaise qualité.", "category": "jugement", "difficulty": 1, "theme": "technologie" },
+    { "id": "qr-fr-085", "text": "C’est une réponse insuffisante.", "category": "jugement", "difficulty": 1, "theme": "societe" },
+
+    { "id": "qr-fr-086", "text": "La situation est intolérable.", "category": "jugement", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-087", "text": "Ce choix est irresponsable.", "category": "jugement", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-088", "text": "Cette annonce est rassurante.", "category": "jugement", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-089", "text": "Cette mesure est dangereuse.", "category": "jugement", "difficulty": 2, "theme": "sante" },
+    { "id": "qr-fr-090", "text": "C’est un mauvais signal.", "category": "jugement", "difficulty": 2, "theme": "societe" },
+
+    { "id": "qr-fr-091", "text": "Ce plan est une trahison des promesses initiales.", "category": "jugement", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-092", "text": "Cette réforme est nécessaire et urgente.", "category": "jugement", "difficulty": 3, "theme": "justice" },
+    { "id": "qr-fr-093", "text": "Cette décision est profondément hypocrite.", "category": "jugement", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-094", "text": "Ce discours est malhonnête.", "category": "jugement", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-095", "text": "Ce projet est trop risqué.", "category": "jugement", "difficulty": 3, "theme": "technologie" },
+
+    { "id": "qr-fr-096", "text": "Cette décision est une erreur stratégique.", "category": "jugement", "difficulty": 4, "theme": "travail" },
+    { "id": "qr-fr-097", "text": "Cette justification est faible.", "category": "jugement", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-098", "text": "C’est un compromis acceptable.", "category": "jugement", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-099", "text": "Cette politique est inefficace.", "category": "jugement", "difficulty": 4, "theme": "economie" },
+    { "id": "qr-fr-100", "text": "Cette solution est plus juste que les alternatives.", "category": "jugement", "difficulty": 4, "theme": "societe" },
+
+    { "id": "qr-fr-101", "text": "Cette communication est cynique.", "category": "jugement", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-102", "text": "Le choix des priorités est indéfendable.", "category": "jugement", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-103", "text": "Cette décision manque de courage.", "category": "jugement", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-104", "text": "Cette réforme est plus punitive qu’utile.", "category": "jugement", "difficulty": 5, "theme": "justice" },
+    { "id": "qr-fr-105", "text": "Cette annonce est une diversion.", "category": "jugement", "difficulty": 5, "theme": "societe" },
+
+    { "id": "qr-fr-106", "text": "Ce récit est construit pour culpabiliser.", "category": "jugement", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-107", "text": "Cette phrase est manipulatrice.", "category": "jugement", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-108", "text": "Le raisonnement est fragile.", "category": "jugement", "difficulty": 6, "theme": "science" },
+    { "id": "qr-fr-109", "text": "L’argument est biaisé.", "category": "jugement", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-110", "text": "Cette conclusion est abusive.", "category": "jugement", "difficulty": 6, "theme": "science" },
+
+    /* =========================
+       CADRAGE (50)
+       ========================= */
+    { "id": "qr-fr-111", "text": "Encore une décision prise à la hâte.", "category": "cadrage", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-112", "text": "Une mesure discrète change déjà la donne.", "category": "cadrage", "difficulty": 1, "theme": "societe" },
+    { "id": "qr-fr-113", "text": "Les usagers paient une fois de plus le prix des erreurs.", "category": "cadrage", "difficulty": 1, "theme": "transport" },
+    { "id": "qr-fr-114", "text": "Un système opaque s’installe dans l’indifférence.", "category": "cadrage", "difficulty": 1, "theme": "technologie" },
+    { "id": "qr-fr-115", "text": "Une annonce spectaculaire masque des détails dérangeants.", "category": "cadrage", "difficulty": 1, "theme": "societe" },
+
+    { "id": "qr-fr-116", "text": "Les autorités ferment les yeux sur un problème bien connu.", "category": "cadrage", "difficulty": 2, "theme": "justice" },
+    { "id": "qr-fr-117", "text": "Une réforme vendue comme simple complique la vie des citoyens.", "category": "cadrage", "difficulty": 2, "theme": "justice" },
+    { "id": "qr-fr-118", "text": "Un virage risqué est engagé sans garanties suffisantes.", "category": "cadrage", "difficulty": 2, "theme": "economie" },
+    { "id": "qr-fr-119", "text": "Des chiffres inquiétants révèlent une réalité ignorée.", "category": "cadrage", "difficulty": 2, "theme": "societe" },
+    { "id": "qr-fr-120", "text": "Une décision imposée suscite déjà la colère.", "category": "cadrage", "difficulty": 2, "theme": "societe" },
+
+    { "id": "qr-fr-121", "text": "Le communiqué insiste sur les bénéfices, mais reste flou sur les contraintes.", "category": "cadrage", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-122", "text": "Un plan présenté comme historique divise l’opinion.", "category": "cadrage", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-123", "text": "La situation se dégrade pendant que les décisions tardent.", "category": "cadrage", "difficulty": 3, "theme": "travail" },
+    { "id": "qr-fr-124", "text": "Une amélioration en apparence peut masquer une dégradation ailleurs.", "category": "cadrage", "difficulty": 3, "theme": "societe" },
+    { "id": "qr-fr-125", "text": "Le service se modernise, au prix de nouvelles contraintes.", "category": "cadrage", "difficulty": 3, "theme": "technologie" },
+
+    { "id": "qr-fr-126", "text": "Selon des sources proches du dossier, la situation serait sous-estimée.", "category": "cadrage", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-127", "text": "Un dispositif qui se veut protecteur pourrait créer de nouveaux problèmes.", "category": "cadrage", "difficulty": 4, "theme": "justice" },
+    { "id": "qr-fr-128", "text": "Les responsables minimisent un signal pourtant alarmant.", "category": "cadrage", "difficulty": 4, "theme": "sante" },
+    { "id": "qr-fr-129", "text": "Le choix du calendrier semble précipité.", "category": "cadrage", "difficulty": 4, "theme": "societe" },
+    { "id": "qr-fr-130", "text": "Une réforme controversée entre en vigueur dès lundi.", "category": "cadrage", "difficulty": 4, "theme": "justice" },
+
+    { "id": "qr-fr-131", "text": "Le rapport confirme une baisse, tout en soulignant des risques persistants.", "category": "cadrage", "difficulty": 5, "theme": "environnement" },
+    { "id": "qr-fr-132", "text": "Le projet promet des gains, mais inquiète sur la protection des données.", "category": "cadrage", "difficulty": 5, "theme": "technologie" },
+    { "id": "qr-fr-133", "text": "Une décision saluée par ses partisans est vivement critiquée ailleurs.", "category": "cadrage", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-134", "text": "Les délais s’allongent, une attente jugée excessive par de nombreux usagers.", "category": "cadrage", "difficulty": 5, "theme": "societe" },
+    { "id": "qr-fr-135", "text": "Une mesure coûteuse relance la polémique.", "category": "cadrage", "difficulty": 5, "theme": "economie" },
+
+    { "id": "qr-fr-136", "text": "Les chiffres confirment une tendance préoccupante.", "category": "cadrage", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-137", "text": "Une décision présentée comme technique pourrait avoir des implications politiques.", "category": "cadrage", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-138", "text": "Il est difficile de ne pas y voir une tentative de détourner l’attention.", "category": "cadrage", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-139", "text": "Le consensus affiché paraît fragile dès qu’on examine les détails.", "category": "cadrage", "difficulty": 6, "theme": "societe" },
+    { "id": "qr-fr-140", "text": "Le ton employé invite à dramatiser la situation.", "category": "cadrage", "difficulty": 6, "theme": "societe" }
   ]
 }

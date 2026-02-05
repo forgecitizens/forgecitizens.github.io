@@ -14,7 +14,7 @@ const fileSystem = {
         children: {
             'Jeux': {
                 type: 'folder',
-                icon: '🎮',
+                icon: 'img/jeux.png',
                 children: {
                     'Mapper': {
                         type: 'file',
@@ -30,7 +30,7 @@ const fileSystem = {
             },
             'Outils': {
                 type: 'folder',
-                icon: '🛠️',
+                icon: 'img/outils.png',
                 children: {
                     'Drafter': {
                         type: 'file',
