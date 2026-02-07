@@ -24,9 +24,6 @@
     }
   },
   "questions": [
-    /* =========================
-       FAIT (50) — majoritairement non-numérique
-       ========================= */
     { "id": "qr-fr-001", "text": "La bibliothèque est fermée le dimanche.", "category": "fait", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-002", "text": "Le train de 8h12 a été annulé ce matin.", "category": "fait", "difficulty": 1, "theme": "transport" },
     { "id": "qr-fr-003", "text": "Le règlement intérieur a été mis à jour et publié sur le site.", "category": "fait", "difficulty": 1, "theme": "travail" },
@@ -83,9 +80,6 @@
     { "id": "qr-fr-049", "text": "Le titre et le contenu ne portent pas sur la même idée principale.", "category": "fait", "difficulty": 6, "theme": "societe" },
     { "id": "qr-fr-050", "text": "Le texte mélange des citations directes et des paraphrases sans les distinguer.", "category": "fait", "difficulty": 6, "theme": "societe" },
 
-    /* =========================
-       INTERPRÉTATION (50)
-       ========================= */
     { "id": "qr-fr-051", "text": "Ce retard montre que l’organisation manque de moyens.", "category": "interpretation", "difficulty": 1, "theme": "travail" },
     { "id": "qr-fr-052", "text": "Cette décision vise surtout à rassurer les usagers.", "category": "interpretation", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-053", "text": "La baisse de fréquentation s’explique par un manque de communication.", "category": "interpretation", "difficulty": 1, "theme": "societe" },
@@ -122,9 +116,7 @@
     { "id": "qr-fr-079", "text": "Le choix des mots oriente l’interprétation vers une seule lecture.", "category": "interpretation", "difficulty": 6, "theme": "societe" },
     { "id": "qr-fr-080", "text": "Cette formulation laisse entendre qu’il n’y a pas d’alternative crédible.", "category": "interpretation", "difficulty": 6, "theme": "societe" },
 
-    /* =========================
-       JUGEMENT (50)
-       ========================= */
+
     { "id": "qr-fr-081", "text": "Cette décision est injuste.", "category": "jugement", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-082", "text": "C’est une excellente initiative.", "category": "jugement", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-083", "text": "Cette règle est absurde.", "category": "jugement", "difficulty": 1, "theme": "justice" },
@@ -161,9 +153,6 @@
     { "id": "qr-fr-109", "text": "L’argument est biaisé.", "category": "jugement", "difficulty": 6, "theme": "societe" },
     { "id": "qr-fr-110", "text": "Cette conclusion est abusive.", "category": "jugement", "difficulty": 6, "theme": "science" },
 
-    /* =========================
-       CADRAGE (50)
-       ========================= */
     { "id": "qr-fr-111", "text": "Encore une décision prise à la hâte.", "category": "cadrage", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-112", "text": "Une mesure discrète change déjà la donne.", "category": "cadrage", "difficulty": 1, "theme": "societe" },
     { "id": "qr-fr-113", "text": "Les usagers paient une fois de plus le prix des erreurs.", "category": "cadrage", "difficulty": 1, "theme": "transport" },
