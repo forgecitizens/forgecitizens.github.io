@@ -41,7 +41,7 @@ document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'pause-btn') {
         setPause(!isPaused);
     }
-    if (e.target && e.target.id === 'rules-btn') {
+    if (e.target && (e.target.id === 'rules-btn' || e.target.id === 'btn-rules')) {
         setPause(true);
     }
     if (e.target && e.target.id === 'rules-close-btn') {
@@ -117,7 +117,7 @@ window.addEventListener('keydown', (e) => {
             min: 0.5,
             max: 8,
             step: 0.15,
-            default: 1
+            default: 1.49
         }
     };
     
@@ -637,10 +637,16 @@ window.addEventListener('keydown', (e) => {
     function updateRulesContent() {
         const rulesContent = document.getElementById('rules-content');
         const rulesTitle = document.getElementById('rules-modal-title');
+        const btnRules = document.getElementById('btn-rules');
         const lang = GameState.currentLanguage || 'FR';
         
         if (rulesTitle) {
             rulesTitle.textContent = lang === 'FR' ? 'Règles du jeu' : 'Game Rules';
+        }
+        
+        // Mettre à jour le texte du menu selon la langue
+        if (btnRules) {
+            btnRules.innerHTML = lang === 'FR' ? '<u>R</u>ègles du jeu' : 'Game <u>R</u>ules';
         }
         
         if (rulesContent) {
@@ -837,12 +843,20 @@ window.addEventListener('keydown', (e) => {
      */
     function initUpdatesModal() {
         const updatesToolbarBtn = document.getElementById('updates-toolbar-btn');
+        const btnUpdates = document.getElementById('btn-updates');
         const updatesOverlay = document.getElementById('updates-modal-overlay');
         const updatesCloseBtn = document.getElementById('updates-close-btn');
         
         // Ouvrir la modale depuis le bouton toolbar "Mises à jour"
         if (updatesToolbarBtn && updatesOverlay) {
             updatesToolbarBtn.addEventListener('click', () => {
+                showUpdatesModal();
+            });
+        }
+        
+        // Ouvrir la modale depuis le menu "Mises à jour"
+        if (btnUpdates && updatesOverlay) {
+            btnUpdates.addEventListener('click', () => {
                 showUpdatesModal();
             });
         }
@@ -878,6 +892,7 @@ window.addEventListener('keydown', (e) => {
         const updatesOverlay = document.getElementById('updates-modal-overlay');
         const updatesTitle = document.getElementById('updates-modal-title');
         const updatesToolbarBtn = document.getElementById('updates-toolbar-btn');
+        const btnUpdates = document.getElementById('btn-updates');
         
         // Mettre à jour le titre selon la langue
         if (updatesTitle) {
@@ -887,6 +902,11 @@ window.addEventListener('keydown', (e) => {
         // Mettre à jour le texte du bouton toolbar selon la langue
         if (updatesToolbarBtn) {
             updatesToolbarBtn.textContent = GameState.currentLanguage === 'FR' ? 'Mises à jour' : 'Updates';
+        }
+        
+        // Mettre à jour le texte du menu selon la langue
+        if (btnUpdates) {
+            btnUpdates.innerHTML = GameState.currentLanguage === 'FR' ? '<u>M</u>ises à jour' : '<u>U</u>pdates';
         }
         
         // Mettre à jour le contenu selon la langue
@@ -908,6 +928,27 @@ window.addEventListener('keydown', (e) => {
         const lang = GameState.currentLanguage;
         
         const updates = {
+            // 07.02.2026
+            'update-07-02-a': {
+                FR: "Refonte complète de l'interface avec un nouveau design sombre.",
+                EN: "Complete interface redesign with a new dark design."
+            },
+            'update-07-02-b': {
+                FR: "La barre de statut a été remplacée par un HUD flottant en haut à droite de l'écran.",
+                EN: "The status bar has been replaced by a floating HUD in the top right corner."
+            },
+            'update-07-02-c': {
+                FR: "Les labels des pays sont maintenant plus grands et plus lisibles sur mobile.",
+                EN: "Country labels are now larger and more readable on mobile."
+            },
+            'update-07-02-d': {
+                FR: "Le zoom par défaut au lancement d'une partie est désormais à 149%.",
+                EN: "Default zoom when starting a game is now set to 149%."
+            },
+            'update-07-02-e': {
+                FR: "Réorganisation de la barre de menu avec les boutons Règles du jeu, Mises à jour et Pause.",
+                EN: "Menu bar reorganization with Game Rules, Updates, and Pause buttons."
+            },
             // 31.01.2026
             'update-31-01-a': {
                 FR: "Correction d'un bug qui bloquait les interactions avec la carte après avoir relancé une partie.",

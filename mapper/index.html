@@ -14,9 +14,6 @@
     <link rel="stylesheet" href="/assets/mapper-game/mapper.css">
 </head>
 <body>
-    <!-- Lien retour vers le bureau -->
-    <a href="/" class="back-link">← Retour</a>
-
     <!-- Fenêtre principale style Windows 98 -->
     <div class="window-frame">
         
@@ -35,7 +32,6 @@
 
         <!-- Barre de menu -->
         <div class="menubar">
-            <div class="menu-item"><u>J</u>eu</div>
             <div class="menu-item" id="btn-options"><u>O</u>ptions
                 <div class="menu-dropdown" id="options-dropdown">
                     <div class="menu-dropdown-item" id="toggle-dark-mode">
@@ -44,21 +40,23 @@
                     </div>
                 </div>
             </div>
-            <div class="menu-item"><u>A</u>ide</div>
+            <div class="menu-item" id="btn-rules"><u>R</u>ègles du jeu</div>
             <div class="menu-item" id="btn-credits"><u>C</u>rédits</div>
-        </div>
-
-        <!-- Barre d'outils -->
-        <div class="toolbar">
-            <button class="toolbar-btn" id="pause-btn">Pause</button>
-            <button class="toolbar-btn" id="rules-btn">Règles du jeu</button>
-            <button class="toolbar-btn" id="credits-toolbar-btn">Crédits</button>
-            <button class="toolbar-btn" id="updates-toolbar-btn">Mises à jour</button>
+            <div class="menu-item" id="btn-updates"><u>M</u>ises à jour</div>
+            <div class="menu-item" id="pause-btn"><u>P</u>ause</div>
+            <a href="/" class="back-link">← retour vers forgecitizens.com</a>
         </div>
 
         <!-- Zone de contenu principale -->
         <div class="content-area">
             <div class="game-container" id="game-container">
+                
+                <!-- HUD flottant en haut à droite -->
+                <div class="game-hud" id="game-hud">
+                    <div class="hud-item" id="status-message">En jeu</div>
+                    <div class="hud-item" id="status-time">Temps : --:--</div>
+                    <div class="hud-item" id="status-score">Score : 0</div>
+                </div>
                 
                 <!-- Zone de la carte (sera remplie par le JS) -->
                 <div class="map-container" id="map-container">
@@ -84,13 +82,6 @@
                 </div>
                 
             </div>
-        </div>
-
-        <!-- Barre de statut -->
-        <div class="statusbar">
-            <div class="status-section" id="status-message" style="flex: 1;">Chargement...</div>
-            <div class="status-section" id="status-time">Temps: --:--</div>
-            <div class="status-section" id="status-score">Score: 0/0</div>
         </div>
         
     </div>
@@ -229,6 +220,17 @@
             <button class="credits-close-btn" id="updates-close-btn" title="Fermer">×</button>
             <div class="credits-title" id="updates-modal-title">Mises à jour</div>
             <div class="credits-content" id="updates-content">
+                <!-- 07.02.2026 - Refonte UI -->
+                <div class="credits-section">
+                    <h3>07.02.2026</h3>
+                    <ul class="credits-list">
+                        <li id="update-07-02-a">Refonte complète de l'interface avec un nouveau design sombre.</li>
+                        <li id="update-07-02-b">La barre de statut a été remplacée par un HUD flottant en haut à droite de l'écran.</li>
+                        <li id="update-07-02-c">Les labels des pays sont maintenant plus grands et plus lisibles sur mobile.</li>
+                        <li id="update-07-02-d">Le zoom par défaut au lancement d'une partie est désormais à 149%.</li>
+                        <li id="update-07-02-e">Réorganisation de la barre de menu avec les boutons Règles du jeu, Mises à jour et Pause.</li>
+                    </ul>
+                </div>
                 <!-- 31.01.2026 - Corrections -->
                 <div class="credits-section">
                     <h3>31.01.2026</h3>
