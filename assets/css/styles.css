@@ -1637,7 +1637,7 @@
         
         .typewriter-intro-content {
             padding: 20px;
-            background: #fffef0;
+            background: url('../../img/mapper_modal_texture.jpg') center/cover no-repeat;
             font-family: 'MS Sans Serif', Tahoma, sans-serif;
             font-size: 12px;
             line-height: 1.6;
