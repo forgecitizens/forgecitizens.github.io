@@ -843,6 +843,94 @@
             color: #555;
         }
 
+        /* Cosmology Selection Popup */
+        .cosmology-selection-popup {
+            width: 450px;
+            max-width: 95vw;
+        }
+
+        .cosmology-research-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .cosmology-research-item:hover {
+            background: #e8f0ff;
+            border-color: #0000ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 128, 0.15);
+        }
+
+        .cosmology-research-item:active {
+            background: #d0e0ff;
+            transform: translateY(1px);
+        }
+
+        .cosmology-research-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .research-icon {
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .research-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .research-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #000080;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .research-subtitle {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Responsive pour mobile */
+        @media (max-width: 768px) {
+            .cosmology-selection-popup {
+                width: 95vw;
+            }
+
+            .cosmology-research-item {
+                padding: 10px;
+            }
+
+            .research-icon {
+                font-size: 20px;
+                width: 28px;
+                height: 28px;
+            }
+
+            .research-title {
+                font-size: 12px;
+            }
+
+            .research-subtitle {
+                font-size: 10px;
+            }
+        }
+
         /* Responsive pour mobile */
         @media (max-width: 768px) {
             .about-popup {

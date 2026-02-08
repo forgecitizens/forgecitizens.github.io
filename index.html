@@ -9,7 +9,7 @@
 <body>
     <div class="desktop" id="desktop">
         <!-- Desktop Icons -->
-        <div class="desktop-icon" style="top: 20px; left: 20px;" data-modal="simulations">
+        <div class="desktop-icon" style="top: 20px; left: 20px;" onclick="openCosmologySelection()">
             <img class="icon-image" src="img/galaxy.png" alt="Cosmologie">
             <div class="icon-label">Recherches en cosmologie</div>
         </div>
@@ -391,6 +391,149 @@
         <div class="resize-handle"></div>
     </div>
 
+    <!-- Rompre le monolithe Modal -->
+    <div class="modal" id="rompre-monolithe-modal">
+        <div class="modal-header">
+            <div class="modal-title">Rompre le monolithe <span class="alpha-chi-title">α–χ</span></div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('rompre-monolithe-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('rompre-monolithe-modal')">□</div>
+                <div class="modal-button" onclick="closeModal('rompre-monolithe-modal')">×</div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <!-- Header / Overview Section (Non-collapsible) -->
+            <div style="background: #f0f0f0; border: 1px inset #c0c0c0; padding: 16px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; background: #c0c0c0; border: 1px outset #c0c0c0; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🕳️</div>
+                    <h2 style="margin: 0; font-size: 16px; font-weight: bold; color: #000080; font-family: 'MS Sans Serif', sans-serif;">Rompre le monolithe : un cadre diagnostique pour l'origine des trous noirs supermassifs primordiaux</h2>
+                </div>
+                
+                <div style="background: #ffffff; border: 1px inset #c0c0c0; padding: 12px; font-size: 11px; line-height: 1.4; font-family: 'MS Sans Serif', sans-serif;">
+                    <p style="margin: 0 0 8px 0;">
+                        Ce travail propose un cadre diagnostique original pour comprendre l'origine des trous noirs supermassifs (SMBH) observés à des redshifts élevés (z > 6). 
+                        Face aux tensions entre observations récentes et modèles standard de formation, ce document développe une approche analytique systématique.
+                    </p>
+                    <p style="margin: 0; font-style: italic; color: #404040;">
+                        Recherche théorique visant à identifier et caractériser les mécanismes possibles de formation rapide des trous noirs massifs dans l'univers primordial.
+                    </p>
+                </div>
+                
+                <!-- Publications subsection -->
+                <div style="margin-top: 12px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Publications</h4>
+                    <div style="background: #ffffff; border: 1px inset #c0c0c0; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #666; font-style: italic;">Publication officielle en cours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sections accordéon -->
+            <div class="accordion-container">
+            
+                <!-- Section Vulgarisation -->
+                <div class="accordion-item">
+                    <div class="accordion-header" tabindex="0">
+                        <span>📖 Vulgarisation</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            
+                            <!-- Idée centrale -->
+                            <div style="margin-bottom: 16px;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Le problème</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    Les observations récentes, notamment grâce au télescope James Webb, révèlent des trous noirs supermassifs 
+                                    (plusieurs millions à milliards de masses solaires) existant très tôt dans l'histoire de l'univers — moins d'un milliard d'années après le Big Bang.
+                                </p>
+                                <p style="margin: 0;">
+                                    Comment des objets aussi massifs ont-ils pu se former si rapidement ? Les modèles classiques de croissance par accrétion 
+                                    peinent à expliquer leur existence à ces époques reculées.
+                                </p>
+                            </div>
+
+                            <!-- L'approche -->
+                            <div style="margin-bottom: 16px;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">L'approche</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    Plutôt que de proposer un nouveau modèle spécifique, ce travail développe un « cadre diagnostique » — 
+                                    une méthode systématique pour évaluer et comparer les différents scénarios de formation proposés.
+                                </p>
+                                <p style="margin: 0;">
+                                    L'idée est de « rompre le monolithe » : déconstruire le problème en sous-questions précises 
+                                    pour mieux identifier où se situent les vraies difficultés théoriques et observationnelles.
+                                </p>
+                            </div>
+
+                            <!-- Ce que ce travail apporte -->
+                            <div style="margin-bottom: 0;">
+                                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">Ce que ce travail apporte</h4>
+                                <p style="margin: 0 0 8px 0;">
+                                    Une grille d'analyse claire pour confronter les hypothèses existantes (effondrement direct, restes stellaires massifs, 
+                                    fusions primordiales, etc.) aux contraintes observationnelles actuelles.
+                                </p>
+                                <p style="margin: 0;">
+                                    Une contribution à la réflexion méthodologique sur la manière d'aborder les questions ouvertes en astrophysique.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Recherche -->
+                <div class="accordion-item">
+                    <div class="accordion-header" tabindex="0">
+                        <span>🔬 Recherche & téléchargements</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                    
+                    <!-- Downloads Area -->
+                    <div style="background: #f8f8f8; border: 1px inset #c0c0c0; padding: 12px; margin-bottom: 16px;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #000080; border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;">📁 Documents de travail</h4>
+                        <p style="margin: 0 0 8px 0; font-style: italic; color: #666;">
+                            <strong>Avertissement :</strong> Documents de recherche préliminaires, non soumis à évaluation par les pairs. 
+                            Travaux en cours susceptibles de modifications.
+                        </p>
+                        
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+                            <a href="simulations/Rompre le monolithe_FR.pdf" 
+                               class="download-button" 
+                               download
+                               onclick="playClickSound()"
+                               style="display: inline-flex; align-items: center; gap: 4px;">
+                                🇫🇷 Version française (PDF)
+                            </a>
+                            <span style="font-size: 11px; color: #888; font-style: italic;">
+                                🇺🇸 Version anglaise à venir
+                            </span>
+                        </div>
+                        
+                        <div style="font-size: 10px; color: #808080;">
+                            <strong>Prochainement :</strong> Figures complémentaires • Annexes techniques
+                        </div>
+                    </div>
+
+                    <!-- Limitations and Disclaimer -->
+                    <div style="background: #fff8dc; border: 1px inset #c0c0c0; padding: 8px; font-size: 10px; color: #8b4513;">
+                        <strong>⚠️ Limitations reconnues :</strong> Ce travail demeure purement théorique et conceptuel. 
+                        Aucune validation expérimentale n'est revendiquée. Les propositions avancées nécessitent 
+                        un développement formel approfondi et une analyse critique par la communauté scientifique.
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of accordion-container -->
+            
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
     <!-- File Explorer Modal (for folder navigation) -->
     <div class="modal" id="file-explorer-modal">
         <div class="modal-header">
@@ -743,6 +886,38 @@
         <img src="img/buymeacoffee.png" alt="Buy me a coffee">
     </a>
 
+    <!-- Cosmology Selection Popup Overlay -->
+    <div class="about-overlay" id="cosmologySelectionOverlay"></div>
+
+    <!-- Cosmology Selection Popup -->
+    <div class="about-popup cosmology-selection-popup" id="cosmologySelectionPopup">
+        <div class="about-popup-header">
+            <span class="about-popup-title">🌌 Recherches en cosmologie</span>
+            <button class="about-popup-close" id="cosmologySelectionCloseBtn" aria-label="Fermer">×</button>
+        </div>
+        <div class="about-popup-content" style="padding: 16px;">
+            <p style="font-size: 12px; color: #666; margin-bottom: 16px;">Sélectionnez un travail de recherche :</p>
+            
+            <!-- Research Item 1 -->
+            <div class="cosmology-research-item" onclick="openResearch1()">
+                <div class="research-icon">⚛️</div>
+                <div class="research-info">
+                    <div class="research-title">Vers un modèle cosmologique auto-régulé</div>
+                    <div class="research-subtitle">Émergence de l'univers à partir du Chaos Absolu</div>
+                </div>
+            </div>
+            
+            <!-- Research Item 2 -->
+            <div class="cosmology-research-item" onclick="openResearch2()">
+                <div class="research-icon">🕳️</div>
+                <div class="research-info">
+                    <div class="research-title">Rompre le monolithe</div>
+                    <div class="research-subtitle">Un cadre diagnostique pour l'origine des trous noirs supermassifs primordiaux</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Visitors Popup Overlay -->
     <div class="about-overlay" id="visitorsOverlay"></div>
 
@@ -761,6 +936,71 @@
     <!-- GoatCounter Analytics -->
     <script data-goatcounter="https://forgecitizens.goatcounter.com/count"
             src="//gc.zgo.at/count.js"></script>
+    
+    <!-- Cosmology Selection Popup functionality -->
+    <script>
+        // Cosmology selection popup functions (global scope)
+        function openCosmologySelection() {
+            const overlay = document.getElementById('cosmologySelectionOverlay');
+            const popup = document.getElementById('cosmologySelectionPopup');
+            
+            if (overlay && popup) {
+                overlay.classList.add('show');
+                popup.classList.add('show');
+                
+                if (typeof playClickSound === 'function') {
+                    playClickSound();
+                }
+            }
+        }
+        
+        function closeCosmologySelection() {
+            const overlay = document.getElementById('cosmologySelectionOverlay');
+            const popup = document.getElementById('cosmologySelectionPopup');
+            
+            if (overlay && popup) {
+                overlay.classList.remove('show');
+                popup.classList.remove('show');
+            }
+        }
+        
+        function openResearch1() {
+            closeCosmologySelection();
+            if (typeof openModal === 'function') {
+                openModal('simulations-modal');
+            }
+        }
+        
+        function openResearch2() {
+            closeCosmologySelection();
+            if (typeof openModal === 'function') {
+                openModal('rompre-monolithe-modal');
+            }
+        }
+        
+        // Initialize cosmology selection popup event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeBtn = document.getElementById('cosmologySelectionCloseBtn');
+            const overlay = document.getElementById('cosmologySelectionOverlay');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeCosmologySelection);
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', closeCosmologySelection);
+            }
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                const popup = document.getElementById('cosmologySelectionPopup');
+                if (e.key === 'Escape' && popup && popup.classList.contains('show')) {
+                    closeCosmologySelection();
+                }
+            });
+        });
+    </script>
+
     <script>
         // Visitors popup functionality
         (function() {
