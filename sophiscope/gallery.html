@@ -311,7 +311,11 @@
         previousFocusElement = document.activeElement;
         
         // Populate modal content
-        const { title, slug, images, description, examples } = cardData;
+        const { title, slug, images, content } = cardData;
+        
+        // Extract content fields (with fallbacks)
+        const definition = (content && content.definition) ? content.definition : null;
+        const examples = (content && content.examples) ? content.examples : [];
         
         // Image (prefer w1200, fallback to w800)
         const imageSrc = basePaths.w1200 + images.w1200;
@@ -322,11 +326,11 @@
         cardModalTitle.textContent = title.toUpperCase();
         
         // Description (with fallback)
-        cardModalDescription.textContent = description || '(Description à venir…)';
+        cardModalDescription.textContent = definition || '(Description à venir…)';
         
         // Examples (with fallback)
-        const ex1 = (examples && examples[0]) ? examples[0] : '(Exemple 1 à venir…)';
-        const ex2 = (examples && examples[1]) ? examples[1] : '(Exemple 2 à venir…)';
+        const ex1 = examples[0] || '(Exemple 1 à venir…)';
+        const ex2 = examples[1] || '(Exemple 2 à venir…)';
         cardModalExample1.textContent = ex1;
         cardModalExample2.textContent = ex2;
         
