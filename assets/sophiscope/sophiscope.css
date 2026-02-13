@@ -474,7 +474,7 @@ body.sophiscope-page--gallery {
   overflow: hidden;
   display: flex;
   justify-content: center;
-  padding: 0 var(--spacing-sm);
+  padding: 0;
 }
 
 .gallery-wrapper {
@@ -483,6 +483,7 @@ body.sophiscope-page--gallery {
   max-width: 1200px;
   height: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .gallery-grid {
@@ -494,6 +495,7 @@ body.sophiscope-page--gallery {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  box-sizing: border-box;
   
   /* Smooth scrolling */
   scroll-behavior: smooth;
@@ -601,14 +603,16 @@ body.sophiscope-page--gallery {
 .gallery-card__title {
   font-size: 0.65rem;
   font-weight: 500;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   color: var(--sophiscope-muted);
   text-align: center;
   margin: var(--spacing-xs) 0 0;
   padding: 0 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  /* Allow wrapping on mobile for long titles */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 /* --------------------------------------------------------------------------
