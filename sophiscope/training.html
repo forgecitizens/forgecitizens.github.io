@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Sophiscope - Entraînement">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/ui/favicon.ico">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/assets/sophiscope/sophiscope.css">
+  
+  <title>Sophiscope - Entraînement</title>
+  
+  <style>
+    .training-placeholder {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .training-placeholder__icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: var(--spacing-lg);
+      stroke: rgba(100, 140, 120, 0.6);
+    }
+    
+    .training-placeholder__title {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: var(--sophiscope-text);
+      margin: 0 0 var(--spacing-md);
+      text-transform: uppercase;
+    }
+    
+    .training-placeholder__card {
+      font-size: 1.2rem;
+      color: #6bbfb0;
+      margin: 0 0 var(--spacing-xl);
+      word-break: break-word;
+    }
+    
+    .training-placeholder__message {
+      font-size: 1rem;
+      color: var(--sophiscope-muted);
+      margin: 0 0 var(--spacing-xl);
+      max-width: 500px;
+    }
+    
+    .training-placeholder__back {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background-color: rgba(100, 140, 120, 0.2);
+      border: 1px solid rgba(100, 140, 120, 0.4);
+      border-radius: 6px;
+      color: var(--sophiscope-text);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    
+    .training-placeholder__back:hover,
+    .training-placeholder__back:focus {
+      background-color: rgba(100, 140, 120, 0.3);
+      border-color: rgba(100, 140, 120, 0.6);
+    }
+    
+    .training-placeholder__back-icon {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body class="sophiscope-page">
+  <div class="sophiscope-container">
+    
+    <main class="training-placeholder" role="main">
+      <svg class="training-placeholder__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      
+      <h1 class="training-placeholder__title">Entraînement</h1>
+      
+      <p class="training-placeholder__card" id="card-name">Chargement...</p>
+      
+      <p class="training-placeholder__message">
+        Le module d'entraînement est en cours de développement.<br>
+        Revenez bientôt pour tester vos connaissances sur les sophismes !
+      </p>
+      
+      <a href="/sophiscope/gallery.html" class="training-placeholder__back">
+        <svg class="training-placeholder__back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Retour à la galerie
+      </a>
+    </main>
+    
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+      
+      // Get card slug from URL params
+      const params = new URLSearchParams(window.location.search);
+      const cardSlug = params.get('card');
+      
+      const cardNameEl = document.getElementById('card-name');
+      
+      if (cardSlug) {
+        // Format slug for display (replace hyphens with spaces, capitalize)
+        const displayName = cardSlug
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+        
+        cardNameEl.textContent = displayName;
+        document.title = `Sophiscope - Entraînement : ${displayName}`;
+      } else {
+        cardNameEl.textContent = 'Aucune carte sélectionnée';
+      }
+      
+    })();
+  </script>
+</body>
+</html>

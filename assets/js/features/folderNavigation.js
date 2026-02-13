@@ -25,6 +25,11 @@ const fileSystem = {
                         type: 'file',
                         icon: "/assets/qualif'R/letter-q.png",
                         action: 'openQualifR'
+                    },
+                    'Sophiscope': {
+                        type: 'file',
+                        icon: 'img/lock.svg',
+                        action: 'openSophiscope'
                     }
                 }
             },
@@ -432,6 +437,14 @@ function openQualifR() {
     window.open("/qualif'R/", '_blank');
 }
 
+/**
+ * Open the Sophiscope game in a new tab
+ */
+function openSophiscope() {
+    console.log('🔬 Opening Sophiscope...');
+    window.open('/sophiscope/', '_blank');
+}
+
 // Expose functions globally for cross-module access IMMEDIATELY
 // This runs at script load time, before DOMContentLoaded
 console.log('📁 FolderNavigation: Exposing functions to window...');
@@ -446,6 +459,7 @@ window.handleFileOpen = handleFileOpen;
 window.openFile = openFile;
 window.openMapper = openMapper;
 window.openQualifR = openQualifR;
+window.openSophiscope = openSophiscope;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
 
 // Initialize on DOM ready

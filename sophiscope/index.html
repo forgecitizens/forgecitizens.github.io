@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Sophiscope - Décrypter les sophismes. Un outil interactif pour identifier et comprendre les erreurs de raisonnement.">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="Sophiscope - Décrypter les sophismes">
+  <meta property="og:description" content="Un outil interactif pour identifier et comprendre les erreurs de raisonnement.">
+  <meta property="og:image" content="/assets/img/sophiscope-images/sophiscope_main_image.jpg">
+  <meta property="og:type" content="website">
+  
+  <!-- Favicon (utiliser existant ou placeholder) -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/ui/favicon.ico">
+  
+  <!-- Preload hero image for performance -->
+  <link rel="preload" as="image" href="/assets/img/sophiscope-images/sophiscope_main_image.jpg">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/assets/sophiscope/sophiscope.css">
+  
+  <title>Sophiscope - Décrypter les sophismes</title>
+</head>
+<body class="sophiscope-page">
+  <div class="sophiscope-container">
+    
+    <!-- Main Content -->
+    <main class="sophiscope-main" role="main">
+      <figure class="sophiscope-hero">
+        <img 
+          src="/assets/img/sophiscope-images/sophiscope_main_image.jpg"
+          alt="Sophiscope - Décrypter les sophismes. Une illustration montrant un observatoire scientifique futuriste avec une sphère centrale contenant des instruments d'optique, symbolisant l'analyse critique des arguments."
+          class="sophiscope-hero__image"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        >
+      </figure>
+    </main>
+    
+    <!-- Footer with Start Button and Credits -->
+    <footer class="sophiscope-footer" role="contentinfo">
+      <a 
+        href="https://forgecitizens.com" 
+        class="sophiscope-powered"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Visiter forgecitizens.com (ouvre dans un nouvel onglet)"
+      >
+        Powered by forgecitizens.com
+      </a>
+      
+      <button 
+        type="button" 
+        class="sophiscope-btn" 
+        id="btn-start"
+        aria-label="Commencer le jeu Sophiscope"
+      >
+        <span class="sophiscope-btn__icon" aria-hidden="true">
+          <span class="sophiscope-btn__card sophiscope-btn__card--red"></span>
+          <span class="sophiscope-btn__card sophiscope-btn__card--yellow"></span>
+          <span class="sophiscope-btn__card sophiscope-btn__card--green"></span>
+        </span>
+        <span class="sophiscope-btn__label">Commencer</span>
+      </button>
+    </footer>
+    
+  </div>
+
+  <!-- Minimal JavaScript -->
+  <script>
+    (function() {
+      'use strict';
+      
+      // Start button handler - Navigate to gallery
+      const btnStart = document.getElementById('btn-start');
+      
+      if (btnStart) {
+        btnStart.addEventListener('click', function(event) {
+          event.preventDefault();
+          window.location.href = '/sophiscope/gallery.html';
+        });
+      }
+      
+      // Image load error fallback
+      const heroImage = document.querySelector('.sophiscope-hero__image');
+      
+      if (heroImage) {
+        heroImage.addEventListener('error', function() {
+          this.alt = 'Image non disponible - Sophiscope';
+          this.style.minHeight = '400px';
+          console.warn('Sophiscope: Hero image failed to load');
+        });
+      }
+      
+    })();
+  </script>
+</body>
+</html>

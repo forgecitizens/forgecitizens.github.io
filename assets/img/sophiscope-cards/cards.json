@@ -1,0 +1,468 @@
+{
+  "meta": {
+    "schemaVersion": "1.0",
+    "project": "sophiscope",
+    "language": "fr",
+    "basePaths": {
+      "w400": "/assets/img/sophiscope-cards/w400/",
+      "w800": "/assets/img/sophiscope-cards/w800/",
+      "w1200": "/assets/img/sophiscope-cards/w1200/"
+    },
+    "categories": [
+      {
+        "id": "formels",
+        "label": "Sophismes formels",
+        "description": "Erreurs liées à la structure logique de l’argument."
+      },
+      {
+        "id": "pertinence",
+        "label": "Sophismes de pertinence",
+        "description": "Détournent le débat (attaque, émotion, diversion) au lieu de traiter le fond."
+      },
+      {
+        "id": "presomption",
+        "label": "Sophismes de présomption",
+        "description": "Reposent sur des hypothèses fragiles, des inférences hâtives ou des preuves biaisées."
+      },
+      {
+        "id": "langagiers",
+        "label": "Sophismes langagiers",
+        "description": "Exploitent l’ambiguïté, le cadrage ou le glissement de sens."
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "SC-001",
+      "slug": "affirmation-du-consequent",
+      "title": "Affirmation du conséquent",
+      "category": "formels",
+      "order": 1,
+      "images": {
+        "w400": "affirmation-du-consequent.jpg",
+        "w800": "affirmation-du-consequent.jpg",
+        "w1200": "affirmation-du-consequent.jpg"
+      },
+      "tags": ["logique", "conditionnel"]
+    },
+    {
+      "id": "SC-002",
+      "slug": "negation-de-antecedent",
+      "title": "Négation de l’antécédent",
+      "category": "formels",
+      "order": 2,
+      "images": {
+        "w400": "negation-de-antecedent.jpg",
+        "w800": "negation-de-antecedent.jpg",
+        "w1200": "negation-de-antecedent.jpg"
+      },
+      "tags": ["logique", "conditionnel"]
+    },
+
+    {
+      "id": "SC-010",
+      "slug": "ad-hominem",
+      "title": "Ad hominem",
+      "category": "pertinence",
+      "order": 10,
+      "images": {
+        "w400": "ad-hominem.jpg",
+        "w800": "ad-hominem.jpg",
+        "w1200": "ad-hominem.jpg"
+      },
+      "tags": ["attaque", "débat"]
+    },
+    {
+      "id": "SC-011",
+      "slug": "homme-de-paille",
+      "title": "Homme de paille",
+      "category": "pertinence",
+      "order": 11,
+      "images": {
+        "w400": "homme-de-paille.jpg",
+        "w800": "homme-de-paille.jpg",
+        "w1200": "homme-de-paille.jpg"
+      },
+      "tags": ["caricature", "débat"]
+    },
+    {
+      "id": "SC-012",
+      "slug": "appel-a-la-peur",
+      "title": "Appel à la peur",
+      "category": "pertinence",
+      "order": 12,
+      "images": {
+        "w400": "appel-a-la-peur.jpg",
+        "w800": "appel-a-la-peur.jpg",
+        "w1200": "appel-a-la-peur.jpg"
+      },
+      "tags": ["émotion", "manipulation"]
+    },
+    {
+      "id": "SC-013",
+      "slug": "appel-a-la-pitie",
+      "title": "Appel à la pitié",
+      "category": "pertinence",
+      "order": 13,
+      "images": {
+        "w400": "appel-a-la-pitie.jpg",
+        "w800": "appel-a-la-pitie.jpg",
+        "w1200": "appel-a-la-pitie.jpg"
+      },
+      "tags": ["émotion", "manipulation"]
+    },
+    {
+      "id": "SC-014",
+      "slug": "appel-au-peuple",
+      "title": "Appel au peuple",
+      "category": "pertinence",
+      "order": 14,
+      "images": {
+        "w400": "appel-au-peuple.jpg",
+        "w800": "appel-au-peuple.jpg",
+        "w1200": "appel-au-peuple.jpg"
+      },
+      "tags": ["popularité", "argument"]
+    },
+    {
+      "id": "SC-015",
+      "slug": "argument-par-slogan",
+      "title": "Argument par slogan",
+      "category": "pertinence",
+      "order": 15,
+      "images": {
+        "w400": "argument-par-slogan.jpg",
+        "w800": "argument-par-slogan.jpg",
+        "w1200": "argument-par-slogan.jpg"
+      },
+      "tags": ["rhétorique", "simplification"]
+    },
+    {
+      "id": "SC-016",
+      "slug": "mille-feuille-argumentatif",
+      "title": "Mille-feuille argumentatif",
+      "category": "pertinence",
+      "order": 16,
+      "images": {
+        "w400": "mille-feuille-argumentatif.jpg",
+        "w800": "mille-feuille-argumentatif.jpg",
+        "w1200": "mille-feuille-argumentatif.jpg"
+      },
+      "tags": ["gish gallop", "surcharge"]
+    },
+    {
+      "id": "SC-017",
+      "slug": "nivelage-par-le-bas",
+      "title": "Nivellage par le bas",
+      "category": "pertinence",
+      "order": 17,
+      "images": {
+        "w400": "nivelage-par-le-bas.jpg",
+        "w800": "nivelage-par-le-bas.jpg",
+        "w1200": "nivelage-par-le-bas.jpg"
+      },
+      "tags": ["comparaison", "relativisation"]
+    },
+    {
+      "id": "SC-018",
+      "slug": "paralysie-par-analyse",
+      "title": "Paralysie par l’analyse",
+      "category": "pertinence",
+      "order": 18,
+      "images": {
+        "w400": "paralysie-par-analyse.jpg",
+        "w800": "paralysie-par-analyse.jpg",
+        "w1200": "paralysie-par-analyse.jpg"
+      },
+      "tags": ["décision", "complexité"]
+    },
+
+    {
+      "id": "SC-030",
+      "slug": "fausse-analogie",
+      "title": "Fausse analogie",
+      "category": "presomption",
+      "order": 30,
+      "images": {
+        "w400": "fausse-analogie.jpg",
+        "w800": "fausse-analogie.jpg",
+        "w1200": "fausse-analogie.jpg"
+      },
+      "tags": ["analogie", "inférence"]
+    },
+    {
+      "id": "SC-031",
+      "slug": "fausse-cause",
+      "title": "Fausse cause",
+      "category": "presomption",
+      "order": 31,
+      "images": {
+        "w400": "fausse-cause.jpg",
+        "w800": "fausse-cause.jpg",
+        "w1200": "fausse-cause.jpg"
+      },
+      "tags": ["causalité", "corrélation"]
+    },
+    {
+      "id": "SC-032",
+      "slug": "post-hoc-ergo-propter-hoc",
+      "title": "Post hoc ergo propter hoc",
+      "category": "presomption",
+      "order": 32,
+      "images": {
+        "w400": "post-hoc-ergo-propter-hoc.jpg",
+        "w800": "post-hoc-ergo-propter-hoc.jpg",
+        "w1200": "post-hoc-ergo-propter-hoc.jpg"
+      },
+      "tags": ["causalité", "chronologie"]
+    },
+    {
+      "id": "SC-033",
+      "slug": "generalisation-hative",
+      "title": "Généralisation hâtive",
+      "category": "presomption",
+      "order": 33,
+      "images": {
+        "w400": "generalisation-hative.jpg",
+        "w800": "generalisation-hative.jpg",
+        "w1200": "generalisation-hative.jpg"
+      },
+      "tags": ["statistiques", "échantillon"]
+    },
+    {
+      "id": "SC-034",
+      "slug": "cherry-picking",
+      "title": "Cherry picking",
+      "category": "presomption",
+      "order": 34,
+      "images": {
+        "w400": "cherry-picking.jpg",
+        "w800": "cherry-picking.jpg",
+        "w1200": "cherry-picking.jpg"
+      },
+      "tags": ["preuves", "sélection"]
+    },
+    {
+      "id": "SC-035",
+      "slug": "petition-de-principe",
+      "title": "Pétition de principe",
+      "category": "presomption",
+      "order": 35,
+      "images": {
+        "w400": "petition-de-principe.jpg",
+        "w800": "petition-de-principe.jpg",
+        "w1200": "petition-de-principe.jpg"
+      },
+      "tags": ["raisonnement", "cercle"]
+    },
+    {
+      "id": "SC-036",
+      "slug": "definition-circulaire",
+      "title": "Définition circulaire",
+      "category": "presomption",
+      "order": 36,
+      "images": {
+        "w400": "definition-circulaire.jpg",
+        "w800": "definition-circulaire.jpg",
+        "w1200": "definition-circulaire.jpg"
+      },
+      "tags": ["définition", "cercle"]
+    },
+    {
+      "id": "SC-037",
+      "slug": "fausse-dichotomie",
+      "title": "Fausse dichotomie",
+      "category": "presomption",
+      "order": 37,
+      "images": {
+        "w400": "fausse-dichotomie.jpg",
+        "w800": "fausse-dichotomie.jpg",
+        "w1200": "fausse-dichotomie.jpg"
+      },
+      "tags": ["choix", "binarité"]
+    },
+    {
+      "id": "SC-038",
+      "slug": "pente-glissante",
+      "title": "Pente glissante",
+      "category": "presomption",
+      "order": 38,
+      "images": {
+        "w400": "pente-glissante.jpg",
+        "w800": "pente-glissante.jpg",
+        "w1200": "pente-glissante.jpg"
+      },
+      "tags": ["conséquences", "enchaînement"]
+    },
+    {
+      "id": "SC-039",
+      "slug": "question-complexe",
+      "title": "Question complexe",
+      "category": "presomption",
+      "order": 39,
+      "images": {
+        "w400": "question-complexe.jpg",
+        "w800": "question-complexe.jpg",
+        "w1200": "question-complexe.jpg"
+      },
+      "tags": ["piège", "présupposé"]
+    },
+    {
+      "id": "SC-040",
+      "slug": "appel-a-ignorance",
+      "title": "Appel à l’ignorance",
+      "category": "presomption",
+      "order": 40,
+      "images": {
+        "w400": "appel-a-ignorance.jpg",
+        "w800": "appel-a-ignorance.jpg",
+        "w1200": "appel-a-ignorance.jpg"
+      },
+      "tags": ["preuve", "absence"]
+    },
+    {
+      "id": "SC-041",
+      "slug": "appel-a-autorite",
+      "title": "Appel à l’autorité",
+      "category": "presomption",
+      "order": 41,
+      "images": {
+        "w400": "appel-a-autorite.jpg",
+        "w800": "appel-a-autorite.jpg",
+        "w1200": "appel-a-autorite.jpg"
+      },
+      "tags": ["expert", "statut"]
+    },
+    {
+      "id": "SC-042",
+      "slug": "appel-a-la-tradition",
+      "title": "Appel à la tradition",
+      "category": "presomption",
+      "order": 42,
+      "images": {
+        "w400": "appel-a-la-tradition.jpg",
+        "w800": "appel-a-la-tradition.jpg",
+        "w1200": "appel-a-la-tradition.jpg"
+      },
+      "tags": ["habitude", "ancien"]
+    },
+    {
+      "id": "SC-043",
+      "slug": "appel-a-la-nouveaute",
+      "title": "Appel à la nouveauté",
+      "category": "presomption",
+      "order": 43,
+      "images": {
+        "w400": "appel-a-la-nouveaute.jpg",
+        "w800": "appel-a-la-nouveaute.jpg",
+        "w1200": "appel-a-la-nouveaute.jpg"
+      },
+      "tags": ["nouveau", "biais"]
+    },
+    {
+      "id": "SC-044",
+      "slug": "non-sequitur",
+      "title": "Non sequitur",
+      "category": "presomption",
+      "order": 44,
+      "images": {
+        "w400": "non-sequitur.jpg",
+        "w800": "non-sequitur.jpg",
+        "w1200": "non-sequitur.jpg"
+      },
+      "tags": ["inférence", "lien logique"]
+    },
+
+    {
+      "id": "SC-060",
+      "slug": "amphibologie",
+      "title": "Amphibologie",
+      "category": "langagiers",
+      "order": 60,
+      "images": {
+        "w400": "amphibologie.jpg",
+        "w800": "amphibologie.jpg",
+        "w1200": "amphibologie.jpg"
+      },
+      "tags": ["ambiguïté", "syntaxe"]
+    },
+    {
+      "id": "SC-061",
+      "slug": "equivoque",
+      "title": "Équivoque",
+      "category": "langagiers",
+      "order": 61,
+      "images": {
+        "w400": "equivoque.jpg",
+        "w800": "equivoque.jpg",
+        "w1200": "equivoque.jpg"
+      },
+      "tags": ["ambiguïté", "sens"]
+    },
+    {
+      "id": "SC-062",
+      "slug": "accent",
+      "title": "Accent",
+      "category": "langagiers",
+      "order": 62,
+      "images": {
+        "w400": "accent.jpg",
+        "w800": "accent.jpg",
+        "w1200": "accent.jpg"
+      },
+      "tags": ["cadrage", "mise en avant"]
+    },
+    {
+      "id": "SC-063",
+      "slug": "epithete",
+      "title": "Épithète",
+      "category": "langagiers",
+      "order": 63,
+      "images": {
+        "w400": "epithete.jpg",
+        "w800": "epithete.jpg",
+        "w1200": "epithete.jpg"
+      },
+      "tags": ["étiquette", "qualification"]
+    },
+    {
+      "id": "SC-064",
+      "slug": "terme-charge",
+      "title": "Terme chargé",
+      "category": "langagiers",
+      "order": 64,
+      "images": {
+        "w400": "terme-charge.jpg",
+        "w800": "terme-charge.jpg",
+        "w1200": "terme-charge.jpg"
+      },
+      "tags": ["connotation", "émotion"]
+    },
+    {
+      "id": "SC-065",
+      "slug": "texte-hors-contexte",
+      "title": "Texte hors contexte",
+      "category": "langagiers",
+      "order": 65,
+      "images": {
+        "w400": "texte-hors-contexte.jpg",
+        "w800": "texte-hors-contexte.jpg",
+        "w1200": "texte-hors-contexte.jpg"
+      },
+      "tags": ["citation", "contexte"]
+    },
+    {
+      "id": "SC-066",
+      "slug": "verdict-par-metaphore",
+      "title": "Verdict par métaphore",
+      "category": "langagiers",
+      "order": 66,
+      "images": {
+        "w400": "verdict-par-metaphore.jpg",
+        "w800": "verdict-par-metaphore.jpg",
+        "w1200": "verdict-par-metaphore.jpg"
+      },
+      "tags": ["métaphore", "cadrage"]
+    }
+  ]
+}

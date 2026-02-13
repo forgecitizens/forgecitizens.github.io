@@ -1,0 +1,1302 @@
+/* ==========================================================================
+   SOPHISCOPE - Landing Screen Styles
+   Mobile-first responsive design
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Variables)
+   -------------------------------------------------------------------------- */
+:root {
+  --sophiscope-bg: #000000;
+  --sophiscope-text: #ffffff;
+  --sophiscope-accent: #c4a35a;
+  --sophiscope-muted: rgba(255, 255, 255, 0.6);
+  --sophiscope-btn-bg: #1a1a1a;
+  --sophiscope-btn-hover: #2a2a2a;
+  --sophiscope-btn-border: #444444;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  
+  /* Image constraints */
+  --image-max-width-mobile: 100%;
+  --image-max-width-tablet: 520px;
+  --image-max-width-desktop: 620px;
+  
+  /* Safe area for mobile notches */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* --------------------------------------------------------------------------
+   Reset & Base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body.sophiscope-page {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  background-color: var(--sophiscope-bg);
+  color: var(--sophiscope-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  
+  /* Safe area padding for notched devices */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* --------------------------------------------------------------------------
+   Main Layout Container
+   -------------------------------------------------------------------------- */
+.sophiscope-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Main Content Area
+   -------------------------------------------------------------------------- */
+.sophiscope-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-xl) + 60px); /* Space for footer */
+}
+
+/* --------------------------------------------------------------------------
+   Hero Image
+   -------------------------------------------------------------------------- */
+.sophiscope-hero {
+  width: 100%;
+  max-width: var(--image-max-width-mobile);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sophiscope-hero__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  
+  /* Fallback background if image fails to load */
+  background-color: #0a1520;
+  background-image: linear-gradient(135deg, #0a1520 0%, #1a2530 100%);
+  min-height: 200px;
+  
+  /* Smooth loading */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.sophiscope-hero__image[data-loading="true"] {
+  opacity: 0.5;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.sophiscope-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-bottom: calc(var(--spacing-sm) + var(--safe-area-inset-bottom));
+  pointer-events: none;
+  z-index: 100;
+}
+
+.sophiscope-footer > * {
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Powered By Text
+   -------------------------------------------------------------------------- */
+.sophiscope-powered {
+  font-size: 0.75rem;
+  color: var(--sophiscope-accent);
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.sophiscope-powered:hover,
+.sophiscope-powered:focus {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Start Button
+   -------------------------------------------------------------------------- */
+.sophiscope-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  color: var(--sophiscope-text);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  text-decoration: none;
+}
+
+.sophiscope-btn:hover,
+.sophiscope-btn:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.sophiscope-btn:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.sophiscope-btn:active {
+  transform: scale(0.98);
+}
+
+/* Card icon placeholder - simple colored cards stack */
+.sophiscope-btn__icon {
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+
+.sophiscope-btn__card {
+  position: absolute;
+  width: 32px;
+  height: 40px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sophiscope-btn__card--red {
+  background-color: #e53935;
+  top: 0;
+  left: 0;
+  transform: rotate(-15deg);
+  z-index: 1;
+}
+
+.sophiscope-btn__card--yellow {
+  background-color: #fdd835;
+  top: 2px;
+  left: 8px;
+  transform: rotate(5deg);
+  z-index: 2;
+}
+
+.sophiscope-btn__card--green {
+  background-color: #43a047;
+  top: 4px;
+  left: 16px;
+  transform: rotate(20deg);
+  z-index: 3;
+}
+
+.sophiscope-btn__label {
+  font-size: 0.85rem;
+  margin-top: var(--spacing-xs);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE: Tablet (768px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 768px) {
+  .sophiscope-main {
+    padding: var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-xl) + 80px);
+  }
+  
+  .sophiscope-hero {
+    max-width: var(--image-max-width-tablet);
+  }
+  
+  .sophiscope-footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-md) + var(--safe-area-inset-bottom));
+  }
+  
+  .sophiscope-powered {
+    font-size: 0.875rem;
+  }
+  
+  .sophiscope-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+  
+  .sophiscope-btn__icon {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .sophiscope-btn__card {
+    width: 36px;
+    height: 46px;
+  }
+  
+  .sophiscope-btn__label {
+    font-size: 0.95rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE: Desktop (1024px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1024px) {
+  /* Prevent scrolling on desktop */
+  body.sophiscope-page {
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .sophiscope-container {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  .sophiscope-main {
+    flex: 1;
+    overflow: hidden;
+    padding-bottom: var(--spacing-lg);
+  }
+  
+  .sophiscope-hero {
+    max-width: var(--image-max-width-desktop);
+    max-height: calc(100vh - 120px); /* Viewport minus footer and padding */
+    max-height: calc(100dvh - 120px);
+  }
+  
+  .sophiscope-hero__image {
+    max-height: calc(100vh - 120px);
+    max-height: calc(100dvh - 120px);
+    width: auto;
+    object-fit: contain;
+  }
+  
+  .sophiscope-footer {
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+  
+  .sophiscope-powered {
+    font-size: 1rem;
+  }
+  
+  .sophiscope-btn__icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .sophiscope-btn__card {
+    width: 40px;
+    height: 52px;
+  }
+  
+  .sophiscope-btn__label {
+    font-size: 1rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE: Large Desktop (1440px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1440px) {
+  :root {
+    --image-max-width-desktop: 720px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Landscape Orientation Adjustments
+   -------------------------------------------------------------------------- */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .sophiscope-main {
+    padding-top: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-lg) + 50px);
+  }
+  
+  .sophiscope-hero {
+    max-width: 50vh; /* Limit by height in landscape */
+  }
+  
+  .sophiscope-footer {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+  
+  .sophiscope-btn__icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .sophiscope-btn__card {
+    width: 26px;
+    height: 34px;
+  }
+  
+  .sophiscope-btn__label {
+    font-size: 0.8rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sophiscope-hero__image,
+  .sophiscope-btn,
+  .sophiscope-powered {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility: High Contrast Mode
+   -------------------------------------------------------------------------- */
+@media (prefers-contrast: high) {
+  .sophiscope-btn {
+    border: 2px solid var(--sophiscope-text);
+  }
+  
+  .sophiscope-powered {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print Styles (just in case)
+   -------------------------------------------------------------------------- */
+@media print {
+  .sophiscope-footer {
+    position: static;
+  }
+  
+  body.sophiscope-page {
+    background-color: white;
+    color: black;
+  }
+}
+
+/* ==========================================================================
+   GALLERY PAGE STYLES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Gallery Layout
+   -------------------------------------------------------------------------- */
+body.sophiscope-page--gallery {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.sophiscope-container--gallery {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Header
+   -------------------------------------------------------------------------- */
+.gallery-header {
+  flex-shrink: 0;
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  padding-top: calc(var(--spacing-md) + var(--safe-area-inset-top));
+}
+
+.gallery-title {
+  font-size: 1.25rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--sophiscope-text);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.gallery-subtitle {
+  font-size: 0.8rem;
+  color: var(--sophiscope-muted);
+  margin: var(--spacing-xs) 0 0;
+  font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Main Content
+   -------------------------------------------------------------------------- */
+.gallery-main {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--spacing-sm);
+}
+
+.gallery-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  padding-bottom: calc(var(--spacing-xl) * 3); /* Extra padding for last row visibility */
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+.gallery-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.gallery-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gallery-grid::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 2px;
+}
+
+/* Bottom fade gradient */
+.gallery-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to top,
+    var(--sophiscope-bg) 0%,
+    var(--sophiscope-bg) 20%,
+    rgba(0, 0, 0, 0.8) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Cards
+   -------------------------------------------------------------------------- */
+.gallery-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-card:focus-visible {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.gallery-card__visual {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(145deg, #1a2a2a 0%, #0d1a1a 100%);
+  border: 1px solid rgba(100, 140, 120, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-card:hover .gallery-card__visual,
+.gallery-card:focus .gallery-card__visual {
+  border-color: rgba(100, 140, 120, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.gallery-card:active .gallery-card__visual {
+  transform: scale(0.98);
+}
+
+/* Placeholder content */
+.gallery-card__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+}
+
+.gallery-card__placeholder-icon {
+  width: 32px;
+  height: 32px;
+  stroke: rgba(100, 140, 120, 0.5);
+}
+
+.gallery-card__placeholder-text {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: rgba(100, 140, 120, 0.5);
+  text-align: center;
+}
+
+/* Card title */
+.gallery-card__title {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--sophiscope-muted);
+  text-align: center;
+  margin: var(--spacing-xs) 0 0;
+  padding: 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Card Images
+   -------------------------------------------------------------------------- */
+.gallery-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.3s ease;
+}
+
+/* Fallback placeholder - hidden by default, shown on image error */
+.gallery-card__placeholder--fallback {
+  display: none;
+}
+
+.gallery-card__placeholder--fallback.gallery-card__placeholder--visible {
+  display: flex;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Skeleton Loading
+   -------------------------------------------------------------------------- */
+.gallery-card--skeleton {
+  pointer-events: none;
+}
+
+.gallery-card__placeholder--loading {
+  background: linear-gradient(145deg, #1a2a2a 0%, #0d1a1a 100%);
+}
+
+.gallery-card__skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(100, 140, 120, 0.08) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.gallery-card__title--skeleton {
+  background: rgba(100, 140, 120, 0.15);
+  border-radius: 2px;
+  height: 0.65rem;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Error State
+   -------------------------------------------------------------------------- */
+.gallery-error {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+  text-align: center;
+  min-height: 300px;
+}
+
+.gallery-error__icon {
+  width: 48px;
+  height: 48px;
+  stroke: rgba(100, 140, 120, 0.6);
+}
+
+.gallery-error__text {
+  font-size: 1rem;
+  color: var(--sophiscope-muted);
+  margin: 0;
+}
+
+.gallery-error__retry {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: rgba(100, 140, 120, 0.2);
+  border: 1px solid rgba(100, 140, 120, 0.4);
+  border-radius: 6px;
+  color: var(--sophiscope-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-error__retry:hover,
+.gallery-error__retry:focus {
+  background-color: rgba(100, 140, 120, 0.3);
+  border-color: rgba(100, 140, 120, 0.6);
+}
+
+.gallery-error__retry:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Footer / Back Button
+   -------------------------------------------------------------------------- */
+.gallery-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-inset-bottom));
+  padding-right: calc(var(--spacing-md) + var(--safe-area-inset-right));
+  z-index: 100;
+}
+
+.gallery-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--sophiscope-text);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.gallery-btn-back:hover,
+.gallery-btn-back:focus {
+  background-color: rgba(40, 40, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.gallery-btn-back:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.gallery-btn-back:active {
+  transform: translateY(0);
+}
+
+.gallery-btn-back__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.gallery-btn-back__label {
+  font-size: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Responsive: Tablet (768px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 768px) {
+  .gallery-header {
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .gallery-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.4em;
+  }
+  
+  .gallery-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .gallery-main {
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+  
+  .gallery-card__placeholder-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .gallery-card__placeholder-text {
+    font-size: 0.7rem;
+  }
+  
+  .gallery-card__title {
+    font-size: 0.75rem;
+    margin-top: var(--spacing-sm);
+  }
+  
+  .gallery-fade {
+    height: 150px;
+  }
+  
+  .gallery-footer {
+    padding: var(--spacing-lg);
+  }
+  
+  .gallery-btn-back {
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+  
+  .gallery-btn-back__icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .gallery-btn-back__label {
+    font-size: 0.85rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Responsive: Desktop (1024px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1024px) {
+  .gallery-header {
+    padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-md);
+  }
+  
+  .gallery-title {
+    font-size: 1.75rem;
+  }
+  
+  .gallery-main {
+    padding: 0 var(--spacing-xl);
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  /* Hover effects enhanced on desktop */
+  .gallery-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .gallery-card:hover .gallery-card__visual {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  
+  .gallery-card__placeholder-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .gallery-card__placeholder-text {
+    font-size: 0.75rem;
+  }
+  
+  .gallery-card__title {
+    font-size: 0.8rem;
+  }
+  
+  .gallery-fade {
+    height: 180px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Responsive: Large Desktop (1440px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1440px) {
+  .gallery-wrapper {
+    max-width: 1400px;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gallery: Landscape Mobile
+   -------------------------------------------------------------------------- */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .gallery-header {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+  
+  .gallery-title {
+    font-size: 1rem;
+  }
+  
+  .gallery-subtitle {
+    display: none;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+  }
+  
+  .gallery-card__title {
+    font-size: 0.55rem;
+    margin-top: 2px;
+  }
+  
+  .gallery-fade {
+    height: 80px;
+  }
+  
+  .gallery-footer {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .gallery-btn-back {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .gallery-btn-back__label {
+    font-size: 0.7rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gallery: Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-card,
+  .gallery-card__visual,
+  .gallery-card__image,
+  .gallery-btn-back {
+    transition: none;
+  }
+  
+  .gallery-grid {
+    scroll-behavior: auto;
+  }
+  
+  .gallery-card__skeleton-shimmer {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   CARD DETAIL MODAL
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Modal Base & Overlay
+   -------------------------------------------------------------------------- */
+.card-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md);
+  padding-top: calc(var(--spacing-md) + var(--safe-area-inset-top));
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-inset-bottom));
+  padding-left: calc(var(--spacing-md) + var(--safe-area-inset-left));
+  padding-right: calc(var(--spacing-md) + var(--safe-area-inset-right));
+  
+  /* Hidden by default */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.card-modal--open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.card-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+}
+
+/* Body scroll lock when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Modal Content Container
+   -------------------------------------------------------------------------- */
+.card-modal__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 100%;
+  overflow-y: auto;
+  background-color: var(--sophiscope-bg);
+  border-radius: 8px;
+  outline: none;
+  
+  /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   Modal Poster (Left Side on Desktop)
+   -------------------------------------------------------------------------- */
+.card-modal__poster {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+}
+
+.card-modal__image {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.card-modal__title {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--sophiscope-text);
+  text-align: center;
+  margin: var(--spacing-md) 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   Modal Panel (Right Side on Desktop)
+   -------------------------------------------------------------------------- */
+.card-modal__panel {
+  flex: 1;
+  padding: var(--spacing-md);
+}
+
+.card-modal__panel-inner {
+  border: 2px solid #d4a839;
+  border-radius: 4px;
+  padding: var(--spacing-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-modal__description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--sophiscope-text);
+  margin: 0 0 var(--spacing-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Modal Examples
+   -------------------------------------------------------------------------- */
+.card-modal__example {
+  margin-bottom: var(--spacing-lg);
+}
+
+.card-modal__example-title {
+  font-size: 1.1rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #6bbfb0;
+  margin: 0 0 var(--spacing-sm);
+}
+
+.card-modal__example-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--sophiscope-muted);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Modal CTA Button
+   -------------------------------------------------------------------------- */
+.card-modal__cta {
+  display: inline-block;
+  align-self: center;
+  margin-top: auto;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background-color: #4ade80;
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-modal__cta:hover,
+.card-modal__cta:focus {
+  background-color: #22c55e;
+  transform: scale(1.02);
+}
+
+.card-modal__cta:focus {
+  outline: 3px solid #4ade80;
+  outline-offset: 2px;
+}
+
+.card-modal__cta:active {
+  transform: scale(0.98);
+}
+
+/* --------------------------------------------------------------------------
+   Modal Responsive: Tablet (768px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 768px) {
+  .card-modal {
+    padding: var(--spacing-lg);
+  }
+  
+  .card-modal__content {
+    flex-direction: row;
+    overflow: visible;
+  }
+  
+  .card-modal__poster {
+    width: 40%;
+    max-width: 400px;
+    padding: var(--spacing-lg);
+  }
+  
+  .card-modal__image {
+    max-width: 100%;
+  }
+  
+  .card-modal__title {
+    font-size: 1.2rem;
+  }
+  
+  .card-modal__panel {
+    flex: 1;
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: stretch;
+  }
+  
+  .card-modal__panel-inner {
+    padding: var(--spacing-xl);
+  }
+  
+  .card-modal__description {
+    font-size: 1rem;
+  }
+  
+  .card-modal__example-text {
+    font-size: 0.95rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Modal Responsive: Desktop (1024px+)
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1024px) {
+  .card-modal {
+    padding: var(--spacing-xl);
+  }
+  
+  .card-modal__poster {
+    width: 45%;
+    max-width: 500px;
+  }
+  
+  .card-modal__image {
+    max-width: 420px;
+  }
+  
+  .card-modal__title {
+    font-size: 1.4rem;
+    letter-spacing: 0.25em;
+  }
+  
+  .card-modal__panel-inner {
+    padding: var(--spacing-xl) calc(var(--spacing-xl) * 1.5);
+  }
+  
+  .card-modal__description {
+    font-size: 1.05rem;
+  }
+  
+  .card-modal__example-title {
+    font-size: 1.2rem;
+  }
+  
+  .card-modal__example-text {
+    font-size: 1rem;
+  }
+  
+  .card-modal__cta {
+    font-size: 1.1rem;
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Modal: Landscape Mobile
+   -------------------------------------------------------------------------- */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .card-modal__content {
+    flex-direction: row;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  
+  .card-modal__poster {
+    width: 35%;
+    padding: var(--spacing-sm);
+  }
+  
+  .card-modal__image {
+    max-width: 180px;
+  }
+  
+  .card-modal__title {
+    font-size: 0.85rem;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .card-modal__panel {
+    padding: var(--spacing-sm);
+  }
+  
+  .card-modal__panel-inner {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .card-modal__description {
+    font-size: 0.8rem;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .card-modal__example {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .card-modal__example-title {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+  }
+  
+  .card-modal__example-text {
+    font-size: 0.75rem;
+  }
+  
+  .card-modal__cta {
+    font-size: 0.85rem;
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Modal: Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card-modal {
+    transition: none;
+  }
+  
+  .card-modal__cta {
+    transition: none;
+  }
+}
