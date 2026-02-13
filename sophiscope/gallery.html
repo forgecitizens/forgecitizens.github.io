@@ -117,6 +117,11 @@
       const JSON_URL = '/assets/img/sophiscope-cards/cards.json';
       const SKELETON_COUNT = 12;
       const HIGH_PRIORITY_COUNT = 6;
+      const TRANSITION_SOUND_URL = '/assets/sophiscope/sophiscope-sounds/sophiscope_transition.mp3';
+      
+      // Audio
+      const transitionSound = new Audio(TRANSITION_SOUND_URL);
+      transitionSound.volume = 0.5;
       
       // DOM Elements
       const galleryGrid = document.getElementById('gallery-grid');
@@ -309,6 +314,12 @@
         currentCard = cardData;
         isModalOpen = true;
         previousFocusElement = document.activeElement;
+        
+        // Play transition sound
+        transitionSound.currentTime = 0;
+        transitionSound.play().catch(err => {
+          // Autoplay may be blocked, ignore silently
+        });
         
         // Populate modal content
         const { title, slug, images, content } = cardData;
