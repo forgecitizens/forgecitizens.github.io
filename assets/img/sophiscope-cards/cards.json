@@ -1,6 +1,6 @@
 {
   "meta": {
-    "schemaVersion": "1.0",
+    "schemaVersion": "1.1",
     "project": "sophiscope",
     "language": "fr",
     "basePaths": {
@@ -8,6 +8,7 @@
       "w800": "/assets/img/sophiscope-cards/w800/",
       "w1200": "/assets/img/sophiscope-cards/w1200/"
     },
+    "trainingBasePath": "/assets/img/sophiscope-training/",
     "categories": [
       {
         "id": "formels",
@@ -43,7 +44,22 @@
         "w800": "affirmation-du-consequent.jpg",
         "w1200": "affirmation-du-consequent.jpg"
       },
-      "tags": ["logique", "conditionnel"]
+      "tags": [
+        "logique",
+        "conditionnel"
+      ],
+      "content": {
+        "hook": "Confond condition et conséquence.",
+        "definition": "On conclut qu’une cause est vraie parce qu’un effet observé est vrai : « Si A alors B ; B, donc A ». Or B peut avoir d’autres causes.",
+        "examples": [
+          "Si l’alarme sonne, il y a un incendie. L’alarme sonne, donc il y a un incendie.",
+          "Si je suis malade, j’ai de la fièvre. J’ai de la fièvre, donc je suis malade."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-002",
@@ -56,9 +72,23 @@
         "w800": "negation-de-antecedent.jpg",
         "w1200": "negation-de-antecedent.jpg"
       },
-      "tags": ["logique", "conditionnel"]
+      "tags": [
+        "logique",
+        "conditionnel"
+      ],
+      "content": {
+        "hook": "Nier A ne dit rien sur B.",
+        "definition": "On pense que si une condition n’est pas remplie, alors la conséquence est impossible : « Si A alors B ; non-A, donc non-B ». Ce n’est pas valide.",
+        "examples": [
+          "Si je prends le train, j’arrive à 9h. Je ne prends pas le train, donc je n’arriverai pas à 9h.",
+          "Si on investit, on progresse. On n’a pas investi, donc on ne progressera pas."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
-
     {
       "id": "SC-010",
       "slug": "ad-hominem",
@@ -70,7 +100,22 @@
         "w800": "ad-hominem.jpg",
         "w1200": "ad-hominem.jpg"
       },
-      "tags": ["attaque", "débat"]
+      "tags": [
+        "attaque",
+        "débat"
+      ],
+      "content": {
+        "hook": "On vise la personne, pas l’idée.",
+        "definition": "Au lieu de répondre à l’argument, on attaque celui qui le formule (son caractère, ses intentions, son passé) pour discréditer son propos.",
+        "examples": [
+          "Tu ne peux pas parler d’écologie, tu prends l’avion.",
+          "Ton idée est nulle : tu n’as même pas fait d’études."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-011",
@@ -83,7 +128,22 @@
         "w800": "homme-de-paille.jpg",
         "w1200": "homme-de-paille.jpg"
       },
-      "tags": ["caricature", "débat"]
+      "tags": [
+        "caricature",
+        "débat"
+      ],
+      "content": {
+        "hook": "Caricaturer pour gagner.",
+        "definition": "On déforme l’argument de l’autre pour le rendre plus facile à attaquer, puis on réfute cette version affaiblie plutôt que la thèse réelle.",
+        "examples": [
+          "— Il faudrait réguler un peu les pubs. — Donc tu veux censurer tout le monde.",
+          "— On devrait réduire la viande. — Ah, tu veux interdire les barbecues ?"
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-012",
@@ -96,7 +156,22 @@
         "w800": "appel-a-la-peur.jpg",
         "w1200": "appel-a-la-peur.jpg"
       },
-      "tags": ["émotion", "manipulation"]
+      "tags": [
+        "émotion",
+        "manipulation"
+      ],
+      "content": {
+        "hook": "La peur remplace la preuve.",
+        "definition": "On cherche à convaincre en suscitant l’angoisse ou la menace plutôt qu’en apportant des raisons : « si on fait X, ça finira très mal ». ",
+        "examples": [
+          "Si on change cette règle, ce sera le chaos total.",
+          "Si tu n’acceptes pas, tu le regretteras quand il sera trop tard."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-013",
@@ -109,7 +184,22 @@
         "w800": "appel-a-la-pitie.jpg",
         "w1200": "appel-a-la-pitie.jpg"
       },
-      "tags": ["émotion", "manipulation"]
+      "tags": [
+        "émotion",
+        "manipulation"
+      ],
+      "content": {
+        "hook": "L’émotion remplace l’argument.",
+        "definition": "On demande l’adhésion non pas parce que l’idée est juste, mais parce que la situation suscite la compassion (tristesse, culpabilité).",
+        "examples": [
+          "Vous devez me valider, j’ai eu une semaine horrible.",
+          "Ne me critique pas : tu sais ce que j’ai traversé."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-014",
@@ -122,7 +212,22 @@
         "w800": "appel-au-peuple.jpg",
         "w1200": "appel-au-peuple.jpg"
       },
-      "tags": ["popularité", "argument"]
+      "tags": [
+        "popularité",
+        "argument"
+      ],
+      "content": {
+        "hook": "Populaire ≠ vrai.",
+        "definition": "On présente une idée comme vraie ou bonne parce qu’elle plaît, rassemble, ou correspond à « ce que tout le monde pense ».",
+        "examples": [
+          "Tout le monde le dit, donc c’est forcément vrai.",
+          "Si ça marche auprès de millions de gens, ça ne peut pas être mauvais."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-015",
@@ -135,7 +240,22 @@
         "w800": "argument-par-slogan.jpg",
         "w1200": "argument-par-slogan.jpg"
       },
-      "tags": ["rhétorique", "simplification"]
+      "tags": [
+        "rhétorique",
+        "simplification"
+      ],
+      "content": {
+        "hook": "Une formule n’est pas une démonstration.",
+        "definition": "On remplace une justification par une phrase choc, un mantra ou une punchline qui donne l’impression d’expliquer, sans réellement argumenter.",
+        "examples": [
+          "C’est le bon sens.",
+          "On a toujours fait comme ça, point."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-016",
@@ -148,7 +268,22 @@
         "w800": "mille-feuille-argumentatif.jpg",
         "w1200": "mille-feuille-argumentatif.jpg"
       },
-      "tags": ["gish gallop", "surcharge"]
+      "tags": [
+        "gish gallop",
+        "surcharge"
+      ],
+      "content": {
+        "hook": "Trop d’arguments tue l’argument.",
+        "definition": "On noie l’échange sous une avalanche d’affirmations et de points secondaires, rendant difficile toute réponse sérieuse point par point.",
+        "examples": [
+          "Je vais te prouver que j’ai raison : voilà 25 raisons (et si tu ne réponds pas à tout, c’est que tu fuis).",
+          "Regarde : dix liens, cinq graphiques, trois anecdotes… donc tu vois bien."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-017",
@@ -161,7 +296,22 @@
         "w800": "nivelage-par-le-bas.jpg",
         "w1200": "nivelage-par-le-bas.jpg"
       },
-      "tags": ["comparaison", "relativisation"]
+      "tags": [
+        "comparaison",
+        "relativisation"
+      ],
+      "content": {
+        "hook": "« D’autres ont pire » n’est pas une réponse.",
+        "definition": "On minimise un problème en le comparant à pire, comme si l’existence de situations plus graves rendait la plainte ou la critique illégitime.",
+        "examples": [
+          "Pourquoi tu te plains ? D’autres n’ont même pas de travail.",
+          "Ce n’est rien, il y a des gens qui souffrent bien plus."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
     {
       "id": "SC-018",
@@ -174,7 +324,22 @@
         "w800": "paralysie-par-analyse.jpg",
         "w1200": "paralysie-par-analyse.jpg"
       },
-      "tags": ["décision", "complexité"]
+      "tags": [
+        "décision",
+        "complexité"
+      ],
+      "content": {
+        "hook": "Trop analyser, ne plus agir.",
+        "definition": "On retarde indéfiniment une décision en exigeant toujours plus d’informations, de scénarios et de garanties, jusqu’à bloquer l’action.",
+        "examples": [
+          "On ne lance pas tant qu’on n’a pas étudié tous les cas possibles.",
+          "Attendons encore un rapport, puis un autre, pour être sûrs à 100%."
+        ]
+      },
+      "training": {
+        "totalQuestions": 6,
+        "items": []
+      }
     },
 
     {
@@ -188,7 +353,19 @@
         "w800": "fausse-analogie.jpg",
         "w1200": "fausse-analogie.jpg"
       },
-      "tags": ["analogie", "inférence"]
+      "tags": [
+        "analogie",
+        "inférence"
+      ],
+      "content": {
+        "hook": "Ressemblance ≠ équivalence.",
+        "definition": "On conclut à tort que deux situations se valent parce qu’elles se ressemblent sur un point, alors que les différences pertinentes sont décisives.",
+        "examples": [
+          "Gérer une équipe, c’est comme élever des enfants : il faut punir quand ça dérape.",
+          "Un pays, c’est une entreprise : donc il faut le diriger comme un PDG."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-031",
@@ -201,7 +378,19 @@
         "w800": "fausse-cause.jpg",
         "w1200": "fausse-cause.jpg"
       },
-      "tags": ["causalité", "corrélation"]
+      "tags": [
+        "causalité",
+        "corrélation"
+      ],
+      "content": {
+        "hook": "Le lien n’est pas forcément causal.",
+        "definition": "On attribue une cause sans preuve suffisante : corrélation, coïncidence ou explication simpliste sont prises pour une relation causale.",
+        "examples": [
+          "Depuis qu’on a changé le logo, les ventes baissent : le nouveau logo est responsable.",
+          "J’ai porté ce bracelet et j’ai eu de la chance : il porte bonheur."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-032",
@@ -214,7 +403,19 @@
         "w800": "post-hoc-ergo-propter-hoc.jpg",
         "w1200": "post-hoc-ergo-propter-hoc.jpg"
       },
-      "tags": ["causalité", "chronologie"]
+      "tags": [
+        "causalité",
+        "chronologie"
+      ],
+      "content": {
+        "hook": "Après ≠ à cause de.",
+        "definition": "On conclut qu’un événement A a causé B simplement parce que B est arrivé après A, sans établir de mécanisme ni éliminer d’autres facteurs.",
+        "examples": [
+          "J’ai pris ce complément hier, aujourd’hui je vais mieux : c’est grâce à lui.",
+          "On a nommé un nouveau manager puis les résultats ont chuté : il en est la cause."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-033",
@@ -227,7 +428,19 @@
         "w800": "generalisation-hative.jpg",
         "w1200": "generalisation-hative.jpg"
       },
-      "tags": ["statistiques", "échantillon"]
+      "tags": [
+        "statistiques",
+        "échantillon"
+      ],
+      "content": {
+        "hook": "Un cas n’est pas une règle.",
+        "definition": "On tire une conclusion générale à partir de trop peu d’exemples, d’un échantillon biaisé ou d’expériences personnelles.",
+        "examples": [
+          "Deux chauffeurs m’ont coupé la route : les gens de cette ville conduisent mal.",
+          "J’ai eu un souci avec une commande : ce site est une arnaque."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-034",
@@ -240,7 +453,19 @@
         "w800": "cherry-picking.jpg",
         "w1200": "cherry-picking.jpg"
       },
-      "tags": ["preuves", "sélection"]
+      "tags": [
+        "preuves",
+        "sélection"
+      ],
+      "content": {
+        "hook": "Sélectionner les preuves qui arrangent.",
+        "definition": "On ne retient que les données favorables à sa thèse en ignorant celles qui la contredisent, donnant une image trompeuse de l’ensemble.",
+        "examples": [
+          "Regarde ces deux études qui vont dans mon sens (et oublions les dix autres).",
+          "Je ne montre que les jours où le trading a gagné : preuve que ma méthode marche."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-035",
@@ -253,7 +478,19 @@
         "w800": "petition-de-principe.jpg",
         "w1200": "petition-de-principe.jpg"
       },
-      "tags": ["raisonnement", "cercle"]
+      "tags": [
+        "raisonnement",
+        "cercle"
+      ],
+      "content": {
+        "hook": "La conclusion est déjà dans la prémisse.",
+        "definition": "On suppose vrai ce qu’on cherche à prouver : l’argument tourne en rond, souvent en reformulant la conclusion comme une évidence.",
+        "examples": [
+          "Ce candidat est le meilleur, parce que c’est celui qu’il faut élire.",
+          "Cette loi est juste, car elle est conforme à la justice."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-036",
@@ -266,7 +503,19 @@
         "w800": "definition-circulaire.jpg",
         "w1200": "definition-circulaire.jpg"
       },
-      "tags": ["définition", "cercle"]
+      "tags": [
+        "définition",
+        "cercle"
+      ],
+      "content": {
+        "hook": "Définir par soi-même.",
+        "definition": "On explique un terme en le réutilisant, directement ou indirectement, sans apporter d’information nouvelle : la définition ne clarifie rien.",
+        "examples": [
+          "Une bonne décision est une décision de qualité.",
+          "C’est fiable parce que c’est digne de confiance."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-037",
@@ -279,7 +528,19 @@
         "w800": "fausse-dichotomie.jpg",
         "w1200": "fausse-dichotomie.jpg"
       },
-      "tags": ["choix", "binarité"]
+      "tags": [
+        "choix",
+        "binarité"
+      ],
+      "content": {
+        "hook": "Deux choix, alors qu’il y en a d’autres.",
+        "definition": "On présente une situation comme n’ayant que deux options (souvent extrêmes) alors qu’il existe des alternatives, des nuances ou des compromis.",
+        "examples": [
+          "Soit tu es avec nous, soit tu es contre nous.",
+          "Soit on supprime ce service, soit on fait faillite."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-038",
@@ -292,7 +553,19 @@
         "w800": "pente-glissante.jpg",
         "w1200": "pente-glissante.jpg"
       },
-      "tags": ["conséquences", "enchaînement"]
+      "tags": [
+        "conséquences",
+        "enchaînement"
+      ],
+      "content": {
+        "hook": "Une possibilité devient une certitude.",
+        "definition": "On affirme qu’accepter une première décision entraînera forcément une chaîne d’événements, souvent catastrophiques, sans démontrer le lien causal nécessaire entre les étapes.",
+        "examples": [
+          "Si on autorise le télétravail un jour par semaine, bientôt plus personne ne viendra au bureau et l’entreprise s’effondrera.",
+          "Si on tolère ce comportement une fois, alors plus rien ne sera respecté."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-039",
@@ -305,7 +578,19 @@
         "w800": "question-complexe.jpg",
         "w1200": "question-complexe.jpg"
       },
-      "tags": ["piège", "présupposé"]
+      "tags": [
+        "piège",
+        "présupposé"
+      ],
+      "content": {
+        "hook": "Une question qui piège.",
+        "definition": "On pose une question qui contient déjà un présupposé contestable, obligeant à l’accepter en répondant, même par oui/non.",
+        "examples": [
+          "As-tu arrêté de tricher aux examens ?",
+          "Pourquoi tu mens encore à ton équipe ?"
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-040",
@@ -318,7 +603,19 @@
         "w800": "appel-a-ignorance.jpg",
         "w1200": "appel-a-ignorance.jpg"
       },
-      "tags": ["preuve", "absence"]
+      "tags": [
+        "preuve",
+        "absence"
+      ],
+      "content": {
+        "hook": "Absence de preuve ≠ preuve.",
+        "definition": "On affirme qu’une proposition est vraie parce qu’on n’a pas prouvé qu’elle est fausse (ou l’inverse), en confondant incertitude et démonstration.",
+        "examples": [
+          "Personne n’a prouvé que ça ne marche pas, donc ça marche.",
+          "On n’a pas de preuve que c’est dangereux : donc c’est sans risque."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-041",
@@ -331,7 +628,19 @@
         "w800": "appel-a-autorite.jpg",
         "w1200": "appel-a-autorite.jpg"
       },
-      "tags": ["expert", "statut"]
+      "tags": [
+        "expert",
+        "statut"
+      ],
+      "content": {
+        "hook": "Le statut n’est pas un argument.",
+        "definition": "On présente une affirmation comme vraie parce qu’une figure perçue comme experte ou prestigieuse l’a dite, sans examiner la preuve ni la compétence réelle sur le sujet.",
+        "examples": [
+          "Un grand professeur l’a affirmé, donc c’est vrai.",
+          "Cette célébrité recommande ce produit : il doit être efficace."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-042",
@@ -344,7 +653,19 @@
         "w800": "appel-a-la-tradition.jpg",
         "w1200": "appel-a-la-tradition.jpg"
       },
-      "tags": ["habitude", "ancien"]
+      "tags": [
+        "habitude",
+        "ancien"
+      ],
+      "content": {
+        "hook": "Ancien ≠ meilleur.",
+        "definition": "On défend une idée au motif qu’elle a toujours existé ou qu’on l’a toujours faite ainsi, au lieu d’évaluer ses raisons et ses effets.",
+        "examples": [
+          "On a toujours fait comme ça, donc on ne change pas.",
+          "C’est la tradition : ça suffit comme justification."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-043",
@@ -357,7 +678,19 @@
         "w800": "appel-a-la-nouveaute.jpg",
         "w1200": "appel-a-la-nouveaute.jpg"
       },
-      "tags": ["nouveau", "biais"]
+      "tags": [
+        "nouveau",
+        "biais"
+      ],
+      "content": {
+        "hook": "Nouveau ≠ meilleur.",
+        "definition": "On estime qu’une proposition est meilleure simplement parce qu’elle est récente, moderne ou innovante, sans démontrer qu’elle fonctionne mieux.",
+        "examples": [
+          "C’est la dernière version, donc c’est forcément supérieur.",
+          "Cette méthode est nouvelle : elle doit être plus efficace."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-044",
@@ -370,7 +703,19 @@
         "w800": "non-sequitur.jpg",
         "w1200": "non-sequitur.jpg"
       },
-      "tags": ["inférence", "lien logique"]
+      "tags": [
+        "inférence",
+        "lien logique"
+      ],
+      "content": {
+        "hook": "La conclusion ne suit pas.",
+        "definition": "On tire une conclusion qui ne découle pas logiquement des prémisses : les phrases peuvent sembler liées, mais le saut logique n’est pas justifié.",
+        "examples": [
+          "Il est très sympa, donc il fera un bon dirigeant.",
+          "Ce projet est ambitieux : il va forcément réussir."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
 
     {
@@ -384,7 +729,19 @@
         "w800": "amphibologie.jpg",
         "w1200": "amphibologie.jpg"
       },
-      "tags": ["ambiguïté", "syntaxe"]
+      "tags": [
+        "ambiguïté",
+        "syntaxe"
+      ],
+      "content": {
+        "hook": "Ambiguïté de structure.",
+        "definition": "Une phrase est construite de manière ambiguë, si bien qu’elle peut être comprise de plusieurs façons ; l’argument profite ensuite de cette confusion.",
+        "examples": [
+          "J’ai vu l’homme avec le télescope. (Qui a le télescope ?)",
+          "Les clients ont critiqué le service du patron. (Le service du patron ou le service fourni ?)"
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-061",
@@ -397,7 +754,19 @@
         "w800": "equivoque.jpg",
         "w1200": "equivoque.jpg"
       },
-      "tags": ["ambiguïté", "sens"]
+      "tags": [
+        "ambiguïté",
+        "sens"
+      ],
+      "content": {
+        "hook": "Un mot, deux sens.",
+        "definition": "On utilise un même mot avec des sens différents au fil du raisonnement, créant une impression de cohérence alors que le sens a glissé.",
+        "examples": [
+          "Cette solution est « naturelle », donc elle est forcément « bonne ».",
+          "Il faut plus de « liberté » : donc supprimons toutes les règles."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-062",
@@ -410,7 +779,19 @@
         "w800": "accent.jpg",
         "w1200": "accent.jpg"
       },
-      "tags": ["cadrage", "mise en avant"]
+      "tags": [
+        "cadrage",
+        "mise en avant"
+      ],
+      "content": {
+        "hook": "Mettre l’accent change le message.",
+        "definition": "On modifie le sens d’une idée en mettant l’accent sur certains mots (intonation, typographie, découpage, citation sélective), sans changer les faits.",
+        "examples": [
+          "Il a dit qu’il « aimait » le projet… (sous-entendu : pas vraiment).",
+          "Tu as *vraiment* fait ça ? (insinue une faute grave)."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-063",
@@ -423,7 +804,19 @@
         "w800": "epithete.jpg",
         "w1200": "epithete.jpg"
       },
-      "tags": ["étiquette", "qualification"]
+      "tags": [
+        "étiquette",
+        "qualification"
+      ],
+      "content": {
+        "hook": "Étiqueter pour orienter.",
+        "definition": "On glisse un qualificatif chargé (souvent péjoratif ou valorisant) pour influencer la perception, au lieu d’argumenter sur le fond.",
+        "examples": [
+          "Ton plan ‘utopique’ ne tiendra jamais.",
+          "C’est une proposition ‘courageuse’ : donc elle mérite d’être adoptée."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-064",
@@ -436,7 +829,19 @@
         "w800": "terme-charge.jpg",
         "w1200": "terme-charge.jpg"
       },
-      "tags": ["connotation", "émotion"]
+      "tags": [
+        "connotation",
+        "émotion"
+      ],
+      "content": {
+        "hook": "Un mot qui fait réagir.",
+        "definition": "On choisit un terme à forte connotation émotionnelle pour cadrer le débat et pousser une conclusion, sans apporter d’éléments probants.",
+        "examples": [
+          "Cette réforme est un ‘cancer’ pour la société.",
+          "Ils veulent ‘voler’ nos droits."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-065",
@@ -449,7 +854,19 @@
         "w800": "texte-hors-contexte.jpg",
         "w1200": "texte-hors-contexte.jpg"
       },
-      "tags": ["citation", "contexte"]
+      "tags": [
+        "citation",
+        "contexte"
+      ],
+      "content": {
+        "hook": "Couper la citation change le sens.",
+        "definition": "On extrait une phrase de son contexte (avant/après, conditions, ironie) pour lui faire dire autre chose et renforcer une thèse.",
+        "examples": [
+          "Il a dit ‘je doute’ (en omettant la suite : ‘mais les données confirment’).",
+          "On montre une statistique sans préciser l’année ou le périmètre."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     },
     {
       "id": "SC-066",
@@ -462,7 +879,19 @@
         "w800": "verdict-par-metaphore.jpg",
         "w1200": "verdict-par-metaphore.jpg"
       },
-      "tags": ["métaphore", "cadrage"]
+      "tags": [
+        "métaphore",
+        "cadrage"
+      ],
+      "content": {
+        "hook": "Une image qui tranche.",
+        "definition": "On remplace l’analyse par une métaphore frappante qui sert de verdict (« c’est un virus », « c’est un cancer »), donnant l’illusion d’avoir expliqué.",
+        "examples": [
+          "Cette loi est un poison pour notre démocratie.",
+          "La concurrence, c’est la jungle : seuls les forts méritent de survivre."
+        ]
+      },
+      "training": { "totalQuestions": 6, "items": [] }
     }
   ]
 }
