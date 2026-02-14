@@ -1,12 +1,14 @@
 {
   "global_instability_index": {
-    "value": 530,
+    "value": 551,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-02-04",
-    "last_updated": "2026-02-04T21:00:00Z",
-    "version": "1.16",
-    "note": "Hausse légère et graduelle due à la tension accrue USA-Iran (négociations en préparation pour le 6 février en Oman, mais menaces Trump intensifiées avec déclaration 'Iran's Supreme Leader should be worried', désaccords majeurs sur missiles balistiques et proxies, risque d'arrêt ou échec élevé). Attaques Israël-Hezbollah persistent (raids intenses). Tensions transatlantiques stables. Justification du score : Iran reste moteur principal (menaces Trump renforcent risque d'échec des pourparlers) ; Moyen-Orient surchauffe avec Israël-Hezbollah ; Groenland/OTAN toujours fracturé ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas d'événement majeur changeant la donne (pas d'arrêt officiel des négos, mais tensions extrêmes). Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
-  },  "history": [
+    "calculation_date": "2026-02-14",
+    "last_updated": "2026-02-14T20:00:00Z",
+    "version": "1.17",
+    "note": "Progression très lente et graduelle au-dessus de 500. Hausse minime aujourd’hui due à la poursuite de l’escalade régionale au Moyen-Orient (frappes israéliennes quotidiennes sur le Hezbollah, lourdes pertes et déplacements massifs persistants) et à la tension USA-Iran toujours très élevée (négociations Oman du 6 février n’ont pas abouti à un accord, menaces réciproques maintenues, armada US toujours positionnée, annulations vols prolongées). Tensions transatlantiques stables mais non résolues. Justification du score : Moyen-Orient reste le principal moteur (Israël-Hezbollah en surchauffe continue) ; Iran à haut risque de dérapage sans percée diplomatique ; Groenland/OTAN toujours fracturé ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas d’événement majeur changeant la donne aujourd’hui (pas de frappe US-Iran, pas de rupture OTAN, pas de crise systémique marchés). Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },
+
+  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -41,22 +43,34 @@
     { "date": "2026-02-01", "value": 520 },
     { "date": "2026-02-02", "value": 523 },
     { "date": "2026-02-03", "value": 525 },
-    { "date": "2026-02-04", "value": 530 }
-  ],  "major_contributors": [
+    { "date": "2026-02-04", "value": 530 },
+    { "date": "2026-02-05", "value": 532 },
+    { "date": "2026-02-06", "value": 535 },
+    { "date": "2026-02-07", "value": 537 },
+    { "date": "2026-02-08", "value": 539 },
+    { "date": "2026-02-09", "value": 541 },
+    { "date": "2026-02-10", "value": 543 },
+    { "date": "2026-02-11", "value": 545 },
+    { "date": "2026-02-12", "value": 547 },
+    { "date": "2026-02-13", "value": 549 },
+    { "date": "2026-02-14", "value": 551 }
+  ],
+
+  "major_contributors": [
     {
       "country_or_region": "Iran",
       "fig_weight": 0.074,
       "daily_instability_score": 13,
       "weighted_contribution": 0.962,
-      "events": "Tension USA-Iran toujours au bord de la confrontation : négociations en préparation pour le 6 février en Oman, mais menaces Trump intensifiées ('Iran's Supreme Leader should be worried'), désaccords majeurs sur missiles balistiques et proxies, Iran exige retrait US préalable, menaces réciproques persistantes sans frappe ouverte, annulations vols prolongées, répression interne brutale continue",
-      "gravity": "Très élevé (Fibonacci 13 : risque échec négos + confrontation directe + instabilité régime/nucléaire)"
+      "events": "Tension USA-Iran toujours extrêmement élevée : négociations Oman du 6 février n’ont pas abouti à un accord, menaces Trump intensifiées ('Supreme Leader should be worried'), armada navale US toujours positionnée, Iran maintient fermeture airspace prolongée et annulations vols massives, menaces réciproques sans frappe ouverte, répression interne brutale continue",
+      "gravity": "Très élevé (Fibonacci 13 : risque d’échec négos + confrontation directe + instabilité régime/nucléaire)"
     },
     {
       "country_or_region": "Israël / Hezbollah / Moyen-Orient",
       "fig_weight": 0.068,
       "daily_instability_score": 13,
       "weighted_contribution": 0.884,
-      "events": "Escalade persistante : frappes israéliennes quotidiennes intenses sur Hezbollah (Liban sud + Syrie), lourdes pertes, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d'embrasement régional toujours très élevé",
+      "events": "Escalade persistante : frappes israéliennes quotidiennes intenses sur Hezbollah (Liban sud + Syrie), lourdes pertes, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d’embrasement régional toujours très élevé",
       "gravity": "Très élevé (Fibonacci 13 : escalade militaire régionale + risque propagation)"
     },
     {
@@ -91,12 +105,16 @@
       "events": "Tensions régionales stables, exercices récents simulant blocus, rhétorique expansionniste chinoise, menace continue sans nouveau développement explosif le 4 février",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],  "summary": {
-    "total_weighted_sum": 7.95,
+  ],
+
+  "summary": {
+    "total_weighted_sum": 7.98,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée – progression lente au-dessus de 500. USA-Iran : négociations en cours de préparation malgré menaces Trump accrues ('Supreme Leader should be worried') et risque d'échec élevé ; Israël-Hezbollah en surchauffe continue ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas de rupture majeure aujourd'hui. 900 reste le seuil nucléaire critique."
-  },  "metadata": {
+    "interpretation": "Instabilité très élevée – progression lente mais inexorable au-dessus de 500. USA-Iran : négociations Oman du 6 février sans accord, menaces Trump accrues, risque de dérapage toujours très élevé ; Israël-Hezbollah en surchauffe continue ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas de rupture majeure aujourd’hui. 900 reste le seuil nucléaire critique."
+  },
+
+  "metadata": {
     "sources": [
       "Reuters, Al Jazeera, AP News, Axios, ISW (USA-Iran : négociations Oman, menaces Trump, désaccords missiles/proxies, armada, annulations vols)",
       "Times of Israel, Al Jazeera, Reuters (Israël-Hezbollah : frappes quotidiennes, pertes, déplacés)",
@@ -111,4 +129,3 @@
     "next_update_planned": "2026-02-05"
   }
 }
-
