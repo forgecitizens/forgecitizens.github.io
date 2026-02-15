@@ -1,0 +1,19 @@
+# robots.txt for ForgeCitizens
+# https://www.forgecitizens.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.forgecitizens.com/sitemap.xml
+
+# Exclude private/utility files
+Disallow: /assets/data/
+Disallow: /*.json$
+
+# Allow crawling of all main content
+Allow: /drafter.html
+Allow: /qualif'R/
+Allow: /mapper/
+Allow: /igi/
+Allow: /sophiscope/
