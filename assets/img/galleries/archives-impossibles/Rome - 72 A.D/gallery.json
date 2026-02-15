@@ -1,0 +1,64 @@
+{
+  "id": "rome-72-ad",
+  "title": "Rome — 72 A.D.",
+    "subtitle": "Les Archives Impossibles",    "icon": "../colosseum.png",    "intro": "Je traverse des époques comme on traverse une porte : sans bruit, sans rôle, sans drapeau.\n\nJe regarde la vie ordinaire au plus près — la poussière sur les pavés, les gestes répétés, les tensions minuscules. Personne ne me remarque… jusqu’au moment où quelqu’un me voit.\n\nAlors je prends le portrait. Et l’Histoire me recrache ailleurs.",
+    "images": [
+      {
+        "id": "Rome01",
+        "caption": "Je suis arrivé par la route, porté par le rythme régulier de la terre sous les sabots. Au loin, la cité tient dans une brume dorée, comme si elle hésitait encore à exister."
+      },
+      {
+        "id": "Rome02",
+        "caption": "À mesure que j’avance, le sol raconte tout : ornières de char, traces de pas, poussière tassée par des vies répétées. Rien n’est neuf ici — tout est vivant."
+      },
+      {
+        "id": "Rome03",
+        "caption": "La porte avale les silhouettes dans une lumière aveuglante. Je reste un instant à l’ombre, témoin discret d’un passage ordinaire vers l’intérieur du monde."
+      },
+      {
+        "id": "Rome04",
+        "caption": "Le marché s’éveille avant les discours : paniers, étoffes, odeurs, voix basses. Je marche lentement entre les étals, attentif aux détails qui finissent toujours au sol."
+      },
+      {
+        "id": "Rome05",
+        "caption": "Dans une ruelle étroite, la ville devient intime. Le linge tendu au-dessus de moi découpe la lumière et la poussière flotte comme une seconde peau."
+      },
+      {
+        "id": "Rome06",
+        "caption": "Je franchis le seuil d’une maison et l’air change immédiatement. L’atrium respire par son ouverture au ciel, et l’eau au centre reflète une lumière calme."
+      },
+      {
+        "id": "Rome07",
+        "caption": "Dans le cubiculum, tout est simple : un lit bas, un coffre, une lumière qui entre timidement. La chambre ne raconte rien d’héroïque, seulement la fatigue des jours."
+      },
+      {
+        "id": "Rome08",
+        "caption": "Le matin se partage sans cérémonie : du pain rompu, du fromage entamé, un enfant distrait. Je ne suis qu’un regard posé là, au bord d’une table qui n’attend personne."
+      },
+      {
+        "id": "Rome09",
+        "caption": "Au temple, la fumée d’encens attrape un rayon de lumière et le rend visible. Les gestes sont courts, retenus — une dévotion sans spectacle."
+      },
+      {
+        "id": "Rome10",
+        "caption": "La ville se fissure d’un coup : deux hommes se heurtent, un soldat s’interpose, la foule se resserre. Puis tout retombe, comme si rien n’avait compté."
+      },
+      {
+        "id": "Rome11",
+        "caption": "Depuis l’ombre, le forum ressemble à un organisme : débats, passages, attentes, indifférences. On ne peut pas tout comprendre, seulement constater que tout bouge."
+      },
+      {
+        "id": "Rome12",
+        "caption": "Un homme lit à voix haute et les têtes se tournent par vagues. Certains écoutent, d’autres passent — l’information circule sans demander la permission."
+      },
+      {
+        "id": "Rome13",
+        "caption": "Dans un coin ouvert sur la rue, des enfants tracent des signes sur des tablettes. L’apprentissage n’a rien de solennel : c’est juste un effort silencieux au milieu du bruit."
+      },
+      {
+        "id": "Rome14",
+        "caption": "Elle m’a vu. Pas un regard poli, pas une pose — juste la lucidité d’une femme qui a vendu trop de jours dans cette ruelle. J’ai pris le portrait, et j’ai senti le temps se dérober."
+      }
+    ]
+  }
+

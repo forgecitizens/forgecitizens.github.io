@@ -2,6 +2,7 @@
   "id": "fault-lines",
   "title": "Fault Lines",
   "subtitle": "Essais visuels sur les croyances, le pouvoir et les mondes hérités",
+  "icon": "cam.png",
   "intro": "Ces images ne cherchent pas à illustrer une idée, mais à révéler une tension.\n\nElles se situent sur des lignes de fracture invisibles : entre foi et doute, héritage et liberté, nature et industrie, individu et systèmes qui le dépassent.\n\nChaque scène assemble des symboles familiers — religieux, économiques, politiques, intimes — pour les faire entrer en collision. Rien n'est neutre, rien n'est décoratif. Ce que l'on reconnaît est précisément ce qui pèse.\n\nFault Lines est une tentative de cartographier ces tensions : non pas comme des réponses, mais comme des points de rupture où le sens se fissure, et où quelque chose d'autre peut émerger.",
   "images": [
     { "id": "fl-01", "caption": "" },

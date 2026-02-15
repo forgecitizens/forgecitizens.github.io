@@ -58,7 +58,10 @@ function openModal(modalId, htmlFile = null, title = null, width = null, height 
         // Initialiser la galerie si c'est la modale gallery
         if (modalId === 'ia-gallery-modal' && typeof GalleryModule !== 'undefined') {
             setTimeout(() => {
-                GalleryModule.init('gallery-content', ['fault-lines']);
+                GalleryModule.init('gallery-content', [
+                    'fault-lines',
+                    'archives-impossibles'
+                ]);
             }, 100);
         }
     } else {

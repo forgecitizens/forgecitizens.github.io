@@ -9,6 +9,8 @@ const GalleryModule = (function() {
         currentGallery: null,
         currentImageIndex: 0,
         images: [],
+        galleries: [],
+        navigationStack: [], // Pile de navigation pour le retour
         isViewerOpen: false,
         touchStartX: 0,
         touchEndX: 0
@@ -28,16 +30,44 @@ const GalleryModule = (function() {
     };
 
     /**
-     * Charge les métadonnées d'une galerie depuis gallery.json
-     * @param {string} galleryId - ID de la galerie (nom du dossier)
-     * @returns {Promise<Object>} - Métadonnées de la galerie
+     * Encode un chemin de galerie pour les URL (gère les espaces et caractères spéciaux)
+     * @param {string} path - Chemin à encoder
+     * @returns {string} - Chemin encodé
+     */
+    function encodeGalleryPath(path) {
+        return path.split('/').map(part => encodeURIComponent(part)).join('/');
+    }
+
+    /**
+     * Charge les métadonnées d'une galerie ou collection
+     * Essaie d'abord collection.json, puis gallery.json
+     * @param {string} galleryId - ID de la galerie (chemin relatif du dossier)
+     * @returns {Promise<Object>} - Métadonnées de la galerie/collection
      */
     async function loadGalleryData(galleryId) {
-        const jsonPath = `${config.basePath}${galleryId}/gallery.json`;
+        const encodedPath = encodeGalleryPath(galleryId);
+        
+        // Essayer d'abord collection.json (pour les collections parent)
         try {
+            const collectionPath = `${config.basePath}${encodedPath}/collection.json`;
+            const response = await fetch(collectionPath);
+            if (response.ok) {
+                const data = await response.json();
+                data.type = 'collection';
+                return data;
+            }
+        } catch (e) {
+            // Pas une collection, continuer
+        }
+        
+        // Sinon charger gallery.json
+        try {
+            const jsonPath = `${config.basePath}${encodedPath}/gallery.json`;
             const response = await fetch(jsonPath);
             if (!response.ok) throw new Error(`Gallery not found: ${galleryId}`);
-            return await response.json();
+            const data = await response.json();
+            data.type = 'gallery';
+            return data;
         } catch (error) {
             console.error('Error loading gallery:', error);
             return null;
@@ -46,13 +76,30 @@ const GalleryModule = (function() {
 
     /**
      * Génère l'URL d'une image
-     * @param {string} galleryId - ID de la galerie
+     * @param {string} galleryId - ID de la galerie (chemin relatif)
      * @param {string} imageId - ID de l'image
      * @param {string} size - Taille (thumb, medium, full)
      * @returns {string} - URL de l'image
      */
     function getImageUrl(galleryId, imageId, size = 'medium') {
-        return `${config.basePath}${galleryId}/${size}/${imageId}.webp`;
+        const encodedPath = encodeGalleryPath(galleryId);
+        return `${config.basePath}${encodedPath}/${size}/${imageId}.webp`;
+    }
+
+    /**
+     * Génère le HTML pour l'icône d'un dossier (image ou emoji)
+     * @param {Object} data - Données de la galerie/collection
+     * @param {string} galleryId - ID de la galerie pour construire le chemin
+     * @param {boolean} isCollection - True si c'est une collection
+     * @returns {string} - HTML de l'icône
+     */
+    function getFolderIconHtml(data, galleryId, isCollection = false) {
+        if (data.icon) {
+            const encodedPath = encodeGalleryPath(galleryId);
+            const iconUrl = `${config.basePath}${encodedPath}/${data.icon}`;
+            return `<img src="${iconUrl}" alt="" class="folder-icon-img">`;
+        }
+        return isCollection ? '🗂️' : '📁';
     }
 
     /**
@@ -61,6 +108,9 @@ const GalleryModule = (function() {
      * @param {Array} galleries - Liste des galeries disponibles
      */
     async function renderCollectionsView(container, galleries) {
+        // Stocker la liste des galeries dans l'état
+        state.galleries = galleries;
+        
         container.innerHTML = `
             <div class="info-section">
                 <h3 class="section-title">🎨 Collections d'images générées par IA</h3>
@@ -79,15 +129,92 @@ const GalleryModule = (function() {
                 const folder = document.createElement('div');
                 folder.className = 'gallery-folder';
                 folder.dataset.galleryId = galleryId;
+                
+                // Détecter si c'est une collection ou une galerie
+                const isCollection = data.type === 'collection';
+                const count = isCollection 
+                    ? `${data.subGalleries.length} collection(s)` 
+                    : `${data.images.length} images`;
+                
+                const iconHtml = getFolderIconHtml(data, galleryId, isCollection);
+                
                 folder.innerHTML = `
-                    <div class="folder-icon">📁</div>
+                    <div class="folder-icon">${iconHtml}</div>
                     <div class="folder-name">${data.title}</div>
-                    <div class="folder-count">${data.images.length} images</div>
+                    <div class="folder-count">${count}</div>
                 `;
-                folder.addEventListener('click', () => openGalleryGrid(container, galleryId));
+                
+                folder.addEventListener('click', () => {
+                    if (isCollection) {
+                        openCollectionView(container, galleryId, data);
+                    } else {
+                        openGalleryGrid(container, galleryId);
+                    }
+                });
                 foldersContainer.appendChild(folder);
             }
         }
+    }
+
+    /**
+     * Affiche la vue d'une collection (liste des sous-galeries)
+     * @param {HTMLElement} container - Conteneur de la vue
+     * @param {string} collectionId - ID de la collection
+     * @param {Object} data - Données de la collection
+     */
+    async function openCollectionView(container, collectionId, data) {
+        if (typeof playClickSound === 'function') playClickSound();
+        
+        // Ajouter à la pile de navigation
+        state.navigationStack.push({ type: 'root', galleries: state.galleries });
+        
+        container.innerHTML = `
+            <div class="gallery-header">
+                <button class="gallery-back-btn" id="gallery-back">
+                    ← Retour aux collections
+                </button>
+            </div>
+            <div class="gallery-intro">
+                <h3 class="gallery-title">${data.title}</h3>
+                <p class="gallery-subtitle">${data.subtitle || ''}</p>
+                <p class="gallery-description">${data.intro || ''}</p>
+            </div>
+            <div class="gallery-folders" id="gallery-folders"></div>
+        `;
+        
+        // Bouton retour
+        container.querySelector('#gallery-back').addEventListener('click', () => {
+            if (typeof playClickSound === 'function') playClickSound();
+            state.navigationStack.pop();
+            renderCollectionsView(container, state.galleries);
+        });
+        
+        const foldersContainer = container.querySelector('#gallery-folders');
+        
+        for (const subGalleryName of data.subGalleries) {
+            const subGalleryId = `${collectionId}/${subGalleryName}`;
+            const subData = await loadGalleryData(subGalleryId);
+            
+            if (subData) {
+                const folder = document.createElement('div');
+                folder.className = 'gallery-folder';
+                folder.dataset.galleryId = subGalleryId;
+                const subIconHtml = getFolderIconHtml(subData, subGalleryId, false);
+                folder.innerHTML = `
+                    <div class="folder-icon">${subIconHtml}</div>
+                    <div class="folder-name">${subData.title}</div>
+                    <div class="folder-count">${subData.images.length} images</div>
+                `;
+                folder.addEventListener('click', () => {
+                    // Ajouter la collection à la pile avant d'ouvrir la sous-galerie
+                    state.navigationStack.push({ type: 'collection', id: collectionId, data: data });
+                    openGalleryGrid(container, subGalleryId, collectionId);
+                });
+                foldersContainer.appendChild(folder);
+            }
+        }
+        
+        updateFooter(`🗂️ ${data.subGalleries.length} collection(s) dans "${data.title}"`);
     }
 
     /**
@@ -107,10 +234,16 @@ const GalleryModule = (function() {
             playClickSound();
         }
 
+        // Déterminer le texte du bouton retour
+        const lastNav = state.navigationStack[state.navigationStack.length - 1];
+        const backLabel = lastNav && lastNav.type === 'collection' 
+            ? `← Retour à ${lastNav.data.title}`
+            : '← Retour aux collections';
+
         container.innerHTML = `
             <div class="gallery-header">
                 <button class="gallery-back-btn" id="gallery-back">
-                    ← Retour aux collections
+                    ${backLabel}
                 </button>
             </div>
             <div class="gallery-intro">
@@ -121,10 +254,20 @@ const GalleryModule = (function() {
             <div class="gallery-grid" id="gallery-grid"></div>
         `;
 
-        // Bouton retour
+        // Bouton retour - naviguer vers le parent approprié
         container.querySelector('#gallery-back').addEventListener('click', () => {
             if (typeof playClickSound === 'function') playClickSound();
-            renderCollectionsView(container, ['fault-lines']);
+            
+            const nav = state.navigationStack.pop();
+            if (nav && nav.type === 'collection') {
+                // Retourner à la vue collection
+                openCollectionView(container, nav.id, nav.data);
+                // Retirer l'entrée ajoutée par openCollectionView puisqu'on y retourne
+                state.navigationStack.pop();
+            } else {
+                // Retourner à la racine
+                renderCollectionsView(container, state.galleries);
+            }
         });
 
         // Grille de miniatures

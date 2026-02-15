@@ -1,0 +1,11 @@
+{
+  "id": "archives-impossibles",
+  "title": "Les Archives Impossibles",
+  "subtitle": "Voyages photographiques à travers le temps",
+  "icon": "boite.png",
+  "intro": "Je traverse des époques comme on traverse une porte : sans bruit, sans rôle, sans drapeau. Je regarde la vie ordinaire au plus près — la poussière sur les pavés, les gestes répétés, les tensions minuscules. Personne ne me remarque… jusqu'au moment où quelqu'un me voit. Alors je prends le portrait. Et l'Histoire me recrache ailleurs.",
+  "type": "collection",
+  "subGalleries": [
+    "Rome - 72 A.D"
+  ]
+}
