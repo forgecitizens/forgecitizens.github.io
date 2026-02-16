@@ -18,7 +18,7 @@
     const STARTUP_SOUND_PATH = 'sounds/boot/forgecitizensOS-startup.mp3';
     const STARTUP_SOUND_ENABLED = true;
     const STARTUP_SOUND_VOLUME = 0.5; // Volume from 0 to 1
-    const STARTUP_SOUND_DELAY = 1000; // Delay in ms after boot ends
+    const STARTUP_SOUND_DELAY = 500; // Delay in ms after boot ends
 
     // =========================================================================
     // NAVIGATION DETECTION

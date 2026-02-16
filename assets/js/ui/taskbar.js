@@ -17,6 +17,7 @@ function updateDateTime() {
 function initializeStartMenu() {
     document.getElementById('startButton').addEventListener('click', function(e) {
         e.stopPropagation();
+        playClickSound();
         const startMenu = document.getElementById('startMenu');
         const startButton = document.getElementById('startButton');
         
