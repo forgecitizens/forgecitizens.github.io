@@ -34,11 +34,17 @@
     const overlay = document.getElementById('boot-overlay');
 
     // Skip boot sequence if internal navigation or already seen this session
+    // Keep overlay hidden (display:none) for crawlers and returning users
     if (isInternalNavigation || hasSeenBoot) {
         if (overlay) {
             overlay.classList.add('removed');
         }
         return;
+    }
+
+    // Show overlay for boot sequence (was hidden by default for SEO)
+    if (overlay) {
+        overlay.style.display = 'flex';
     }
 
     // =========================================================================

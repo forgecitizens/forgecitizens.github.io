@@ -27,8 +27,8 @@
     <link rel="stylesheet" href="assets/css/boot-sequence.css">
 </head>
 <body>
-    <!-- Boot Sequence Overlay -->
-    <div id="boot-overlay" class="boot-overlay">
+    <!-- Boot Sequence Overlay (hidden by default for crawlers, shown by JS) -->
+    <div id="boot-overlay" class="boot-overlay" style="display: none;" aria-hidden="true">
         <div class="boot-screen">
             <div class="boot-terminal" id="boot-terminal"></div>
             <div class="boot-cursor"></div>
@@ -46,6 +46,11 @@
             <div class="icon-image icon-text">?</div>
             <div class="icon-label">Qui suis-je ?</div>
         </div>
+
+        <a class="desktop-icon" style="top: 220px; left: 20px;" href="https://buymeacoffee.com/maincitizen" target="_blank" rel="noopener noreferrer">
+            <img class="icon-image" src="img/buymeacoffee.png" alt="Buy me a coffee">
+            <div class="icon-label">Buy me a coffee</div>
+        </a>
     </div>
 
     <!-- Taskbar -->
@@ -883,11 +888,6 @@
         </div>
     </div>
 
-    <!-- Buy Me A Coffee Button -->
-    <a href="https://buymeacoffee.com/maincitizen" target="_blank" rel="noopener noreferrer" class="buymeacoffee-btn" title="Buy me a coffee">
-        <img src="img/buymeacoffee.png" alt="Buy me a coffee">
-    </a>
-
     <!-- Cosmology Selection Popup Overlay -->
     <div class="about-overlay" id="cosmologySelectionOverlay"></div>
 
@@ -1068,8 +1068,8 @@
         </p>
     </aside>
 
-    <!-- Boot sequence (must load first, not deferred) -->
-    <script src="assets/js/features/bootSequence.js"></script>
+    <!-- Boot sequence (deferred, non-blocking) -->
+    <script defer src="assets/js/features/bootSequence.js"></script>
 
     <!-- Load modules in dependency order -->
     <script defer src="assets/js/core/variables.js"></script>
