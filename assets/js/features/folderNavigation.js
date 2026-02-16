@@ -41,6 +41,22 @@ const fileSystem = {
                         type: 'file',
                         icon: 'img/typewriter.png',
                         action: 'openTypewriter'
+                    },
+                    'Indice Global d\'Instabilité': {
+                        type: 'file',
+                        icon: 'img/igi.png',
+                        action: 'openIGI'
+                    }
+                }
+            },
+            'Galeries': {
+                type: 'folder',
+                icon: 'img/gallery.png',
+                children: {
+                    'Gallerie IA': {
+                        type: 'file',
+                        icon: 'img/gallery.png',
+                        action: 'openIAGallery'
                     }
                 }
             }
@@ -445,6 +461,26 @@ function openSophiscope() {
     window.open('/sophiscope/', '_blank');
 }
 
+/**
+ * Open the IGI modal
+ */
+function openIGI() {
+    console.log('📊 Opening IGI...');
+    if (typeof openModal === 'function') {
+        openModal('igi-popup-modal');
+    }
+}
+
+/**
+ * Open the IA Gallery modal
+ */
+function openIAGallery() {
+    console.log('🎨 Opening IA Gallery...');
+    if (typeof openModal === 'function') {
+        openModal('ia-gallery-modal');
+    }
+}
+
 // Expose functions globally for cross-module access IMMEDIATELY
 // This runs at script load time, before DOMContentLoaded
 console.log('📁 FolderNavigation: Exposing functions to window...');
@@ -460,6 +496,8 @@ window.openFile = openFile;
 window.openMapper = openMapper;
 window.openQualifR = openQualifR;
 window.openSophiscope = openSophiscope;
+window.openIGI = openIGI;
+window.openIAGallery = openIAGallery;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
 
 // Initialize on DOM ready

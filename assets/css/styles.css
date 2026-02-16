@@ -483,6 +483,18 @@
             object-fit: contain;
         }
 
+        /* Style pour les icônes texte (comme ?) */
+        .icon-text {
+            background: linear-gradient(180deg, #4a90d9 0%, #2c5aa0 100%);
+            border: 2px solid #1a3a6e;
+            border-radius: 4px;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.3);
+        }
+
         /* Shortcut icon wrapper for arrow overlay */
         .icon-wrapper {
             position: relative;

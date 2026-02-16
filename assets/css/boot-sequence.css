@@ -1,0 +1,148 @@
+/* Boot Sequence Styles - Retro OS Boot Animation */
+
+.boot-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 99999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+    overflow: hidden;
+}
+
+.boot-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.boot-overlay.removed {
+    display: none;
+}
+
+.boot-screen {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 14px;
+    color: #c0c0c0;
+    line-height: 1.4;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.boot-terminal {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.boot-line {
+    opacity: 0;
+    animation: bootLineAppear 0.05s forwards;
+}
+
+@keyframes bootLineAppear {
+    to { opacity: 1; }
+}
+
+.boot-line.success {
+    color: #00ff00;
+}
+
+.boot-line.info {
+    color: #00aaff;
+}
+
+.boot-line.warning {
+    color: #ffaa00;
+}
+
+.boot-line.header {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.boot-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 14px;
+    background: #c0c0c0;
+    animation: blink 0.5s infinite;
+    vertical-align: bottom;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Scanline effect (retro CRT touch) */
+.boot-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .boot-overlay {
+        padding: 12px;
+    }
+    
+    .boot-screen {
+        font-size: 11px;
+        line-height: 1.3;
+    }
+    
+    .boot-cursor {
+        width: 8px;
+        height: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .boot-overlay {
+        padding: 8px;
+    }
+    
+    .boot-screen {
+        font-size: 10px;
+        line-height: 1.25;
+    }
+    
+    .boot-cursor {
+        width: 7px;
+        height: 10px;
+    }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .boot-overlay::after {
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.1),
+            rgba(0, 0, 0, 0.1) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    }
+}

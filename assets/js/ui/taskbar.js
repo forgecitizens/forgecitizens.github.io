@@ -410,3 +410,7 @@ function initializeDateTimeClick() {
         console.warn('⚠️ Élément datetime introuvable');
     }
 }
+
+// Expose functions globally for cross-module access
+window.openAboutPopup = openAboutPopup;
+window.closeAboutPopup = closeAboutPopup;
