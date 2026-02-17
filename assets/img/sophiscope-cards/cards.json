@@ -168,10 +168,104 @@
           "Si tu n’acceptes pas, tu le regretteras quand il sera trop tard."
         ]
       },
-      "training": {
-        "totalQuestions": 6,
-        "items": []
+
+"training": {
+  "totalQuestions": 6,
+  "items": [
+    {
+      "id": "Q1",
+      "type": "tweet",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/tw_01.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le message aligne des conséquences graves (écoles ingérables, hôpitaux saturés, villes moins sûres) pour provoquer l’angoisse.",
+          "Il ne démontre pas précisément la chaîne causale : il vise surtout à faire accepter une position par l’urgence (« avant qu’il ne soit trop tard »)."
+        ],
+        "keyPoint": "Ici, la peur sert d’argument principal : c’est un appel à la peur."
       }
+    },
+    {
+      "id": "Q2",
+      "type": "tweet",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/tw_02.png",
+      "answer": "no",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le tweet présente une donnée et des conséquences possibles formulées au conditionnel.",
+          "Il ne cherche pas à effrayer avec un scénario catastrophique imminent : il appelle plutôt à discuter des options."
+        ],
+        "keyPoint": "Ici, on argumente (même brièvement) sans dramatisation : ce n’est pas un appel à la peur."
+      }
+    },
+    {
+      "id": "Q3",
+      "type": "instagram",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/ig_01.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le post met en scène un futur présenté comme inévitable (« invivables », « il sera trop tard »).",
+          "Même si le sujet peut être sérieux, ici la formulation sert surtout à déclencher peur et urgence, sans éléments vérifiables ni nuance."
+        ],
+        "keyPoint": "L’émotion (urgence/angoisse) remplace la démonstration : appel à la peur."
+      }
+    },
+    {
+      "id": "Q4",
+      "type": "journal",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/news_01.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "L’article part d’un chiffre, puis bascule vers un vocabulaire alarmiste (« spirale incontrôlable », « effondrement »).",
+          "La conclusion cherche à imposer l’urgence par la crainte d’un pire, sans expliquer clairement pourquoi cette issue serait inévitable."
+        ],
+        "keyPoint": "Exagérer le risque pour pousser à agir : c’est un appel à la peur."
+      }
+    },
+    {
+      "id": "Q5",
+      "type": "debate",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/deb_01.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le candidat dramatise en empilant des conséquences extrêmes (« pénuries massives », « crise majeure », « chaos »).",
+          "Plutôt que de prouver le lien entre prudence et catastrophe, il cherche à convaincre en suscitant la peur d’un effondrement imminent."
+        ],
+        "keyPoint": "Ici, la peur sert de levier rhétorique : appel à la peur."
+      }
+    },
+    {
+      "id": "Q6",
+      "type": "tiktok",
+      "prompt": "S’agit-il d’un appel à la peur ?",
+      "image": "appel-a-la-peur/tt_01.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le montage d’images inquiétantes et le texte suggèrent une crise imminente (« quand les pénuries arriveront »).",
+          "Le message appelle à réagir sous la menace, sans démonstration solide : il joue sur l’angoisse et l’urgence."
+        ],
+        "keyPoint": "Menace + urgence + émotion : appel à la peur."
+      }
+    }
+  ]
+}
+
+
     },
     {
       "id": "SC-013",

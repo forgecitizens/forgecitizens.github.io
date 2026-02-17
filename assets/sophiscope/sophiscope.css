@@ -615,6 +615,33 @@ body.sophiscope-page--gallery {
   hyphens: auto;
 }
 
+/* Training available badge under title */
+.gallery-card__training-badge {
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #c4a35a;
+  text-align: center;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery Cards - Training Available Highlight
+   -------------------------------------------------------------------------- */
+.gallery-card--has-training .gallery-card__visual {
+  border-color: rgba(196, 163, 90, 0.5);
+  box-shadow: 0 0 0 1px rgba(196, 163, 90, 0.3),
+              0 0 12px rgba(196, 163, 90, 0.15);
+}
+
+.gallery-card--has-training:hover .gallery-card__visual,
+.gallery-card--has-training:focus .gallery-card__visual {
+  border-color: rgba(196, 163, 90, 0.8);
+  box-shadow: 0 0 0 2px rgba(196, 163, 90, 0.4),
+              0 4px 20px rgba(196, 163, 90, 0.25);
+}
+
 /* --------------------------------------------------------------------------
    Gallery Card Images
    -------------------------------------------------------------------------- */
@@ -1301,6 +1328,841 @@ body.modal-open {
   }
   
   .card-modal__cta {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   TRAINING PAGE STYLES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Training Layout Base
+   -------------------------------------------------------------------------- */
+.sophiscope-page--training {
+  overflow-x: hidden;
+}
+
+.sophiscope-container--training {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.training {
+  display: none; /* Hidden by default, shown via JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-xl) + 60px); /* Space for footer */
+  gap: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.training[aria-hidden="false"] {
+  display: flex;
+}
+
+/* When feedback is shown, shift layout */
+.training--with-feedback {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* --------------------------------------------------------------------------
+   Training Center (Question Area)
+   -------------------------------------------------------------------------- */
+.training__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  width: 100%;
+  max-width: 600px;
+  transition: all 0.3s ease;
+}
+
+.training__prompt {
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--sophiscope-text);
+  margin: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Stimulus Image
+   -------------------------------------------------------------------------- */
+.training__stimulus-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.training__stimulus-btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-height: 45vh;
+  padding: 0;
+  background: none;
+  border: 2px solid rgba(100, 140, 120, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.training__stimulus-btn:hover,
+.training__stimulus-btn:focus {
+  border-color: rgba(100, 140, 120, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.training__stimulus-btn:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.training__stimulus {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 45vh;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Hint text to click for enlarging */
+.training__stimulus-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: var(--spacing-xs);
+  font-size: 0.8rem;
+  color: var(--sophiscope-muted);
+  opacity: 0.8;
+}
+
+.training__stimulus-hint svg {
+  width: 14px;
+  height: 14px;
+}
+
+.training__stimulus-zoom-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.training__stimulus-btn:hover .training__stimulus-zoom-hint,
+.training__stimulus-btn:focus .training__stimulus-zoom-hint {
+  opacity: 1;
+}
+
+.training__stimulus-zoom-hint svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Answer Actions Container (holds buttons and next)
+   -------------------------------------------------------------------------- */
+.training__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 60px;
+  margin-top: var(--spacing-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Answer Buttons (Oui / Non)
+   -------------------------------------------------------------------------- */
+.training__buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.training__buttons.is-hidden {
+  display: none;
+}
+
+.training__btn {
+  min-width: 100px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.training__btn:focus {
+  outline: 3px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.training__btn:disabled {
+  cursor: not-allowed;
+  transform: none;
+}
+
+.training__btn--yes {
+  background-color: #4ade80;
+  color: #000;
+}
+
+.training__btn--yes:hover:not(:disabled),
+.training__btn--yes:focus:not(:disabled) {
+  background-color: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+.training__btn--no {
+  background-color: #64748b;
+  color: #fff;
+}
+
+.training__btn--no:hover:not(:disabled),
+.training__btn--no:focus:not(:disabled) {
+  background-color: #475569;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+}
+
+/* Answer feedback states */
+.training__btn--selected {
+  transform: scale(1.05);
+}
+
+.training__btn--correct {
+  background-color: #22c55e !important;
+  color: #000 !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.5);
+}
+
+.training__btn--incorrect {
+  background-color: #ef4444 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Next Button (replaces Oui/Non after answer)
+   -------------------------------------------------------------------------- */
+.training__btn-next {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  min-width: 140px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: #3b82f6;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.training__btn-next.is-visible {
+  display: inline-flex;
+}
+
+.training__btn-next:hover,
+.training__btn-next:focus {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.training__btn-next:focus {
+  outline: 3px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.training__btn-next svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   Question Counter
+   -------------------------------------------------------------------------- */
+.training__counter {
+  font-size: 0.9rem;
+  color: var(--sophiscope-muted);
+  margin: var(--spacing-sm) 0 0;
+  letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   Feedback Panel (Right Side Desktop)
+   -------------------------------------------------------------------------- */
+.training__feedback {
+  display: none;
+  background-color: #1e3a4c;
+  border-radius: 8px;
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.training__feedback.is-visible,
+.training__feedback[aria-hidden="false"] {
+  display: block;
+}
+
+.training__feedback-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.training__feedback-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.training__feedback-title--correct {
+  color: #4ade80;
+}
+
+.training__feedback-title--incorrect {
+  color: #ef4444;
+}
+
+.training__feedback-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.training__feedback-body p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--sophiscope-text);
+  margin: 0;
+  text-align: justify;
+}
+
+.training__feedback-keypoint {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6bbfb0;
+  margin: var(--spacing-sm) 0 0;
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(100, 140, 120, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Final Score Screen
+   -------------------------------------------------------------------------- */
+.training__final {
+  display: none;
+  position: fixed;
+  inset: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background-color: var(--sophiscope-bg);
+  z-index: 500;
+}
+
+.training__final.is-visible,
+.training__final[aria-hidden="false"] {
+  display: flex;
+}
+
+.training__final-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  text-align: center;
+  max-width: 500px;
+}
+
+.training__final-title {
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--sophiscope-text);
+  margin: 0;
+}
+
+.training__final-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #4ade80;
+  margin: 0;
+}
+
+.training__final-message {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--sophiscope-muted);
+  margin: 0;
+}
+
+.training__final-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background-color: #4ade80;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: var(--spacing-md);
+}
+
+.training__final-btn:hover,
+.training__final-btn:focus {
+  background-color: #22c55e;
+  transform: scale(1.02);
+}
+
+.training__final-btn:focus {
+  outline: 3px solid #4ade80;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Error State
+   -------------------------------------------------------------------------- */
+.training__error {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--spacing-lg);
+  text-align: center;
+  gap: var(--spacing-md);
+}
+
+.training__error.is-visible,
+.training__error[aria-hidden="false"] {
+  display: flex;
+}
+
+.training__error-icon {
+  width: 64px;
+  height: 64px;
+  stroke: rgba(239, 68, 68, 0.8);
+}
+
+.training__error-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--sophiscope-text);
+  margin: 0;
+}
+
+.training__error-message {
+  font-size: 1rem;
+  color: var(--sophiscope-muted);
+  margin: 0;
+  max-width: 400px;
+}
+
+.training__error-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: rgba(100, 140, 120, 0.2);
+  border: 1px solid rgba(100, 140, 120, 0.4);
+  border-radius: 6px;
+  color: var(--sophiscope-text);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  margin-top: var(--spacing-sm);
+}
+
+.training__error-btn:hover,
+.training__error-btn:focus {
+  background-color: rgba(100, 140, 120, 0.3);
+  border-color: rgba(100, 140, 120, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Image Overlay / Zoom
+   -------------------------------------------------------------------------- */
+.training__overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.training__overlay.is-visible,
+.training__overlay[aria-hidden="false"] {
+  display: flex;
+}
+
+.training__overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  cursor: pointer;
+}
+
+.training__overlay-close {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.training__overlay-close:hover,
+.training__overlay-close:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.training__overlay-close:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.training__overlay-close svg {
+  width: 100%;
+  height: 100%;
+}
+
+.training__overlay-image {
+  position: relative;
+  max-width: 95vw;
+  max-height: 92vh;
+  object-fit: contain;
+  border-radius: 4px;
+  z-index: 5;
+}
+
+/* Prevent scroll when overlay is open */
+body.overlay-open {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Training Footer (Back Button)
+   -------------------------------------------------------------------------- */
+.training__footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-inset-bottom));
+  padding-right: calc(var(--spacing-md) + var(--safe-area-inset-right));
+  z-index: 100;
+}
+
+/* ==========================================================================
+   TRAINING RESPONSIVE: Tablet (768px+)
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+  .training {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+  
+  /* When feedback appears on tablet+, switch to row layout */
+  .training--with-feedback {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  
+  .training__center {
+    max-width: 550px;
+    padding: var(--spacing-md);
+  }
+  
+  .training--with-feedback .training__center {
+    flex-shrink: 0;
+  }
+  
+  .training__prompt {
+    font-size: 1.4rem;
+  }
+  
+  .training__stimulus-container {
+    max-width: 450px;
+  }
+  
+  /* Feedback side panel */
+  .training__feedback {
+    width: 380px;
+    max-width: 380px;
+    margin-top: 0;
+    align-self: flex-start;
+    display: none;
+    flex-shrink: 0;
+  }
+  
+  .training__feedback.is-visible,
+  .training__feedback[aria-hidden="false"] {
+    display: block;
+  }
+  
+  .training__feedback-inner {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  
+  .training__feedback-title {
+    font-size: 1.4rem;
+  }
+  
+  .training__feedback-body p {
+    font-size: 1rem;
+  }
+  
+  .training__footer {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* ==========================================================================
+   TRAINING RESPONSIVE: Desktop (1024px+)
+   ========================================================================== */
+@media screen and (min-width: 1024px) {
+  .training {
+    padding: var(--spacing-xl);
+    gap: var(--spacing-xl);
+    max-height: 100vh;
+    max-height: 100dvh;
+  }
+  
+  .training__center {
+    max-width: 600px;
+  }
+  
+  .training__prompt {
+    font-size: 1.6rem;
+  }
+  
+  .training__stimulus-container {
+    max-width: 520px;
+  }
+  
+  .training__stimulus-btn {
+    max-height: 50vh;
+  }
+  
+  .training__stimulus {
+    max-height: 50vh;
+  }
+  
+  .training__btn {
+    min-width: 120px;
+    font-size: 1.2rem;
+    padding: var(--spacing-sm) calc(var(--spacing-lg) * 1.2);
+  }
+  
+  .training__feedback {
+    width: 32%;
+    max-width: 420px;
+    padding: var(--spacing-xl);
+  }
+  
+  .training__feedback-title {
+    font-size: 1.5rem;
+  }
+  
+  .training__feedback-body p {
+    font-size: 1.05rem;
+  }
+  
+  .training__feedback-keypoint {
+    font-size: 1rem;
+  }
+  
+  .training__final-title {
+    font-size: 2.2rem;
+  }
+  
+  .training__final-score {
+    font-size: 5rem;
+  }
+}
+
+/* ==========================================================================
+   TRAINING RESPONSIVE: Large Desktop (1440px+)
+   ========================================================================== */
+@media screen and (min-width: 1440px) {
+  .training {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .training__center {
+    max-width: 650px;
+  }
+  
+  .training__stimulus-container {
+    max-width: 600px;
+  }
+  
+  .training__feedback {
+    max-width: 480px;
+  }
+}
+
+/* ==========================================================================
+   TRAINING RESPONSIVE: Landscape Mobile
+   ========================================================================== */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .training {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+  
+  .training--with-feedback {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  
+  .training__center {
+    max-width: 350px;
+    padding: var(--spacing-xs);
+    gap: var(--spacing-xs);
+  }
+  
+  .training__prompt {
+    font-size: 1rem;
+  }
+  
+  .training__stimulus-container {
+    max-width: 280px;
+  }
+  
+  .training__stimulus-btn {
+    max-height: 35vh;
+  }
+  
+  .training__stimulus {
+    max-height: 35vh;
+  }
+  
+  .training__stimulus-hint {
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
+  
+  .training__btn {
+    min-width: 80px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.95rem;
+  }
+  
+  .training__btn-next {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+  
+  .training__counter {
+    font-size: 0.75rem;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .training__feedback {
+    width: 250px;
+    max-width: 250px;
+    padding: var(--spacing-sm);
+    margin-top: 0;
+    flex-shrink: 0;
+  }
+  
+  .training__feedback-title {
+    font-size: 1rem;
+  }
+  
+  .training__feedback-body p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  
+  .training__feedback-keypoint {
+    font-size: 0.8rem;
+  }
+  
+  .training__footer {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .training__overlay-close {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+  }
+}
+
+/* ==========================================================================
+   TRAINING: Reduced Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .training__btn,
+  .training__btn-next,
+  .training__stimulus-btn,
+  .training__stimulus-zoom-hint,
+  .training__overlay-close,
+  .training__final-btn,
+  .training__error-btn {
     transition: none;
   }
 }

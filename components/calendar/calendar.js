@@ -68,6 +68,12 @@ class RetroCalendar {
                 text: 'Lancement de la v.1 de Qualif\'R, un jeu qui permet d\'entraîner son discernement. Public cible : tous les âges.',
                 link: null,
                 linkText: null
+            },
+            '2026-02-17': {
+                title: 'Release v1 de Sophiscope',
+                text: 'Sophiscope est un jeu interactif pour apprendre à reconnaître les sophismes sur les réseaux sociaux, dans les débats, dans les journaux.',
+                link: null,
+                linkText: null
             }
         };
         

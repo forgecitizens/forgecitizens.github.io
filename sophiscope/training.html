@@ -13,122 +13,638 @@
   <link rel="stylesheet" href="/assets/sophiscope/sophiscope.css">
   
   <title>Sophiscope - Entraînement</title>
-  
-  <style>
-    .training-placeholder {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: var(--spacing-lg);
-      text-align: center;
-    }
-    
-    .training-placeholder__icon {
-      width: 80px;
-      height: 80px;
-      margin-bottom: var(--spacing-lg);
-      stroke: rgba(100, 140, 120, 0.6);
-    }
-    
-    .training-placeholder__title {
-      font-size: 1.5rem;
-      font-weight: 300;
-      letter-spacing: 0.2em;
-      color: var(--sophiscope-text);
-      margin: 0 0 var(--spacing-md);
-      text-transform: uppercase;
-    }
-    
-    .training-placeholder__card {
-      font-size: 1.2rem;
-      color: #6bbfb0;
-      margin: 0 0 var(--spacing-xl);
-      word-break: break-word;
-    }
-    
-    .training-placeholder__message {
-      font-size: 1rem;
-      color: var(--sophiscope-muted);
-      margin: 0 0 var(--spacing-xl);
-      max-width: 500px;
-    }
-    
-    .training-placeholder__back {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      padding: var(--spacing-sm) var(--spacing-lg);
-      background-color: rgba(100, 140, 120, 0.2);
-      border: 1px solid rgba(100, 140, 120, 0.4);
-      border-radius: 6px;
-      color: var(--sophiscope-text);
-      font-size: 0.9rem;
-      text-decoration: none;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
-    }
-    
-    .training-placeholder__back:hover,
-    .training-placeholder__back:focus {
-      background-color: rgba(100, 140, 120, 0.3);
-      border-color: rgba(100, 140, 120, 0.6);
-    }
-    
-    .training-placeholder__back-icon {
-      width: 16px;
-      height: 16px;
-    }
-  </style>
 </head>
-<body class="sophiscope-page">
-  <div class="sophiscope-container">
+<body class="sophiscope-page sophiscope-page--training">
+  <div class="sophiscope-container sophiscope-container--training">
     
-    <main class="training-placeholder" role="main">
-      <svg class="training-placeholder__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
+    <!-- Main Training Layout -->
+    <main class="training" role="main" id="training-main">
       
-      <h1 class="training-placeholder__title">Entraînement</h1>
+      <!-- Center: Question Area -->
+      <section class="training__center" id="training-center">
+        
+        <!-- Prompt / Question Title -->
+        <h1 class="training__prompt" id="training-prompt">Chargement...</h1>
+        
+        <!-- Stimulus Image Container -->
+        <div class="training__stimulus-container">
+          <button 
+            type="button" 
+            class="training__stimulus-btn" 
+            id="stimulus-zoom-btn"
+            aria-label="Agrandir l'image"
+            title="Cliquer pour agrandir"
+          >
+            <img 
+              class="training__stimulus" 
+              id="training-stimulus"
+              src="" 
+              alt="Image du stimulus"
+              loading="lazy"
+            >
+            <span class="training__stimulus-zoom-hint" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+                <path d="M11 8v6M8 11h6"/>
+              </svg>
+            </span>
+          </button>
+          <p class="training__stimulus-hint" id="stimulus-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            Cliquez sur l'image pour l'agrandir
+          </p>
+        </div>
+        
+        <!-- Answer Buttons Container (holds both Oui/Non and Suivant) -->
+        <div class="training__actions" id="training-actions">
+          <div class="training__buttons" id="training-buttons">
+          <button 
+            type="button" 
+            class="training__btn training__btn--yes" 
+            id="btn-yes"
+            data-answer="yes"
+          >
+            Oui
+          </button>
+          <button 
+            type="button" 
+            class="training__btn training__btn--no" 
+            id="btn-no"
+            data-answer="no"
+          >
+            Non
+          </button>
+          </div>
+        
+          <!-- Next Button (hidden until answered, replaces Oui/Non) -->
+          <button 
+            type="button" 
+            class="training__btn-next" 
+            id="btn-next"
+            aria-hidden="true"
+          >
+            Suivant
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Question Counter -->
+        <p class="training__counter" id="training-counter">Question 1/6</p>
+        
+      </section>
       
-      <p class="training-placeholder__card" id="card-name">Chargement...</p>
+      <!-- Right: Feedback Panel -->
+      <aside class="training__feedback" id="training-feedback" aria-live="polite" aria-hidden="true">
+        <div class="training__feedback-inner">
+          <h2 class="training__feedback-title" id="feedback-title"></h2>
+          <div class="training__feedback-body" id="feedback-body"></div>
+          <p class="training__feedback-keypoint" id="feedback-keypoint"></p>
+        </div>
+      </aside>
       
-      <p class="training-placeholder__message">
-        Le module d'entraînement est en cours de développement.<br>
-        Revenez bientôt pour tester vos connaissances sur les sophismes !
-      </p>
-      
-      <a href="/sophiscope/gallery.html" class="training-placeholder__back">
-        <svg class="training-placeholder__back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        Retour à la galerie
-      </a>
     </main>
     
+    <!-- Final Score Screen -->
+    <div class="training__final" id="training-final" aria-hidden="true">
+      <div class="training__final-content">
+        <h1 class="training__final-title">Entraînement terminé !</h1>
+        <p class="training__final-score" id="final-score">0/6</p>
+        <p class="training__final-message" id="final-message"></p>
+        <a href="/sophiscope/gallery.html" class="training__final-btn">
+          Revenir à la galerie
+        </a>
+      </div>
+    </div>
+    
+    <!-- Error State -->
+    <div class="training__error" id="training-error" aria-hidden="true">
+      <svg class="training__error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+      <h1 class="training__error-title">Carte introuvable</h1>
+      <p class="training__error-message" id="error-message">
+        La carte demandée n'existe pas ou ne contient pas d'exercices.
+      </p>
+      <a href="/sophiscope/gallery.html" class="training__error-btn">
+        Retour à la galerie
+      </a>
+    </div>
+    
+    <!-- Image Overlay/Zoom -->
+    <div 
+      class="training__overlay" 
+      id="image-overlay" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-label="Image agrandie"
+      aria-hidden="true"
+    >
+      <div class="training__overlay-backdrop" id="overlay-backdrop"></div>
+      <button 
+        type="button" 
+        class="training__overlay-close" 
+        id="overlay-close"
+        aria-label="Fermer"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <img 
+        class="training__overlay-image" 
+        id="overlay-image"
+        src="" 
+        alt="Image agrandie"
+      >
+    </div>
+    
+    <!-- Back Button -->
+    <footer class="training__footer" role="contentinfo">
+      <a 
+        href="/sophiscope/gallery.html"
+        class="gallery-btn-back"
+        id="btn-back"
+        aria-label="Retour à la galerie"
+      >
+        <svg class="gallery-btn-back__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span class="gallery-btn-back__label">RETOUR</span>
+      </a>
+    </footer>
+    
   </div>
-
+  
   <script>
+    /**
+     * Sophiscope Training Module
+     * Handles quiz/training exercises for identifying fallacies
+     */
     (function() {
       'use strict';
       
-      // Get card slug from URL params
-      const params = new URLSearchParams(window.location.search);
-      const cardSlug = params.get('card');
+      // ==========================================================================
+      // CONFIGURATION
+      // ==========================================================================
+      const CONFIG = {
+        cardsJsonPath: '/assets/img/sophiscope-cards/cards.json',
+        galleryPath: '/sophiscope/gallery.html',
+        sounds: {
+          answerGiven: '/sounds/sophiscope sounds/answer_given.mp3',
+          successBell: '/sounds/sophiscope sounds/success_bell.mp3',
+          transition: '/sounds/sophiscope sounds/transition.mp3'
+        }
+      };
       
-      const cardNameEl = document.getElementById('card-name');
+      // ==========================================================================
+      // AUDIO
+      // ==========================================================================
+      const sounds = {
+        answerGiven: new Audio(CONFIG.sounds.answerGiven),
+        successBell: new Audio(CONFIG.sounds.successBell),
+        transition: new Audio(CONFIG.sounds.transition)
+      };
       
-      if (cardSlug) {
-        // Format slug for display (replace hyphens with spaces, capitalize)
-        const displayName = cardSlug
-          .replace(/-/g, ' ')
-          .replace(/\b\w/g, c => c.toUpperCase());
+      // Pre-load sounds
+      Object.values(sounds).forEach(sound => {
+        sound.preload = 'auto';
+        sound.volume = 0.5;
+      });
+      
+      /**
+       * Play a sound effect
+       */
+      function playSound(sound) {
+        try {
+          sound.currentTime = 0;
+          sound.play().catch(err => {
+            // Autoplay may be blocked, ignore silently
+          });
+        } catch (e) {
+          // Sound not available
+        }
+      }
+      
+      // ==========================================================================
+      // STATE
+      // ==========================================================================
+      let state = {
+        card: null,
+        meta: null,
+        items: [],
+        currentIndex: 0,
+        score: 0,
+        answered: false
+      };
+      
+      // ==========================================================================
+      // DOM ELEMENTS
+      // ==========================================================================
+      const elements = {
+        main: document.getElementById('training-main'),
+        poster: null,
+        posterImage: null,
+        center: document.getElementById('training-center'),
+        prompt: document.getElementById('training-prompt'),
+        stimulus: document.getElementById('training-stimulus'),
+        stimulusZoomBtn: document.getElementById('stimulus-zoom-btn'),
+        buttons: document.getElementById('training-buttons'),
+        btnYes: document.getElementById('btn-yes'),
+        btnNo: document.getElementById('btn-no'),
+        btnNext: document.getElementById('btn-next'),
+        counter: document.getElementById('training-counter'),
+        feedback: document.getElementById('training-feedback'),
+        feedbackTitle: document.getElementById('feedback-title'),
+        feedbackBody: document.getElementById('feedback-body'),
+        feedbackKeypoint: document.getElementById('feedback-keypoint'),
+        final: document.getElementById('training-final'),
+        finalScore: document.getElementById('final-score'),
+        finalMessage: document.getElementById('final-message'),
+        error: document.getElementById('training-error'),
+        errorMessage: document.getElementById('error-message'),
+        overlay: document.getElementById('image-overlay'),
+        overlayBackdrop: document.getElementById('overlay-backdrop'),
+        overlayClose: document.getElementById('overlay-close'),
+        overlayImage: document.getElementById('overlay-image')
+      };
+      
+      // ==========================================================================
+      // UTILITIES
+      // ==========================================================================
+      
+      /**
+       * Get URL parameter by name
+       */
+      function getUrlParam(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name);
+      }
+      
+      /**
+       * Show an element (remove aria-hidden)
+       */
+      function showElement(el) {
+        el.setAttribute('aria-hidden', 'false');
+        el.classList.add('is-visible');
+      }
+      
+      /**
+       * Hide an element (add aria-hidden)
+       */
+      function hideElement(el) {
+        el.setAttribute('aria-hidden', 'true');
+        el.classList.remove('is-visible');
+      }
+      
+      // ==========================================================================
+      // DATA LOADING
+      // ==========================================================================
+      
+      /**
+       * Fetch cards.json and find the requested card
+       */
+      async function loadCardData(slug) {
+        try {
+          const response = await fetch(CONFIG.cardsJsonPath);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          
+          const data = await response.json();
+          state.meta = data.meta;
+          
+          // Find the card by slug
+          const card = data.cards.find(c => c.slug === slug);
+          if (!card) {
+            throw new Error('Card not found');
+          }
+          
+          // Check if card has training items
+          if (!card.training || !card.training.items || card.training.items.length === 0) {
+            throw new Error('No training items');
+          }
+          
+          state.card = card;
+          state.items = card.training.items;
+          
+          return true;
+        } catch (error) {
+          console.error('Error loading card data:', error);
+          return false;
+        }
+      }
+      
+      // ==========================================================================
+      // RENDERING
+      // ==========================================================================
+      
+      /**
+       * Initialize the training UI with card data
+       */
+      function initializeUI() {
+        // Set page title
+        document.title = `Sophiscope - ${state.card.title}`;
         
-        cardNameEl.textContent = displayName;
-        document.title = `Sophiscope - Entraînement : ${displayName}`;
+        // Show main training area
+        showElement(elements.main);
+        
+        // Render first question
+        renderQuestion(0);
+      }
+      
+      /**
+       * Render a specific question
+       */
+      function renderQuestion(index) {
+        const item = state.items[index];
+        state.currentIndex = index;
+        state.answered = false;
+        
+        // Update prompt
+        elements.prompt.textContent = item.prompt;
+        
+        // Update stimulus image
+        const stimulusPath = state.meta.trainingBasePath + item.image;
+        elements.stimulus.src = stimulusPath;
+        elements.stimulus.alt = `Stimulus ${index + 1} - ${item.type}`;
+        
+        // Update counter
+        const total = state.items.length;
+        elements.counter.textContent = `Question ${index + 1}/${total}`;
+        
+        // Reset button states
+        elements.btnYes.disabled = false;
+        elements.btnNo.disabled = false;
+        elements.btnYes.classList.remove('training__btn--selected', 'training__btn--correct', 'training__btn--incorrect');
+        elements.btnNo.classList.remove('training__btn--selected', 'training__btn--correct', 'training__btn--incorrect');
+        
+        // Hide feedback and next button
+        hideElement(elements.feedback);
+        elements.main.classList.remove('training--with-feedback');
+        hideElement(elements.btnNext);
+        elements.btnNext.classList.remove('is-visible');
+        
+        // Show answer buttons, hide next
+        showElement(elements.buttons);
+        elements.buttons.classList.remove('is-hidden');
+      }
+      
+      /**
+       * Handle user answer
+       */
+      function handleAnswer(userAnswer) {
+        if (state.answered) return;
+        state.answered = true;
+        
+        // Play answer sound
+        playSound(sounds.answerGiven);
+        
+        const item = state.items[state.currentIndex];
+        const isCorrect = userAnswer === item.answer;
+        
+        if (isCorrect) {
+          state.score++;
+          // Play success sound after a short delay
+          setTimeout(() => playSound(sounds.successBell), 200);
+        }
+        
+        // Disable buttons
+        elements.btnYes.disabled = true;
+        elements.btnNo.disabled = true;
+        
+        // Mark selected button
+        const selectedBtn = userAnswer === 'yes' ? elements.btnYes : elements.btnNo;
+        const correctBtn = item.answer === 'yes' ? elements.btnYes : elements.btnNo;
+        
+        selectedBtn.classList.add('training__btn--selected');
+        
+        if (isCorrect) {
+          selectedBtn.classList.add('training__btn--correct');
+        } else {
+          selectedBtn.classList.add('training__btn--incorrect');
+          correctBtn.classList.add('training__btn--correct');
+        }
+        
+        // Show feedback
+        showFeedback(item.feedback, isCorrect);
+        
+        // Hide answer buttons, show next button (same position)
+        hideElement(elements.buttons);
+        elements.buttons.classList.add('is-hidden');
+        showElement(elements.btnNext);
+        elements.btnNext.classList.add('is-visible');
+        elements.btnNext.focus();
+      }
+      
+      /**
+       * Display feedback panel
+       */
+      function showFeedback(feedback, isCorrect) {
+        // Set title with correct/incorrect styling
+        elements.feedbackTitle.textContent = isCorrect ? feedback.title : 'Mauvaise réponse';
+        elements.feedbackTitle.classList.toggle('training__feedback-title--correct', isCorrect);
+        elements.feedbackTitle.classList.toggle('training__feedback-title--incorrect', !isCorrect);
+        
+        // Set body paragraphs
+        elements.feedbackBody.innerHTML = '';
+        feedback.body.forEach(paragraph => {
+          const p = document.createElement('p');
+          p.textContent = paragraph;
+          elements.feedbackBody.appendChild(p);
+        });
+        
+        // Set keypoint
+        elements.feedbackKeypoint.textContent = feedback.keyPoint;
+        
+        // Show feedback panel and shift layout
+        showElement(elements.feedback);
+        elements.main.classList.add('training--with-feedback');
+      }
+      
+      /**
+       * Go to next question or show final screen
+       */
+      function nextQuestion() {
+        // Play transition sound
+        playSound(sounds.transition);
+        
+        const nextIndex = state.currentIndex + 1;
+        
+        if (nextIndex >= state.items.length) {
+          showFinalScreen();
+        } else {
+          renderQuestion(nextIndex);
+        }
+      }
+      
+      /**
+       * Show final score screen
+       */
+      function showFinalScreen() {
+        const total = state.items.length;
+        const score = state.score;
+        const percentage = Math.round((score / total) * 100);
+        
+        // Update score display
+        elements.finalScore.textContent = `${score}/${total}`;
+        
+        // Set message based on performance
+        let message = '';
+        if (percentage === 100) {
+          message = 'Excellent ! Vous maîtrisez parfaitement ce sophisme.';
+        } else if (percentage >= 80) {
+          message = 'Très bien ! Vous avez une bonne compréhension de ce sophisme.';
+        } else if (percentage >= 60) {
+          message = 'Pas mal ! Continuez à vous entraîner pour affiner votre analyse.';
+        } else if (percentage >= 40) {
+          message = 'Vous pouvez mieux faire. Relisez la définition et réessayez !';
+        } else {
+          message = 'Ce sophisme semble encore difficile à identifier. Prenez le temps de revoir les exemples.';
+        }
+        elements.finalMessage.textContent = message;
+        
+        // Hide main, show final
+        hideElement(elements.main);
+        showElement(elements.final);
+        elements.final.classList.add('is-visible');
+      }
+      
+      /**
+       * Show error state
+       */
+      function showError(message) {
+        if (message) {
+          elements.errorMessage.textContent = message;
+        }
+        hideElement(elements.main);
+        hideElement(elements.final);
+        showElement(elements.error);
+        elements.error.classList.add('is-visible');
+      }
+      
+      // ==========================================================================
+      // IMAGE OVERLAY
+      // ==========================================================================
+      
+      /**
+       * Open image overlay
+       */
+      function openOverlay() {
+        const src = elements.stimulus.src;
+        elements.overlayImage.src = src;
+        
+        showElement(elements.overlay);
+        elements.overlay.classList.add('is-visible');
+        document.body.classList.add('overlay-open');
+        
+        // Focus close button
+        elements.overlayClose.focus();
+        
+        // Trap focus in overlay
+        elements.overlay.addEventListener('keydown', trapFocus);
+      }
+      
+      /**
+       * Close image overlay
+       */
+      function closeOverlay() {
+        hideElement(elements.overlay);
+        elements.overlay.classList.remove('is-visible');
+        document.body.classList.remove('overlay-open');
+        
+        // Remove focus trap
+        elements.overlay.removeEventListener('keydown', trapFocus);
+        
+        // Return focus to stimulus button
+        elements.stimulusZoomBtn.focus();
+      }
+      
+      /**
+       * Trap focus within overlay
+       */
+      function trapFocus(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          elements.overlayClose.focus();
+        }
+      }
+      
+      // ==========================================================================
+      // EVENT HANDLERS
+      // ==========================================================================
+      
+      function setupEventListeners() {
+        // Answer buttons
+        elements.btnYes.addEventListener('click', () => handleAnswer('yes'));
+        elements.btnNo.addEventListener('click', () => handleAnswer('no'));
+        
+        // Next button
+        elements.btnNext.addEventListener('click', nextQuestion);
+        
+        // Image zoom
+        elements.stimulusZoomBtn.addEventListener('click', openOverlay);
+        
+        // Overlay close
+        elements.overlayClose.addEventListener('click', closeOverlay);
+        elements.overlayBackdrop.addEventListener('click', closeOverlay);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+          // ESC to close overlay or go back
+          if (e.key === 'Escape') {
+            if (elements.overlay.classList.contains('is-visible')) {
+              closeOverlay();
+            }
+          }
+          
+          // Enter/Space on Next button when visible
+          if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === elements.btnNext) {
+            e.preventDefault();
+            nextQuestion();
+          }
+        });
+      }
+      
+      // ==========================================================================
+      // INITIALIZATION
+      // ==========================================================================
+      
+      async function init() {
+        // Get card slug from URL
+        const slug = getUrlParam('card');
+        
+        if (!slug) {
+          showError('Aucun slug de carte spécifié.');
+          return;
+        }
+        
+        // Load card data
+        const success = await loadCardData(slug);
+        
+        if (!success) {
+          showError(`La carte "${slug}" n'existe pas ou ne contient pas d'exercices d'entraînement.`);
+          return;
+        }
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+        // Initialize UI
+        initializeUI();
+      }
+      
+      // Start when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
       } else {
-        cardNameEl.textContent = 'Aucune carte sélectionnée';
+        init();
       }
       
     })();

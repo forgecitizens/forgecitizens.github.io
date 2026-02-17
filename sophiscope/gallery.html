@@ -227,23 +227,31 @@
       }
       
       function createCard(data, index) {
-        const { id, slug, title, category, images } = data;
+        const { id, slug, title, category, images, training } = data;
         const isHighPriority = index < HIGH_PRIORITY_COUNT;
         
+        // Check if training is available
+        const hasTraining = training && training.items && training.items.length > 0;
+        
         const card = document.createElement('article');
-        card.className = 'gallery-card';
+        card.className = hasTraining ? 'gallery-card gallery-card--has-training' : 'gallery-card';
         card.setAttribute('data-id', id);
         card.setAttribute('data-slug', slug);
         card.setAttribute('data-category', category);
         card.setAttribute('tabindex', '0');
         card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', title);
+        card.setAttribute('aria-label', title + (hasTraining ? ' - Entraînement disponible' : ''));
         
         const srcW400 = basePaths.w400 + images.w400;
         const srcW800 = basePaths.w800 + images.w800;
         const srcW1200 = basePaths.w1200 + images.w1200;
         const srcset = `${srcW400} 400w, ${srcW800} 800w, ${srcW1200} 1200w`;
         const sizes = '(max-width: 767px) 46vw, (max-width: 1024px) 30vw, 220px';
+        
+        // Build training badge HTML
+        const trainingBadge = hasTraining 
+          ? '<p class="gallery-card__training-badge">Entraînement disponible</p>' 
+          : '';
         
         card.innerHTML = `
           <div class="gallery-card__visual">
@@ -267,6 +275,7 @@
             </div>
           </div>
           <h2 class="gallery-card__title">${title.toUpperCase()}</h2>
+          ${trainingBadge}
         `;
         
         const img = card.querySelector('.gallery-card__image');
