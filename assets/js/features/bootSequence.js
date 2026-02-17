@@ -28,14 +28,25 @@
     const referrer = document.referrer;
     const currentHost = window.location.host;
     const isInternalNavigation = referrer && referrer.includes(currentHost);
-    const hasSeenBoot = sessionStorage.getItem('forgecitizens_booted');
+    
+    // Use localStorage (persists across tabs) instead of sessionStorage
+    // This fixes the issue when returning from subpages opened in new tabs
+    const hasSeenBoot = localStorage.getItem('forgecitizens_booted');
+    
+    // Also check if referrer is from forgecitizens.com (handles target="_blank" links)
+    const isFromForgeCitizens = referrer && (
+        referrer.includes('forgecitizens.com') || 
+        referrer.includes('forgecitizens.github.io')
+    );
 
     // Get overlay element early
     const overlay = document.getElementById('boot-overlay');
 
-    // Skip boot sequence if internal navigation or already seen this session
-    // Keep overlay hidden (display:none) for crawlers and returning users
-    if (isInternalNavigation || hasSeenBoot) {
+    // Skip boot sequence if:
+    // - Internal navigation within the same tab
+    // - Already seen boot in any tab (localStorage)
+    // - Coming from a forgecitizens subpage (even via target="_blank")
+    if (isInternalNavigation || hasSeenBoot || isFromForgeCitizens) {
         if (overlay) {
             overlay.classList.add('removed');
         }
@@ -151,7 +162,7 @@
 
     if (!terminal || !overlay) {
         // If elements don't exist, mark as booted and exit
-        sessionStorage.setItem('forgecitizens_booted', 'true');
+        localStorage.setItem('forgecitizens_booted', 'true');
         return;
     }
 
@@ -214,7 +225,7 @@
         if (index >= bootMessages.length) {
             // Boot sequence complete
             setTimeout(function() {
-                sessionStorage.setItem('forgecitizens_booted', 'true');
+                localStorage.setItem('forgecitizens_booted', 'true');
                 stopBootSound();
                 overlay.classList.add('hidden');
                 
