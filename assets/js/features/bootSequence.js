@@ -29,9 +29,9 @@
     const currentHost = window.location.host;
     const isInternalNavigation = referrer && referrer.includes(currentHost);
     
-    // Use localStorage (persists across tabs) instead of sessionStorage
-    // This fixes the issue when returning from subpages opened in new tabs
-    const hasSeenBoot = localStorage.getItem('forgecitizens_booted');
+    // Use sessionStorage (clears when browser closes)
+    // Boot will replay on each new browser session
+    const hasSeenBoot = sessionStorage.getItem('forgecitizens_booted');
     
     // Also check if referrer is from forgecitizens.com (handles target="_blank" links)
     const isFromForgeCitizens = referrer && (
@@ -44,7 +44,7 @@
 
     // Skip boot sequence if:
     // - Internal navigation within the same tab
-    // - Already seen boot in any tab (localStorage)
+    // - Already seen boot in this session (sessionStorage)
     // - Coming from a forgecitizens subpage (even via target="_blank")
     if (isInternalNavigation || hasSeenBoot || isFromForgeCitizens) {
         if (overlay) {
@@ -162,7 +162,7 @@
 
     if (!terminal || !overlay) {
         // If elements don't exist, mark as booted and exit
-        localStorage.setItem('forgecitizens_booted', 'true');
+        sessionStorage.setItem('forgecitizens_booted', 'true');
         return;
     }
 
@@ -225,7 +225,7 @@
         if (index >= bootMessages.length) {
             // Boot sequence complete
             setTimeout(function() {
-                localStorage.setItem('forgecitizens_booted', 'true');
+                sessionStorage.setItem('forgecitizens_booted', 'true');
                 stopBootSound();
                 overlay.classList.add('hidden');
                 

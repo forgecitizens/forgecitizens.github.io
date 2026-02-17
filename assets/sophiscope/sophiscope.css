@@ -1083,12 +1083,7 @@ body.modal-open {
 }
 
 .card-modal__title {
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  color: var(--sophiscope-text);
-  text-align: center;
-  margin: var(--spacing-md) 0 0;
+  display: none; /* Hidden - title already visible on the card image */
 }
 
 /* --------------------------------------------------------------------------
