@@ -31,6 +31,82 @@
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/assets/sophiscope/sophiscope.css">
+  
+  <!-- Structured Data: Article + FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Sophiscope – Un outil pédagogique pour développer l'esprit critique",
+    "description": "Outil éducatif interactif pour identifier et comprendre les sophismes logiques, biais cognitifs et erreurs de raisonnement.",
+    "author": {
+      "@type": "Organization",
+      "name": "ForgeCitizens",
+      "url": "https://www.forgecitizens.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "ForgeCitizens",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.forgecitizens.com/assets/img/ui/favicon.ico"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.forgecitizens.com/sophiscope/"
+    },
+    "keywords": ["sophismes", "esprit critique", "éducation aux médias", "biais cognitifs", "pensée critique", "argumentation", "EMC", "philosophie"]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Sophiscope est-il adapté au collège ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, certains sophismes peuvent être introduits dès la 4e ou 3e avec des exemples simples."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Sophiscope peut-il être utilisé en lycée ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, notamment en philosophie, SES et EMC."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Sophiscope est-il un outil gratuit ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, Sophiscope est accessible librement en ligne."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qu'est-ce qu'un sophisme ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Un sophisme est un raisonnement qui semble logique mais qui contient une erreur. Il peut être utilisé volontairement pour manipuler ou involontairement par méconnaissance des règles logiques."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Comment utiliser Sophiscope en classe ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sophiscope peut être utilisé en cours de philosophie, français, EMC ou éducation aux médias. Les élèves analysent des exemples de sophismes dans des tweets, articles ou discours, puis justifient leur analyse."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="sophiscope-page sophiscope-page--landing">
   
@@ -130,12 +206,14 @@
           Sophiscope est un outil éducatif interactif conçu pour aider les élèves, enseignants et parents 
           à identifier et comprendre les <strong>sophismes logiques</strong> présents dans les discours du quotidien. 
           À l'heure des réseaux sociaux, de la désinformation et des débats polarisés, apprendre à repérer 
-          les <strong>biais cognitifs</strong> et les <strong>erreurs de raisonnement</strong> devient une compétence essentielle.
+          les <strong>biais cognitifs</strong> et les <strong>erreurs de raisonnement</strong> devient une compétence essentielle 
+          pour exercer son <strong>esprit critique</strong> et lutter contre la <strong>manipulation rhétorique</strong>.
         </p>
         
         <p class="seo-accordion__highlight">
-          Grâce à des cartes illustrées et des exercices pratiques, Sophiscope permet d'enseigner 
-          la pensée critique de manière accessible, progressive et engageante.
+          Grâce à des <a href="/sophiscope/gallery.html" style="color: var(--sophiscope-accent); text-decoration: underline;">cartes illustrées de sophismes</a> 
+          et des <a href="/sophiscope/training.html" style="color: var(--sophiscope-accent); text-decoration: underline;">exercices pratiques d'entraînement</a>, 
+          Sophiscope permet d'enseigner la pensée critique de manière accessible, progressive et engageante.
         </p>
         
         <!-- Section: Pourquoi enseigner les sophismes -->
@@ -222,6 +300,11 @@
           L'élève n'est pas passif. Il analyse, compare et argumente.
           L'outil peut être utilisé en autonomie ou intégré dans une séquence pédagogique complète.
         </p>
+        <p>
+          <strong>Prêt à détecter les sophismes ?</strong> 
+          <a href="/sophiscope/gallery.html" style="color: var(--sophiscope-accent); text-decoration: underline;">Découvrez les cartes →</a> ou 
+          <a href="/sophiscope/training.html" style="color: var(--sophiscope-accent); text-decoration: underline;">Testez-vous avec les exercices →</a>
+        </p>
         
         <!-- FAQ -->
         <div class="seo-accordion__faq">
@@ -240,6 +323,16 @@
           <div class="seo-accordion__faq-item">
             <p class="seo-accordion__faq-q">Est-ce un outil gratuit ?</p>
             <p class="seo-accordion__faq-a">Oui, Sophiscope est accessible librement en ligne.</p>
+          </div>
+          
+          <div class="seo-accordion__faq-item">
+            <p class="seo-accordion__faq-q">Qu'est-ce qu'un sophisme ?</p>
+            <p class="seo-accordion__faq-a">Un sophisme est un raisonnement qui semble logique mais qui contient une erreur. Il peut être utilisé volontairement pour manipuler ou involontairement par méconnaissance des règles logiques.</p>
+          </div>
+          
+          <div class="seo-accordion__faq-item">
+            <p class="seo-accordion__faq-q">Comment utiliser Sophiscope en classe ?</p>
+            <p class="seo-accordion__faq-a">Sophiscope peut être utilisé en cours de philosophie, français, EMC ou éducation aux médias. Les élèves analysent des exemples de sophismes dans des tweets, articles ou discours, puis justifient leur analyse.</p>
           </div>
         </div>
         
