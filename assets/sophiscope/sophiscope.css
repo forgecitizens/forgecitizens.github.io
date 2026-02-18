@@ -59,6 +59,7 @@ body.sophiscope-page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
+  overflow-y: auto; /* Permettre le scroll vertical */
   
   /* Safe area padding for notched devices */
   padding-top: var(--safe-area-inset-top);
@@ -67,14 +68,206 @@ body.sophiscope-page {
   padding-right: var(--safe-area-inset-right);
 }
 
+/* ==========================================================================
+   LANDING PAGE - Nouvelle mise en page centrée
+   ========================================================================== */
+
+/* Container principal - plein écran centré */
+.sophiscope-landing {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-lg);
+  position: relative;
+}
+
+/* Zone principale centrée */
+.sophiscope-landing__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Titre "Sophiscope" - style élégant italique */
+.sophiscope-landing__title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--sophiscope-text);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 0.02em;
+}
+
+/* Sous-texte descriptif */
+.sophiscope-landing__subtitle {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  color: var(--sophiscope-muted);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-xl);
+  max-width: 480px;
+}
+
+/* Bouton Commencer avec cartes */
+.sophiscope-landing__start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin-bottom: var(--spacing-lg);
+}
+
+.sophiscope-landing__start:hover {
+  transform: scale(1.05);
+}
+
+.sophiscope-landing__start:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.sophiscope-landing__start:active {
+  transform: scale(0.98);
+}
+
+/* Icône des cartes empilées */
+.sophiscope-landing__cards {
+  position: relative;
+  width: 60px;
+  height: 70px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.sophiscope-landing__card {
+  position: absolute;
+  width: 40px;
+  height: 56px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sophiscope-landing__card--red {
+  background-color: #e53935;
+  transform: rotate(-15deg);
+  left: 0;
+  top: 8px;
+  z-index: 1;
+}
+
+.sophiscope-landing__card--yellow {
+  background-color: #fdd835;
+  transform: rotate(0deg);
+  left: 10px;
+  top: 4px;
+  z-index: 2;
+}
+
+.sophiscope-landing__card--green {
+  background-color: #43a047;
+  transform: rotate(15deg);
+  left: 20px;
+  top: 0;
+  z-index: 3;
+}
+
+.sophiscope-landing__start-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--sophiscope-text);
+}
+
+/* Bouton Accordion "Qu'est-ce que Sophiscope ?" */
+.sophiscope-landing__accordion-btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 24px;
+  background: transparent;
+  border: 1px solid var(--sophiscope-accent);
+  border-radius: 30px;
+  color: var(--sophiscope-accent);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sophiscope-landing__accordion-btn:hover {
+  background: rgba(196, 163, 90, 0.1);
+}
+
+.sophiscope-landing__accordion-btn:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.sophiscope-landing__accordion-btn:active {
+  transform: scale(0.98);
+}
+
+.sophiscope-landing__accordion-btn[aria-expanded="true"] {
+  background: var(--sophiscope-accent);
+  color: #000;
+}
+
+/* Lien vers forgecitizens.com */
+.sophiscope-landing__link {
+  position: absolute;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  font-size: 0.85rem;
+  color: var(--sophiscope-accent);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.sophiscope-landing__link:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+.sophiscope-landing__link:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  .sophiscope-landing {
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-xl) + 40px);
+  }
+  
+  .sophiscope-landing__link {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin-top: var(--spacing-xl);
+  }
+  
+  .sophiscope-landing__accordion-btn {
+    max-width: 100%;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Main Layout Container
    -------------------------------------------------------------------------- */
 .sophiscope-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: auto; /* Ne plus forcer la hauteur plein écran */
   position: relative;
 }
 
@@ -88,7 +281,8 @@ body.sophiscope-page {
   justify-content: center;
   align-items: center;
   padding: var(--spacing-md);
-  padding-bottom: calc(var(--spacing-xl) + 60px); /* Space for footer */
+  padding-bottom: var(--spacing-md); /* Footer n'est plus fixé */
+  min-height: 80vh; /* Garder une taille minimum pour l'image hero */
 }
 
 /* --------------------------------------------------------------------------
@@ -126,22 +320,20 @@ body.sophiscope-page {
    Footer
    -------------------------------------------------------------------------- */
 .sophiscope-footer {
-  position: fixed;
+  position: sticky;
   bottom: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   padding: var(--spacing-sm) var(--spacing-md);
   padding-bottom: calc(var(--spacing-sm) + var(--safe-area-inset-bottom));
-  pointer-events: none;
+  background: linear-gradient(to top, var(--sophiscope-bg) 0%, var(--sophiscope-bg) 70%, transparent 100%);
   z-index: 100;
 }
 
-.sophiscope-footer > * {
-  pointer-events: auto;
-}
+/* Supprimé : pointer-events plus nécessaire avec sticky */
 
 /* --------------------------------------------------------------------------
    Powered By Text
@@ -2158,6 +2350,314 @@ body.overlay-open {
   .training__overlay-close,
   .training__final-btn,
   .training__error-btn {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   SEO MODAL - "Qu'est-ce que Sophiscope ?"
+   Overlay modal style OS rétro avec scroll interne
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Container Modal (overlay plein écran)
+   -------------------------------------------------------------------------- */
+.seo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md);
+  /* État fermé */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.seo-modal[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+/* Overlay sombre */
+.seo-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Fenêtre style OS
+   -------------------------------------------------------------------------- */
+.seo-modal__window {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Animation d'entrée */
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.seo-modal[aria-hidden="false"] .seo-modal__window {
+  transform: scale(1) translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Header de la fenêtre (barre de titre)
+   -------------------------------------------------------------------------- */
+.seo-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+}
+
+.seo-modal__title-text {
+  font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--sophiscope-text);
+}
+
+.seo-modal__close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: var(--sophiscope-text);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.seo-modal__close:hover {
+  background: #c0392b;
+  border-color: #e74c3c;
+}
+
+.seo-modal__close:focus {
+  outline: 2px solid var(--sophiscope-accent);
+  outline-offset: 2px;
+}
+
+.seo-modal__close:active {
+  transform: scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   Contenu scrollable
+   -------------------------------------------------------------------------- */
+.seo-modal__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  
+  /* Scrollbar stylisée */
+  scrollbar-width: thin;
+  scrollbar-color: #555 #1a1a1a;
+}
+
+.seo-modal__content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.seo-modal__content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.seo-modal__content::-webkit-scrollbar-thumb {
+  background: #444;
+  border: 2px solid #1a1a1a;
+  border-radius: 6px;
+}
+
+.seo-modal__content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* --------------------------------------------------------------------------
+   Typographie SEO (réutilisée de l'ancien accordion)
+   -------------------------------------------------------------------------- */
+.seo-accordion__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--sophiscope-accent);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.seo-accordion__intro {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--sophiscope-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+.seo-accordion__highlight {
+  font-size: 1.02rem;
+  font-style: italic;
+  color: var(--sophiscope-text);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-left: 3px solid var(--sophiscope-accent);
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+  background: rgba(196, 163, 90, 0.08);
+}
+
+.seo-modal__content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--sophiscope-text);
+  margin: var(--spacing-lg) 0 var(--spacing-sm);
+  padding-bottom: 6px;
+  border-bottom: 1px solid #333;
+}
+
+.seo-modal__content p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--sophiscope-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.seo-modal__content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+}
+
+.seo-modal__content ul li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--sophiscope-muted);
+  line-height: 1.6;
+}
+
+.seo-modal__content ul li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--sophiscope-accent);
+  font-size: 0.8rem;
+}
+
+.seo-modal__content ol {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+  counter-reset: step-counter;
+}
+
+.seo-modal__content ol li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--sophiscope-muted);
+  line-height: 1.6;
+  counter-increment: step-counter;
+}
+
+.seo-modal__content ol li::before {
+  content: counter(step-counter) ".";
+  position: absolute;
+  left: 0;
+  color: var(--sophiscope-accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   FAQ Section
+   -------------------------------------------------------------------------- */
+.seo-accordion__faq {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid #333;
+}
+
+.seo-accordion__faq h3 {
+  font-size: 1.15rem;
+  margin-bottom: var(--spacing-md);
+  border-bottom: none;
+}
+
+.seo-accordion__faq-item {
+  margin-bottom: var(--spacing-md);
+}
+
+.seo-accordion__faq-q {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sophiscope-text);
+  margin-bottom: 4px;
+}
+
+.seo-accordion__faq-a {
+  font-size: 0.9rem;
+  color: var(--sophiscope-muted);
+  padding-left: var(--spacing-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  .seo-modal {
+    padding: var(--spacing-sm);
+  }
+  
+  .seo-modal__window {
+    max-height: 90vh;
+    border-radius: 6px;
+  }
+  
+  .seo-modal__content {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .seo-accordion__title {
+    font-size: 1.2rem;
+  }
+
+  .seo-modal__content h3 {
+    font-size: 1rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .seo-modal,
+  .seo-modal__window {
     transition: none;
   }
 }

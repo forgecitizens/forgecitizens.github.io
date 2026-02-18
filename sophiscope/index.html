@@ -26,59 +26,225 @@
   <meta name="twitter:description" content="Outil interactif pour identifier les erreurs de raisonnement.">
   <meta name="twitter:image" content="https://www.forgecitizens.com/assets/img/sophiscope-images/sophiscope_main_image.jpg">
   
-  <!-- Favicon (utiliser existant ou placeholder) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/assets/img/ui/favicon.ico">
-  
-  <!-- Preload hero image for performance -->
-  <link rel="preload" as="image" href="/assets/img/sophiscope-images/sophiscope_main_image.jpg">
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/assets/sophiscope/sophiscope.css">
 </head>
-<body class="sophiscope-page">
-  <div class="sophiscope-container">
+<body class="sophiscope-page sophiscope-page--landing">
+  
+  <!-- Landing Screen - Tout visible sans scroll -->
+  <div class="sophiscope-landing">
     
-    <!-- Main Content -->
-    <main class="sophiscope-main" role="main">
-      <figure class="sophiscope-hero">
-        <img 
-          src="/assets/img/sophiscope-images/sophiscope_main_image.jpg"
-          alt="Sophiscope - Décrypter les sophismes. Une illustration montrant un observatoire scientifique futuriste avec une sphère centrale contenant des instruments d'optique, symbolisant l'analyse critique des arguments."
-          class="sophiscope-hero__image"
-          loading="eager"
-          decoding="async"
-          fetchpriority="high"
-        >
-      </figure>
-    </main>
-    
-    <!-- Footer with Start Button and Credits -->
-    <footer class="sophiscope-footer" role="contentinfo">
-      <a 
-        href="https://forgecitizens.com" 
-        class="sophiscope-powered"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Visiter forgecitizens.com (ouvre dans un nouvel onglet)"
-      >
-        Powered by forgecitizens.com
-      </a>
+    <!-- Contenu principal centré -->
+    <main class="sophiscope-landing__main" role="main">
       
+      <!-- Titre -->
+      <h1 class="sophiscope-landing__title">Sophiscope</h1>
+      
+      <!-- Sous-texte -->
+      <p class="sophiscope-landing__subtitle">
+        Un outil pour apprendre à repérer les sophismes<br>
+        dans les médias, réseaux sociaux, débats télévisés...
+      </p>
+      
+      <!-- Bouton Commencer -->
       <button 
         type="button" 
-        class="sophiscope-btn" 
+        class="sophiscope-landing__start" 
         id="btn-start"
         aria-label="Commencer le jeu Sophiscope"
       >
-        <span class="sophiscope-btn__icon" aria-hidden="true">
-          <span class="sophiscope-btn__card sophiscope-btn__card--red"></span>
-          <span class="sophiscope-btn__card sophiscope-btn__card--yellow"></span>
-          <span class="sophiscope-btn__card sophiscope-btn__card--green"></span>
+        <span class="sophiscope-landing__cards" aria-hidden="true">
+          <span class="sophiscope-landing__card sophiscope-landing__card--red"></span>
+          <span class="sophiscope-landing__card sophiscope-landing__card--yellow"></span>
+          <span class="sophiscope-landing__card sophiscope-landing__card--green"></span>
         </span>
-        <span class="sophiscope-btn__label">Commencer</span>
+        <span class="sophiscope-landing__start-label">Commencer</span>
       </button>
-    </footer>
+      
+      <!-- Bouton Accordion -->
+      <button 
+        type="button"
+        class="sophiscope-landing__accordion-btn"
+        id="seo-accordion-btn"
+        aria-expanded="false"
+        aria-controls="seo-accordion-panel"
+      >
+        Qu'est-ce que Sophiscope ?
+      </button>
+      
+    </main>
     
+    <!-- Lien vers forgecitizens.com -->
+    <a 
+      href="https://forgecitizens.com" 
+      class="sophiscope-landing__link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Plus d'outils sur forgecitizens.com
+    </a>
+    
+  </div>
+
+  <!-- =======================================================================
+       MODALE SEO - Qu'est-ce que Sophiscope ?
+       Contenu indexable présent dans le DOM, affiché en overlay modal
+       ======================================================================= -->
+  <div 
+    class="seo-modal" 
+    id="seo-modal" 
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="seo-accordion-heading"
+  >
+    <!-- Overlay sombre -->
+    <div class="seo-modal__overlay" id="seo-modal-overlay"></div>
+    
+    <!-- Fenêtre style OS -->
+    <section class="seo-modal__window" id="about-sophiscope">
+      
+      <!-- Barre de titre -->
+      <header class="seo-modal__header">
+        <span class="seo-modal__title-text">❓ Qu'est-ce que Sophiscope ?</span>
+        <button 
+          type="button" 
+          class="seo-modal__close" 
+          id="seo-modal-close"
+          aria-label="Fermer"
+        >×</button>
+      </header>
+      
+      <!-- Contenu scrollable -->
+      <div class="seo-modal__content">
+        
+        <!-- Titre principal H2 -->
+        <h2 class="seo-accordion__title" id="seo-accordion-heading">
+          Sophiscope – Un outil pédagogique pour développer l'esprit critique chez les élèves
+        </h2>
+        
+        <p class="seo-accordion__intro">
+          Sophiscope est un outil éducatif interactif conçu pour aider les élèves, enseignants et parents 
+          à identifier et comprendre les <strong>sophismes logiques</strong> présents dans les discours du quotidien. 
+          À l'heure des réseaux sociaux, de la désinformation et des débats polarisés, apprendre à repérer 
+          les <strong>biais cognitifs</strong> et les <strong>erreurs de raisonnement</strong> devient une compétence essentielle.
+        </p>
+        
+        <p class="seo-accordion__highlight">
+          Grâce à des cartes illustrées et des exercices pratiques, Sophiscope permet d'enseigner 
+          la pensée critique de manière accessible, progressive et engageante.
+        </p>
+        
+        <!-- Section: Pourquoi enseigner les sophismes -->
+        <h3>Pourquoi enseigner les sophismes à l'école ?</h3>
+        <p>Les élèves sont exposés chaque jour à :</p>
+        <ul>
+          <li>des publications virales</li>
+          <li>des arguments simplistes</li>
+          <li>des manipulations rhétoriques</li>
+          <li>des contenus émotionnels qui contournent l'analyse rationnelle</li>
+        </ul>
+        <p>
+          L'éducation aux médias et à l'information ne peut plus se limiter à distinguer le vrai du faux. 
+          Il faut également apprendre à <strong>analyser la structure d'un argument</strong>.
+        </p>
+        <p class="seo-accordion__highlight">
+          Comprendre un sophisme, c'est comprendre comment un raisonnement peut sembler logique tout en étant trompeur.
+        </p>
+        <p>
+          Sophiscope s'inscrit dans une démarche d'<strong>éducation citoyenne</strong> et de formation 
+          à l'esprit critique adaptée au collège, lycée et enseignement supérieur.
+        </p>
+        
+        <!-- Section: Outil pour enseignants -->
+        <h3>Un outil concret pour enseignants et professeurs</h3>
+        <p>Sophiscope peut être utilisé :</p>
+        <ul>
+          <li>en cours de philosophie</li>
+          <li>en français (analyse argumentative)</li>
+          <li>en EMC (enseignement moral et civique)</li>
+          <li>en histoire-géographie</li>
+          <li>en ateliers d'éducation aux médias</li>
+          <li>en accompagnement personnalisé</li>
+        </ul>
+        <p>
+          Chaque sophisme est présenté sous forme visuelle puis accompagné d'exercices d'analyse :
+        </p>
+        <ul>
+          <li>tweets à décrypter</li>
+          <li>extraits de posts</li>
+          <li>articles fictifs</li>
+          <li>mises en situation</li>
+        </ul>
+        <p>
+          L'objectif n'est pas de donner "la bonne réponse", mais d'apprendre aux élèves 
+          à <strong>justifier leur analyse</strong>.
+        </p>
+        
+        <!-- Section: Support pour parents -->
+        <h3>Un support pour les parents souhaitant accompagner leurs enfants</h3>
+        <p>Les parents peuvent également utiliser Sophiscope comme outil de discussion à la maison. Il permet :</p>
+        <ul>
+          <li>d'ouvrir le dialogue sur l'actualité</li>
+          <li>d'apprendre à questionner une affirmation</li>
+          <li>de développer l'autonomie intellectuelle</li>
+          <li>d'encourager le doute constructif</li>
+        </ul>
+        <p class="seo-accordion__highlight">
+          Former un esprit critique, ce n'est pas rendre méfiant : c'est rendre capable d'analyse.
+        </p>
+        
+        <!-- Section: Compétences développées -->
+        <h3>Compétences développées</h3>
+        <p>L'utilisation régulière de Sophiscope favorise :</p>
+        <ul>
+          <li>la détection des biais cognitifs</li>
+          <li>l'analyse logique des arguments</li>
+          <li>la compréhension des manipulations discursives</li>
+          <li>la capacité à argumenter de manière structurée</li>
+          <li>l'esprit critique face aux médias numériques</li>
+        </ul>
+        <p>Ces compétences sont devenues centrales dans le monde contemporain.</p>
+        
+        <!-- Section: Pédagogie active -->
+        <h3>Une pédagogie active et progressive</h3>
+        <p>Sophiscope repose sur une pédagogie active :</p>
+        <ol>
+          <li>Observation</li>
+          <li>Identification</li>
+          <li>Justification</li>
+          <li>Discussion</li>
+        </ol>
+        <p>
+          L'élève n'est pas passif. Il analyse, compare et argumente.
+          L'outil peut être utilisé en autonomie ou intégré dans une séquence pédagogique complète.
+        </p>
+        
+        <!-- FAQ -->
+        <div class="seo-accordion__faq">
+          <h3>Questions fréquentes</h3>
+          
+          <div class="seo-accordion__faq-item">
+            <p class="seo-accordion__faq-q">Sophiscope est-il adapté au collège ?</p>
+            <p class="seo-accordion__faq-a">Oui, certains sophismes peuvent être introduits dès la 4e ou 3e avec des exemples simples.</p>
+          </div>
+          
+          <div class="seo-accordion__faq-item">
+            <p class="seo-accordion__faq-q">Peut-il être utilisé en lycée ?</p>
+            <p class="seo-accordion__faq-a">Oui, notamment en philosophie, SES et EMC.</p>
+          </div>
+          
+          <div class="seo-accordion__faq-item">
+            <p class="seo-accordion__faq-q">Est-ce un outil gratuit ?</p>
+            <p class="seo-accordion__faq-a">Oui, Sophiscope est accessible librement en ligne.</p>
+          </div>
+        </div>
+        
+      </div>
+    </section>
   </div>
 
   <!-- Minimal JavaScript -->
@@ -96,40 +262,71 @@
         });
       }
       
-      // Image load error fallback
-      const heroImage = document.querySelector('.sophiscope-hero__image');
+      // =====================================================================
+      // SEO Modal Toggle
+      // Accessible: ARIA, keyboard navigation, focus trap, Escape to close
+      // =====================================================================
+      const accordionBtn = document.getElementById('seo-accordion-btn');
+      const modal = document.getElementById('seo-modal');
+      const modalOverlay = document.getElementById('seo-modal-overlay');
+      const modalClose = document.getElementById('seo-modal-close');
       
-      if (heroImage) {
-        heroImage.addEventListener('error', function() {
-          this.alt = 'Image non disponible - Sophiscope';
-          this.style.minHeight = '400px';
-          console.warn('Sophiscope: Hero image failed to load');
+      if (accordionBtn && modal) {
+        /**
+         * Open modal
+         */
+        function openModal() {
+          modal.setAttribute('aria-hidden', 'false');
+          accordionBtn.setAttribute('aria-expanded', 'true');
+          document.body.style.overflow = 'hidden'; // Prevent body scroll
+          modalClose.focus(); // Focus close button
+        }
+        
+        /**
+         * Close modal
+         */
+        function closeModal() {
+          modal.setAttribute('aria-hidden', 'true');
+          accordionBtn.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = ''; // Restore scroll
+          accordionBtn.focus(); // Return focus to trigger
+        }
+        
+        // Open button click
+        accordionBtn.addEventListener('click', openModal);
+        
+        // Close button click
+        if (modalClose) {
+          modalClose.addEventListener('click', closeModal);
+        }
+        
+        // Overlay click to close
+        if (modalOverlay) {
+          modalOverlay.addEventListener('click', closeModal);
+        }
+        
+        // Escape key to close
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+            closeModal();
+          }
         });
+        
+        // Keyboard handler for open button (Enter & Space)
+        accordionBtn.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openModal();
+          }
+        });
+        
+        // Auto-open if URL contains #about-sophiscope
+        if (window.location.hash === '#about-sophiscope') {
+          openModal();
+        }
       }
       
     })();
   </script>
-
-  <!-- SEO Content Block (visually hidden but accessible) -->
-  <aside class="seo-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
-    <h1>Sophiscope - Décrypter les sophismes</h1>
-    <h2>Maîtrisez l'art de l'argumentation</h2>
-    <p>
-      Le Sophiscope est un outil éducatif interactif conçu pour vous aider à identifier et comprendre les sophismes, 
-      ces erreurs de raisonnement qui polluent les débats et la communication quotidienne. Présenté sous forme de cartes 
-      illustrées, chaque sophisme est décrit avec sa définition, des exemples concrets et des techniques pour le repérer.
-    </p>
-    <p>
-      Notre collection couvre les sophismes les plus courants : l'homme de paille, qui déforme l'argument adverse pour le 
-      réfuter plus facilement ; l'appel à l'autorité, qui substitue l'expertise à la preuve ; le faux dilemme, qui réduit 
-      artificiellement les options ; la pente glissante, qui prédit des conséquences catastrophiques sans justification ; 
-      et bien d'autres erreurs logiques que vous rencontrez quotidiennement dans les médias et les discussions.
-    </p>
-    <p>
-      Le Sophiscope fait partie de la suite d'outils ForgeCitizens dédiée au développement de l'esprit critique. 
-      En apprenant à reconnaître ces pièges argumentatifs, vous deviendrez un interlocuteur plus averti et un consommateur 
-      d'information plus éclairé. Parcourez notre galerie de sophismes et entraînez-vous à les identifier dans votre quotidien.
-    </p>
-  </aside>
 </body>
 </html>
