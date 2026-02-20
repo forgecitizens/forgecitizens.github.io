@@ -112,10 +112,101 @@
           "Ton idée est nulle : tu n’as même pas fait d’études."
         ]
       },
-      "training": {
-        "totalQuestions": 6,
-        "items": []
+"training": {
+  "totalQuestions": 6,
+  "items": [
+    {
+      "id": "Q1",
+      "type": "journal",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/nw-01.PNG",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le texte invite à rejeter le rapport à cause du parcours de son auteur (ancien consultant, fonds d’investissement) plutôt que d’examiner ses arguments.",
+          "Même si le passé d’une personne peut soulever des questions, il ne suffit pas à invalider une proposition sans analyse du contenu."
+        ],
+        "keyPoint": "On s’attaque à la personne au lieu de répondre au fond : ad hominem."
       }
+    },
+    {
+      "id": "Q2",
+      "type": "tweet",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/tw-02.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le tweet ne discute pas l’argument écologique en lui-même : il vise à discréditer la position en pointant une incohérence personnelle (« jet privé », « balayer devant sa porte »).",
+          "C’est une manière d’éviter le débat sur le fond en déplaçant l’attention sur la personne et sa supposée hypocrisie."
+        ],
+        "keyPoint": "Ici, l’attaque personnelle remplace la réponse à l’argument : ad hominem."
+      }
+    },
+    {
+      "id": "Q3",
+      "type": "instagram",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/ig-03.png",
+      "answer": "yes",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le post suggère qu’une proposition doit être rejetée parce que son porteur a un passé controversé (condamnations/polémiques).",
+          "Le contenu de la loi n’est pas analysé : on cherche surtout à faire douter en attaquant la crédibilité de la personne."
+        ],
+        "keyPoint": "On juge l’idée par la personne plutôt que par ses arguments : ad hominem."
+      }
+    },
+    {
+      "id": "Q4",
+      "type": "social",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/fb-04.PNG",
+      "answer": "no",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le message critique des hypothèses et des chiffres (croissance, projections, solidité des conclusions).",
+          "Il ne cherche pas à invalider l’argument en s’attaquant à la moralité, au passé ou au caractère d’une personne."
+        ],
+        "keyPoint": "Ici, la critique vise le raisonnement (données/hypothèses), pas la personne."
+      }
+    },
+    {
+      "id": "Q5",
+      "type": "debate",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/db-05.PNG",
+      "answer": "no",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "L’intervenant évoque un possible biais (conseiller d’un syndicat) mais revient ensuite au fond en opposant des chiffres et en discutant des données.",
+          "Un ad hominem consiste à remplacer l’argument par une attaque personnelle. Ici, la discussion continue sur le contenu."
+        ],
+        "keyPoint": "Mentionner un contexte n’est pas forcément un ad hominem si l’on répond ensuite sur le fond."
+      }
+    },
+    {
+      "id": "Q6",
+      "type": "tweet",
+      "prompt": "S’agit-il d’un ad hominem ?",
+      "image": "ad-hominem/tw-06.png",
+      "answer": "no",
+      "feedback": {
+        "title": "Bonne réponse !",
+        "body": [
+          "Le tweet répond à une affirmation précise et questionne la cohérence des hypothèses et des conclusions, en se référant à un travail antérieur.",
+          "Il ne discrédite pas la personne (insultes, moralité, passé) : il demande ce qui a changé dans l’argumentation."
+        ],
+        "keyPoint": "Critiquer une incohérence argumentée n’est pas attaquer la personne : ce n’est pas un ad hominem."
+      }
+    }
+  ]
+}
     },
     {
       "id": "SC-011",
