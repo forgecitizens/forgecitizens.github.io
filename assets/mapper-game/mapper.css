@@ -1433,6 +1433,18 @@ body {
     text-align: center;
     border-bottom: 1px solid #333;
     border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Icône dans le titre de la modale */
+.modal-title-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    vertical-align: middle;
 }
 
 /* Sous-titre */
