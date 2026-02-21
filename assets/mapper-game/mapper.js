@@ -311,6 +311,7 @@ window.addEventListener('keydown', (e) => {
         currentRegion: CONFIG.game.defaultRegion,
         isPlaying: false,
         isPaused: false,
+        pausedByModal: false, // True si le jeu a été mis en pause par une modale (Crédits/Mises à jour)
         
         // Statistiques de la partie
         stats: {
@@ -830,6 +831,13 @@ window.addEventListener('keydown', (e) => {
             if (GameState.geoCombo.active) {
                 stopComboReadySound();
             }
+            
+            // Mettre le jeu en pause si une partie est en cours
+            if (GameState.isPlaying && !GameState.isPaused) {
+                GameState.pausedByModal = true;
+                pauseGame();
+                showPauseIndicator();
+            }
         }
     }
     
@@ -843,6 +851,12 @@ window.addEventListener('keydown', (e) => {
             // Reprendre le son GEO-COMBO si le combo est actif
             if (GameState.geoCombo.active) {
                 playComboReadySound();
+            }
+            
+            // Reprendre le jeu si c'était cette modale qui l'avait mis en pause
+            if (GameState.pausedByModal) {
+                GameState.pausedByModal = false;
+                resumeGame();
             }
         }
     }
@@ -926,6 +940,13 @@ window.addEventListener('keydown', (e) => {
             // Arrêter le son GEO-COMBO si actif
             if (GameState.geoCombo.active) {
                 stopComboReadySound();
+            }
+            
+            // Mettre le jeu en pause si une partie est en cours
+            if (GameState.isPlaying && !GameState.isPaused) {
+                GameState.pausedByModal = true;
+                pauseGame();
+                showPauseIndicator();
             }
         }
     }
@@ -1038,6 +1059,12 @@ window.addEventListener('keydown', (e) => {
             // Reprendre le son GEO-COMBO si le combo est actif
             if (GameState.geoCombo.active) {
                 playComboReadySound();
+            }
+            
+            // Reprendre le jeu si c'était cette modale qui l'avait mis en pause
+            if (GameState.pausedByModal) {
+                GameState.pausedByModal = false;
+                resumeGame();
             }
         }
     }
@@ -1170,6 +1197,59 @@ window.addEventListener('keydown', (e) => {
         }
     }
 
+    /**
+     * Met le jeu en pause (utilisé par les modales)
+     */
+    function pauseGame() {
+        if (!GameState.isPlaying || GameState.isPaused) return;
+        
+        GameState.isPaused = true;
+        stopTimer();
+        stopInactivityTimer();
+        stopPursuitTimer();
+        updateGameState('paused');
+    }
+    
+    /**
+     * Reprend le jeu après une pause (utilisé par les modales)
+     */
+    function resumeGame() {
+        if (!GameState.isPlaying || !GameState.isPaused) return;
+        
+        GameState.isPaused = false;
+        startTimer();
+        resetInactivityTimer();
+        if (GameState.pursuit.active) {
+            startPursuitTimer();
+        }
+        updateGameState('playing');
+    }
+    
+    /**
+     * Affiche un indicateur "PAUSE" au centre de l'écran pendant 3 secondes
+     */
+    function showPauseIndicator() {
+        // Créer l'élément indicateur s'il n'existe pas
+        let indicator = document.getElementById('pause-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'pause-indicator';
+            indicator.className = 'pause-indicator';
+            document.body.appendChild(indicator);
+        }
+        
+        // Texte selon la langue
+        indicator.textContent = GameState.currentLanguage === 'FR' ? 'PAUSE' : 'PAUSED';
+        
+        // Afficher l'indicateur
+        indicator.classList.add('visible');
+        
+        // Masquer après 3 secondes
+        setTimeout(() => {
+            indicator.classList.remove('visible');
+        }, 3000);
+    }
+    
     /**
      * Met en pause/reprend la partie
      */
