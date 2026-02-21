@@ -1923,10 +1923,9 @@ window.addEventListener('keydown', (e) => {
         const gameContainer = GameState.elements?.gameContainer;
         if (!gameContainer) return;
         
-        // Afficher la carte et les labels AVANT le compte à rebours
-        // pour qu'ils soient visibles derrière l'overlay semi-transparent
+        // Afficher la carte AVANT le compte à rebours
+        // pour qu'elle soit visible derrière l'overlay semi-transparent
         renderMap();
-        generateShuffledLabels();
         
         const countdownOverlay = document.createElement('div');
         countdownOverlay.className = 'countdown-overlay';
@@ -1980,6 +1979,10 @@ window.addEventListener('keydown', (e) => {
                     
                     // Démarrer la partie (réinitialise les stats et démarre le timer)
                     startNewGame();
+                    
+                    // Générer et afficher les labels APRÈS startNewGame()
+                    // pour que remainingLabels soit correctement initialisé
+                    generateShuffledLabels();
                     
                     // Démarrer le timer
                     startTimer();
