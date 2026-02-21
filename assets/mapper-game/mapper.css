@@ -1400,14 +1400,12 @@ body {
     visibility: visible;
 }
 
-/* Fenêtre modale */
+/* Fenêtre modale - Thème sombre */
 .language-modal {
-    background: var(--win98-bg);
-    border: 2px outset var(--win98-border-light);
-    box-shadow: 
-        inset 1px 1px 0 var(--win98-white),
-        inset -1px -1px 0 var(--win98-border-dark),
-        4px 4px 16px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     padding: 0;
     min-width: 320px;
     max-width: 90vw;
@@ -1427,58 +1425,59 @@ body {
 
 /* Barre de titre de la modale */
 .language-modal-title {
-    background: var(--modal-header-bg);
-    color: var(--win98-white);
-    padding: 4px 8px;
+    background: #2a2a2a;
+    color: #ffffff;
+    padding: 12px 16px;
     font-weight: bold;
-    font-size: 12px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    font-size: 16px;
     text-align: center;
+    border-bottom: 1px solid #333;
+    border-radius: 6px 6px 0 0;
 }
 
 /* Sous-titre */
 .language-modal-subtitle {
-    padding: 16px 24px 8px;
+    padding: 20px 24px 12px;
     text-align: center;
-    font-size: 12px;
-    color: var(--win98-black);
+    font-size: 13px;
+    color: #b0b0b0;
 }
 
 /* Conteneur des drapeaux */
 .language-flags {
     display: flex;
     justify-content: center;
-    gap: 24px;
-    padding: 20px 32px 28px;
+    gap: 32px;
+    padding: 24px 32px 32px;
 }
 
-/* Boutons drapeaux */
+/* Boutons drapeaux - Style minimaliste */
 .flag-button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     padding: 16px 24px;
-    background: var(--win98-bg);
-    border: 2px outset var(--win98-border-light);
+    background: transparent;
+    border: none;
     cursor: pointer;
     font-family: var(--font-system);
-    transition: transform 0.1s ease;
+    transition: transform 0.2s ease;
+    border-radius: 8px;
 }
 
 .flag-button:hover {
-    background: #d4d4d4;
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .flag-button:active {
-    border-style: inset;
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
 }
 
 .flag-button:focus {
-    outline: 2px dotted var(--win98-black);
-    outline-offset: 2px;
+    outline: 2px solid #90caf9;
+    outline-offset: 4px;
 }
 
 /* Emoji drapeau */
@@ -1492,24 +1491,29 @@ body {
 
 /* Images drapeaux PNG */
 .flag-img {
-    width: 48px;
+    width: 64px;
     height: auto;
     display: block;
-    border: 1px solid #808080;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    transition: box-shadow 0.2s ease;
+}
+
+.flag-button:hover .flag-img {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Label sous le drapeau */
 .flag-label {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
-    color: var(--win98-black);
+    color: #ffffff;
 }
 
 /* État sélectionné */
 .flag-button.selected {
-    border-style: inset;
-    background: #a0a0a0;
+    background: rgba(144, 202, 249, 0.2);
 }
 
 /* Animation de fermeture */
@@ -1558,14 +1562,12 @@ body {
     visibility: visible;
 }
 
-/* Fenêtre modale */
+/* Fenêtre modale - Thème sombre */
 .difficulty-modal {
-    background: var(--win98-bg);
-    border: 2px outset var(--win98-border-light);
-    box-shadow: 
-        inset 1px 1px 0 var(--win98-white),
-        inset -1px -1px 0 var(--win98-border-dark),
-        4px 4px 16px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     padding: 0;
     min-width: 380px;
     max-width: 90vw;
@@ -1574,21 +1576,22 @@ body {
 
 /* Barre de titre de la modale */
 .difficulty-modal-title {
-    background: var(--modal-header-bg);
-    color: var(--win98-white);
-    padding: 4px 8px;
+    background: #2a2a2a;
+    color: #ffffff;
+    padding: 12px 16px;
     font-weight: bold;
-    font-size: 12px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    font-size: 16px;
     text-align: center;
+    border-bottom: 1px solid #333;
+    border-radius: 6px 6px 0 0;
 }
 
 /* Sous-titre */
 .difficulty-modal-subtitle {
-    padding: 16px 24px 8px;
+    padding: 20px 24px 12px;
     text-align: center;
-    font-size: 12px;
-    color: var(--win98-black);
+    font-size: 13px;
+    color: #b0b0b0;
 }
 
 /* Conteneur des options de difficulté */
@@ -1601,34 +1604,36 @@ body {
     padding: 16px 20px 24px;
 }
 
-/* Boutons de difficulté - Layout compact avec icône + label */
+/* Boutons de difficulté - Style minimaliste sombre */
 .difficulty-button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
-    background: var(--win98-bg);
-    border: 2px outset var(--win98-border-light);
+    gap: 8px;
+    padding: 16px 20px;
+    background: #2a2a2a;
+    border: 2px solid #404040;
+    border-radius: 8px;
     cursor: pointer;
     font-family: var(--font-system);
-    transition: transform 0.1s ease, background 0.1s ease;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     position: relative;
     min-width: 90px;
 }
 
 .difficulty-button:hover {
-    background: #d4d4d4;
-    transform: translateY(-2px);
+    background: #333;
+    border-color: #555;
+    transform: translateY(-3px);
 }
 
 .difficulty-button:active {
-    border-style: inset;
     transform: translateY(0);
+    background: #252525;
 }
 
 .difficulty-button:focus {
-    outline: 2px dotted var(--win98-black);
+    outline: 2px solid #90caf9;
     outline-offset: 2px;
 }
 
@@ -1641,9 +1646,9 @@ body {
 
 /* Label de difficulté */
 .difficulty-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
-    color: var(--win98-black);
+    color: #ffffff;
     text-align: center;
     white-space: nowrap;
 }
@@ -1689,8 +1694,8 @@ body {
 
 /* État "pré-sélectionné" pour mobile (premier tap) */
 .difficulty-button.touch-active {
-    background: #b0b0b0;
-    border-style: inset;
+    background: #404040;
+    border-color: #555;
 }
 
 .difficulty-button.touch-active .difficulty-tooltip {
@@ -1700,22 +1705,27 @@ body {
 
 /* État sélectionné */
 .difficulty-button.selected {
-    border-style: inset;
-    background: #a0a0a0;
+    background: #90caf9;
+    border-color: #1976d2;
+}
+
+.difficulty-button.selected .difficulty-label {
+    color: #0d47a1;
 }
 
 /* Style spécial pour le bouton Géo-Poursuite */
 .difficulty-button-pursuit {
-    background: linear-gradient(180deg, #fff3cd 0%, #ffc107 100%);
-    border-color: #d39e00;
+    background: linear-gradient(180deg, #3d3d00 0%, #4a4a00 100%);
+    border-color: #666600;
 }
 
 .difficulty-button-pursuit:hover {
-    background: linear-gradient(180deg, #ffe066 0%, #ffca2c 100%);
+    background: linear-gradient(180deg, #4a4a00 0%, #5a5a00 100%);
+    border-color: #808000;
 }
 
 .difficulty-button-pursuit .difficulty-label {
-    color: #856404;
+    color: #ffc107;
 }
 
 /* Animation de fermeture */
@@ -2199,8 +2209,8 @@ body {
     }
     
     .language-flags {
-        gap: 16px;
-        padding: 16px 20px 24px;
+        gap: 24px;
+        padding: 20px 24px 28px;
     }
     
     .flag-button {
@@ -2212,11 +2222,11 @@ body {
     }
     
     .flag-img {
-        width: 36px;
+        width: 56px;
     }
     
     .flag-label {
-        font-size: 11px;
+        font-size: 13px;
     }
     
     .credits-modal {
