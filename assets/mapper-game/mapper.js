@@ -4182,6 +4182,10 @@ window.addEventListener('keydown', (e) => {
     function startTimer() {
         if (GameState.timerInterval) return;
         
+        // Ajuster startTime pour reprendre depuis le temps écoulé sauvegardé
+        // Cela compense le temps passé en pause
+        GameState.stats.startTime = Date.now() - GameState.stats.elapsedTime;
+        
         GameState.timerInterval = setInterval(() => {
             GameState.stats.elapsedTime = Date.now() - GameState.stats.startTime;
             updateTimerDisplay();
