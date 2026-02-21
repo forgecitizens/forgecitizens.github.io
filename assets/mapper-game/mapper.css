@@ -1924,7 +1924,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('wallpaper_map.jpg') center center / cover no-repeat;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1935,6 +1935,7 @@ body {
     transition: opacity 0.3s ease, visibility 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+    pointer-events: all;
 }
 
 .countdown-overlay.visible {

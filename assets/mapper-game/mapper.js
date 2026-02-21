@@ -1923,6 +1923,11 @@ window.addEventListener('keydown', (e) => {
         const gameContainer = GameState.elements?.gameContainer;
         if (!gameContainer) return;
         
+        // Afficher la carte et les labels AVANT le compte à rebours
+        // pour qu'ils soient visibles derrière l'overlay semi-transparent
+        renderMap();
+        generateShuffledLabels();
+        
         const countdownOverlay = document.createElement('div');
         countdownOverlay.className = 'countdown-overlay';
         countdownOverlay.id = 'countdown-overlay';
@@ -1978,12 +1983,6 @@ window.addEventListener('keydown', (e) => {
                     
                     // Démarrer le timer
                     startTimer();
-                    
-                    // Afficher la carte
-                    renderMap();
-                    
-                    // Générer et afficher les labels mélangés
-                    generateShuffledLabels();
                     
                     // Activer les boutons
                     enableButtons();
