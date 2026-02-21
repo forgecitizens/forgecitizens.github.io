@@ -286,6 +286,15 @@ window.addEventListener('keydown', (e) => {
         'GF': ['BR', 'SR']
     };
 
+    /**
+     * Liste des petits pays difficiles à cliquer
+     * Avec rayon de détection élargi (en pixels SVG)
+     */
+    const SMALL_COUNTRIES = {
+        'GM': { name: 'Gambia', snapRadius: 25 },      // Gambie - très étroite
+        'BN': { name: 'Brunei', snapRadius: 20 }       // Brunei - petit état
+    };
+
     /* ========================================================================
        2. ÉTAT DU JEU
        ======================================================================== */
@@ -3039,11 +3048,17 @@ window.addEventListener('keydown', (e) => {
         const targetCountryId = countryPath.dataset.countryId;
         
         // Chercher si le pays cliqué correspond à un des labels sélectionnés
-        const matchingLabel = GameState.selectedLabels.find(code => checkCountryMatch(code, targetCountryId));
+        let matchingLabel = GameState.selectedLabels.find(code => checkCountryMatch(code, targetCountryId));
+        
+        // Si pas de correspondance directe, vérifier le snap magnétique pour les petits pays
+        if (!matchingLabel) {
+            matchingLabel = findNearbySmallCountry(e);
+        }
+        
         if (matchingLabel) {
-            // Placement correct
+            // Placement correct (direct ou via snap magnétique)
             const labelElement = document.querySelector(`.country-label[data-country-code="${matchingLabel}"]`);
-            handleDrop(matchingLabel, targetCountryId, labelElement);
+            handleDrop(matchingLabel, matchingLabel, labelElement); // Use matchingLabel as targetId for snap
         } else {
             // Aucun label sélectionné ne correspond à ce pays → c'est une erreur
             // On prend le premier label sélectionné pour traiter l'erreur
@@ -3051,6 +3066,53 @@ window.addEventListener('keydown', (e) => {
             const labelElement = document.querySelector(`.country-label[data-country-code="${selectedLabel}"]`);
             handleDrop(selectedLabel, targetCountryId, labelElement);
         }
+    }
+    
+    /**
+     * Recherche un petit pays proche du clic parmi les labels sélectionnés
+     * Utilisé pour le snap magnétique sur les petits pays (Gambie, Brunei, etc.)
+     * @param {MouseEvent} e - L'événement de clic
+     * @returns {string|null} - Le code du pays trouvé ou null
+     */
+    function findNearbySmallCountry(e) {
+        const svg = GameState.elements?.mapContainer?.querySelector('svg');
+        if (!svg) return null;
+        
+        // Obtenir les coordonnées du clic dans le système SVG
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const svgPoint = pt.matrixTransform(svg.getScreenCTM().inverse());
+        
+        // Vérifier chaque label sélectionné
+        for (const labelCode of GameState.selectedLabels) {
+            // Ne vérifier que les petits pays
+            if (!SMALL_COUNTRIES[labelCode]) continue;
+            
+            // Trouver le path du petit pays
+            const countryPath = svg.querySelector(`path.country-path[data-country-id="${labelCode}"]`);
+            if (!countryPath) continue;
+            
+            // Obtenir le centre du pays (bounding box)
+            const bbox = countryPath.getBBox();
+            const centerX = bbox.x + bbox.width / 2;
+            const centerY = bbox.y + bbox.height / 2;
+            
+            // Calculer la distance entre le clic et le centre du pays
+            const distance = Math.sqrt(
+                Math.pow(svgPoint.x - centerX, 2) + 
+                Math.pow(svgPoint.y - centerY, 2)
+            );
+            
+            // Vérifier si le clic est dans le rayon de snap
+            const snapRadius = SMALL_COUNTRIES[labelCode].snapRadius;
+            if (distance <= snapRadius) {
+                console.log(`🧲 Snap magnétique: ${labelCode} (distance: ${distance.toFixed(1)}px, rayon: ${snapRadius}px)`);
+                return labelCode;
+            }
+        }
+        
+        return null;
     }
     
     /**
