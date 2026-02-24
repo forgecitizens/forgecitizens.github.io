@@ -130,6 +130,20 @@
         understanding: 0,
         unlocks: new Set(),
         
+        // Progression system
+        progress: 0,              // 0..100, arrondi au multiple de 5
+        clues: new Set(),         // Ensemble de clues débloquées
+        capabilities: new Set(),  // Ensemble d'opérations déverrouillées
+        
+        // Technical variables (modifiées par opérations)
+        cameraIntegrity: 100,     // 0..100%
+        mobility: 100,            // 0..100%
+        antennaStability: 100,    // 0..100%
+        
+        // Operation state
+        operationInProgress: null, // null ou opType si une opération est en cours
+        appliedRules: new Set(),   // Règles déverrouillage déjà appliquées
+        
         // Data stores
         journal: [],
         inbox: [],
@@ -155,11 +169,13 @@
             statusBar: document.getElementById('statusBar'),
             console: document.getElementById('console'),
             tabBody: document.getElementById('tabBody'),
+            operationsPanel: document.getElementById('operationsPanel'),
             btnPing: document.getElementById('btnPing'),
             btnSync: document.getElementById('btnSync'),
             btnOpenLast: document.getElementById('btnOpenLast'),
             btnMenu: document.getElementById('btnMenu'),
-            tabs: document.querySelectorAll('.tab')
+            tabs: document.querySelectorAll('.tab'),
+            tabImages: document.querySelector('[data-tab="images"]')
         };
     }
 
@@ -214,6 +230,7 @@
         }
 
         renderStatus();
+        renderOperationsPanel();
     }
 
     /**
@@ -249,6 +266,10 @@
                 Object.assign(state, event.payload);
                 break;
 
+            case 'OP_RESULT':
+                resolveOperation(event.payload.opType);
+                break;
+
             default:
                 console.warn('Unknown event type:', event.type);
         }
@@ -264,6 +285,12 @@
         state.inbox.push(tx);
         logLine('TEL', `Transmission reçue: ${tx.id} (${tx.title})`);
         addJournal(`Transmission ${tx.id}`, tx.summary);
+        
+        // Add appropriate clue
+        if (tx.id === '#0001') {
+            state.clues.add('tx_0001_received');
+            updateProgressAndMilestones();
+        }
         
         if (tx.unlocks && tx.unlocks.length > 0) {
             unlock(tx.unlocks);
@@ -281,8 +308,19 @@
         state.images.push(img);
         logLine('IMG', `Fichier image reçu: ${img.id} (qualité: ${img.qualityLabel})`);
         
+        // Add appropriate clue
+        if (img.id === 'IMG_0001_LOWQ') {
+            state.clues.add('img_0001_received');
+            updateProgressAndMilestones();
+        }
+        
         if (img.unlocks && img.unlocks.length > 0) {
             unlock(img.unlocks);
+        }
+        
+        // Add notification to images tab (unless already active)
+        if (state.ui.activeTab !== 'images' && els.tabImages) {
+            els.tabImages.classList.add('has-update');
         }
         
         if (state.ui.activeTab === 'images') {
@@ -331,6 +369,54 @@
         
         if (state.ui.activeTab === 'journal') {
             renderTab();
+        }
+    }
+
+    /**
+     * Render operations panel
+     */
+    function renderOperationsPanel() {
+        const panel = document.getElementById('operationsPanel');
+        if (!panel) return;
+
+        panel.innerHTML = '';
+
+        if (state.capabilities.size === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'ops-empty';
+            empty.textContent = 'Aucune opération disponible.';
+            panel.appendChild(empty);
+            return;
+        }
+
+        // Show all capabilities in order
+        for (const opId of OPERATIONS.map(op => op.id)) {
+            if (!state.capabilities.has(opId)) continue;
+
+            const opInfo = OPERATIONS.find(op => op.id === opId);
+            
+            const btn = document.createElement('button');
+            btn.className = 'op-btn';
+            btn.textContent = opInfo.label;
+            
+            // Disable if operation in progress
+            if (state.operationInProgress) {
+                btn.disabled = true;
+                if (state.operationInProgress === opId) {
+                    btn.className += ' op-btn--active';
+                }
+            }
+            
+            btn.addEventListener('click', () => executeOperation(opId));
+            panel.appendChild(btn);
+        }
+
+        // Show status if operation in progress
+        if (state.operationInProgress) {
+            const status = document.createElement('div');
+            status.className = 'ops-status';
+            status.textContent = 'EN COURS…';
+            panel.appendChild(status);
         }
     }
 
@@ -519,6 +605,117 @@
     }
 
     // ========================================================================
+    // OPERATIONS DATA
+    // ========================================================================
+    
+    const OPERATIONS = [
+        {
+            id: 'OP_CLEAN_LENS',
+            label: 'Nettoyage lentille',
+            shortName: 'CLEAN_LENS'
+        },
+        {
+            id: 'OP_RECAL_CAMERA',
+            label: 'Recalibration caméra',
+            shortName: 'RECAL_CAMERA'
+        },
+        {
+            id: 'OP_FREE_MOBILITY',
+            label: 'Dégagement mobilité',
+            shortName: 'FREE_MOBILITY'
+        }
+    ];
+
+    // ========================================================================
+    // PROGRESSION & CLUES
+    // ========================================================================
+    
+    const CLUE_POINTS = {
+        'tx_0001_received': 5,      // Première transmission
+        'img_0001_received': 5,     // Première image
+        'lens_clean_done': 10,
+        'camera_recal_done': 10,
+        'mobility_free_done': 10
+    };
+
+    /**
+     * Compute progress percentage (0..100, multiple of 5)
+     */
+    function computeProgressFromClues() {
+        let total = 0;
+        for (const clue of state.clues) {
+            total += CLUE_POINTS[clue] || 0;
+        }
+        // Arrondir au multiple de 5
+        return Math.floor(total / 5) * 5;
+    }
+
+    // ========================================================================
+    // UNLOCK RULES
+    // ========================================================================
+    
+    const UNLOCK_RULES = [
+        {
+            id: 'unlock_first_ops',
+            description: 'Déverrouille les 3 premières opérations',
+            condition: (state) => {
+                return state.clues.has('tx_0001_received') && 
+                       state.clues.has('img_0001_received') && 
+                       state.progress >= 10;
+            },
+            grants: ['OP_CLEAN_LENS', 'OP_RECAL_CAMERA', 'OP_FREE_MOBILITY']
+        }
+    ];
+
+    /**
+     * Apply unlock rules and grant capabilities if conditions are met
+     */
+    function applyUnlockRules() {
+        for (const rule of UNLOCK_RULES) {
+            // Éviter doubles déverrouillages
+            if (state.appliedRules.has(rule.id)) {
+                continue;
+            }
+            
+            if (rule.condition(state)) {
+                state.appliedRules.add(rule.id);
+                
+                for (const capId of rule.grants) {
+                    if (!state.capabilities.has(capId)) {
+                        state.capabilities.add(capId);
+                        logLine('SCI', `Opération déverrouillée: ${OPERATIONS.find(op => op.id === capId)?.label || capId}`);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Update progress and apply milestone effects
+     */
+    function updateProgressAndMilestones() {
+        const oldProgress = state.progress;
+        state.progress = computeProgressFromClues();
+        
+        // Appliquer les règles de déverrouillage
+        applyUnlockRules();
+        
+        // Si progression a changé et est un multiple de 5, log
+        if (state.progress > oldProgress && state.progress % 5 === 0) {
+            logLine('SYS', `Progression mission: ${state.progress}%`);
+            onReachMilestone(state.progress);
+        }
+    }
+
+    /**
+     * Hook appelé quand une milestone est atteinte
+     */
+    function onReachMilestone(progressPercent) {
+        // Ici on peut injecter des événements ou des changements selon la progression
+        // Pour maintenant, juste log. Peut être étendu plus tard.
+    }
+
+    // ========================================================================
     // ENCYCLOPEDIA DATA
     // ========================================================================
     
@@ -539,6 +736,109 @@
             text: 'Véhicule robotique d\'exploration de surface. Autonomie: 15 ans terrestres. Équipements: spectromètre, caméra multibande, foreuse, capteurs sismiques.'
         }
     ];
+
+    // ========================================================================
+    // OPERATIONS SYSTEM
+    // ========================================================================
+    
+    /**
+     * Execute an operation - schedule result after latency
+     */
+    function executeOperation(opId) {
+        // Vérifier que l'opération est déverrouillée
+        if (!state.capabilities.has(opId)) {
+            logLine('WARN', `Opération ${opId} non déverrouillée.`);
+            return;
+        }
+        
+        // Vérifier qu'aucune opération n'est en cours
+        if (state.operationInProgress) {
+            logLine('WARN', `Une opération est déjà en cours. Impossible d'en lancer une autre.`);
+            return;
+        }
+        
+        // Marquer comme en cours
+        state.operationInProgress = opId;
+        
+        const opName = OPERATIONS.find(op => op.id === opId)?.shortName || opId;
+        logLine('SCI', `Opération envoyée: ${opName}`);
+        
+        // Disable UI
+        renderOperationsPanel();
+        
+        // Schedule result after latency
+        schedule(
+            state.missionTime + state.latencyMs,
+            'OP_RESULT',
+            { opType: opId }
+        );
+    }
+
+    /**
+     * Resolve operation result
+     */
+    function resolveOperation(opId) {
+        state.operationInProgress = null;
+        
+        const op = OPERATIONS.find(o => o.id === opId);
+        if (!op) return;
+        
+        logLine('SYS', `Résultat opération: ${op.shortName} complétée`);
+        
+        // Add appropriate clue and modify technical variables
+        switch (opId) {
+            case 'OP_CLEAN_LENS':
+                state.clues.add('lens_clean_done');
+                state.cameraIntegrity = Math.min(100, state.cameraIntegrity + 15);
+                logLine('SCI', 'Lentille nettoyée. Intégrité caméra augmentée.');
+                
+                // Trigger new image after a short delay
+                schedule(
+                    state.missionTime + 2000,
+                    'RECV_IMAGE',
+                    {
+                        id: 'IMG_0002_ENHANCED',
+                        qualityLabel: 'MEDIUM',
+                        note: 'Qualité améliorée après nettoyage lentille. Détails de surface plus visibles.',
+                        t: state.missionTime + 2000,
+                        unlocks: []
+                    }
+                );
+                break;
+
+            case 'OP_RECAL_CAMERA':
+                state.clues.add('camera_recal_done');
+                state.signalQuality = Math.max(0.65, state.signalQuality - 0.05);
+                logLine('WARN', 'Recalibration en cours. Signal temporairement instable.');
+                logLine('SCI', 'Caméra recalibrée. Sensibilité spectrale améliorée.');
+                break;
+
+            case 'OP_FREE_MOBILITY':
+                state.clues.add('mobility_free_done');
+                state.mobility = Math.min(100, state.mobility + 20);
+                logLine('SCI', 'Mécanisme de mobilité libéré. Portée de déplacement augmentée.');
+                
+                // Trigger different angle image
+                schedule(
+                    state.missionTime + 3000,
+                    'RECV_IMAGE',
+                    {
+                        id: 'IMG_0003_ANGLE_B',
+                        qualityLabel: 'LOW',
+                        note: 'Prise de vue sous angle B suite à libération mobilité. Nouvelles structures observables.',
+                        t: state.missionTime + 3000,
+                        unlocks: []
+                    }
+                );
+                break;
+        }
+        
+        // Update progress
+        updateProgressAndMilestones();
+        
+        // Re-enable UI
+        renderOperationsPanel();
+    }
 
     // ========================================================================
     // USER ACTIONS
@@ -615,6 +915,11 @@
                 });
                 btn.classList.add('active');
                 btn.setAttribute('aria-selected', 'true');
+                
+                // Remove notification when viewing images tab
+                if (btn.dataset.tab === 'images') {
+                    btn.classList.remove('has-update');
+                }
                 
                 // Update state and render
                 state.ui.activeTab = btn.dataset.tab;
@@ -717,6 +1022,7 @@
         // Initial render
         renderTab();
         renderStatus();
+        renderOperationsPanel();
         
         // Start intro sequence
         startIntroSequence();
@@ -740,7 +1046,10 @@
         schedule,
         logLine,
         stopAllAudio,
-        playTransmissionSound
+        playTransmissionSound,
+        executeOperation,
+        applyUnlockRules,
+        updateProgressAndMilestones
     };
 
 })();
