@@ -79,6 +79,12 @@
         </div>
 
         <div class="system-tray">
+            <div class="tray-icon" id="connecth-tray-icon" onclick="openConnectHAuth()" title="Connect.H">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="14" height="14" rx="2" stroke="#f0d060" stroke-width="1.5" fill="none"/>
+                    <text x="8" y="12" text-anchor="middle" fill="#f0d060" font-family="monospace" font-size="10" font-weight="bold">H</text>
+                </svg>
+            </div>
             <div id="datetime" style="cursor: pointer;" title="Cliquez pour ouvrir le calendrier"></div>
         </div>
     </div>
@@ -117,6 +123,33 @@
             <p>Ce site est un espace d'expérimentation intellectuelle. Un lieu pour manipuler des idées, tester des hypothèses, jouer avec des cartes, déplacer des pièces, comparer des cadres d'interprétation.</p>
             <p><em>ForgeCitizens n'impose pas de vérité : il propose des instruments.<br>
             À vous d'ouvrir les tiroirs, d'appuyer sur les boutons et d'explorer.</em></p>
+        </div>
+    </div>
+
+    <!-- Connect.H Password Modal -->
+    <div class="connecth-overlay" id="connecthOverlay"></div>
+    <div class="connecth-password-modal" id="connecthPasswordModal" role="dialog" aria-modal="true" aria-labelledby="connecth-title">
+        <div class="connecth-modal-header">
+            <span class="connecth-modal-title" id="connecth-title">🔒 Accès restreint</span>
+            <button class="connecth-modal-close" id="connecthCloseBtn" aria-label="Fermer">×</button>
+        </div>
+        <div class="connecth-modal-content">
+            <p>Entrez le mot de passe pour accéder à Connect.H</p>
+            <form id="connecthPasswordForm">
+                <input 
+                    type="password" 
+                    class="connecth-password-input" 
+                    id="connecthPasswordInput" 
+                    placeholder="Mot de passe..."
+                    autocomplete="off"
+                    aria-describedby="connecth-error"
+                >
+                <div class="connecth-password-error" id="connecthPasswordError" role="alert" aria-live="polite"></div>
+                <div class="connecth-modal-actions">
+                    <button type="submit" class="connecth-submit-btn">Accéder</button>
+                    <button type="button" class="connecth-cancel-btn" onclick="closeConnectHModal()">Annuler</button>
+                </div>
+            </form>
         </div>
     </div>
 

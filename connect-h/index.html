@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Connect.H - Programme d'exploration interstellaire</title>
+    <meta name="description" content="Connect.H - Programme d'exploration interstellaire piloté à distance. Interface de contrôle mission.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="connect-h.css">
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-menu" class="skip-link">Aller au menu principal</a>
+
+    <div class="connect-h-container">
+        <!-- Planet Background -->
+        <div class="planet-container" aria-hidden="true">
+            <img 
+                src="/assets/connect.H/img/planet.png" 
+                alt="" 
+                class="planet-img"
+                loading="eager"
+            >
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Title -->
+            <h1 class="connect-h-title">Connect.H</h1>
+
+            <!-- Menu -->
+            <nav class="connect-h-menu" id="main-menu" role="navigation" aria-label="Menu principal">
+                <button class="menu-item menu-item--resume" data-action="resume" type="button">
+                    Reprendre mission
+                </button>
+                <button class="menu-item menu-item--new" data-action="new" type="button">
+                    Nouvelle mission
+                </button>
+                <button class="menu-item menu-item--settings" data-action="settings" type="button">
+                    Paramètres
+                </button>
+            </nav>
+        </main>
+
+        <!-- Terminal Info Block -->
+        <aside class="terminal-block" aria-label="Informations système">
+            <div class="terminal-line">
+                <span class="terminal-line--label">Latence du signal :</span>
+                <span class="terminal-line--value"> 4,2 ans (simulation)</span>
+            </div>
+            <div class="terminal-line">
+                <span class="terminal-line--label">Stabilité de la connexion:</span>
+                <span class="terminal-line--value"> nominale</span>
+            </div>
+            <div class="terminal-line">
+                <span class="terminal-line--label">Statut mission précédente :</span>
+                <span class="terminal-line--warning"> transmission interrompue</span>
+            </div>
+        </aside>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="connect-h.js"></script>
+</body>
+</html>

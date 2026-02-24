@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect.H - Mission Active</title>
+    <meta name="description" content="Connect.H - Interface de contrôle mission">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <meta name="theme-color" content="#000000">
+    
+    <link rel="stylesheet" href="mission.css">
+</head>
+<body>
+    <div id="app" class="terminal">
+        <!-- Status Bar -->
+        <header class="status" id="statusBar">
+            CONNECT.H // LINK: EARTH→PROBE // LATENCY: 00:00:00 // SIGNAL: 0% // T+00:00:00
+        </header>
+
+        <!-- Main Layout -->
+        <main class="main">
+            <!-- Console -->
+            <section class="console" id="console" aria-label="Console système" tabindex="0"></section>
+
+            <!-- Side Panel -->
+            <aside class="panel">
+                <nav class="tabs" aria-label="Navigation onglets">
+                    <button data-tab="journal" class="tab active" aria-selected="true">JOURNAL</button>
+                    <button data-tab="encyclo" class="tab" aria-selected="false">ENCYC</button>
+                    <button data-tab="images" class="tab" aria-selected="false">IMAGES</button>
+                </nav>
+                <div class="tabBody" id="tabBody" aria-live="polite"></div>
+            </aside>
+        </main>
+
+        <!-- Actions Bar -->
+        <footer class="actions">
+            <button id="btnPing" class="action-btn">PING SONDE</button>
+            <button id="btnSync" class="action-btn">SYNC DOSSIER</button>
+            <button id="btnOpenLast" class="action-btn">OUVRIR DERNIÈRE TRANSMISSION</button>
+            <button id="btnMenu" class="action-btn action-btn--secondary">MENU</button>
+        </footer>
+    </div>
+
+    <script src="mission-core.js"></script>
+</body>
+</html>

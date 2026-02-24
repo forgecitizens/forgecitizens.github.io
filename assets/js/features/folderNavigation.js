@@ -481,6 +481,158 @@ function openIAGallery() {
     }
 }
 
+// ===== CONNECT.H AUTHENTICATION =====
+const CONNECTH_AUTH_KEY = 'CONNECTH_AUTH';
+const CONNECTH_AUTH_TS_KEY = 'CONNECTH_AUTH_TS';
+const CONNECTH_PASSWORD = 'MICRO1990macro';
+const CONNECTH_TTL_HOURS = 24 * 7; // 7 days
+
+/**
+ * Check if Connect.H is authenticated
+ */
+function isConnectHAuthenticated() {
+    const auth = localStorage.getItem(CONNECTH_AUTH_KEY);
+    const timestamp = localStorage.getItem(CONNECTH_AUTH_TS_KEY);
+    
+    if (auth !== '1') return false;
+    
+    if (timestamp) {
+        const authTime = parseInt(timestamp, 10);
+        const now = Date.now();
+        const ttlMs = CONNECTH_TTL_HOURS * 60 * 60 * 1000;
+        
+        if (now - authTime > ttlMs) {
+            localStorage.removeItem(CONNECTH_AUTH_KEY);
+            localStorage.removeItem(CONNECTH_AUTH_TS_KEY);
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Open Connect.H authentication modal or redirect if already authenticated
+ */
+function openConnectHAuth() {
+    console.log('🔐 Connect.H auth check...');
+    
+    // Play click sound if available
+    if (typeof playClickSound === 'function') {
+        playClickSound();
+    }
+    
+    if (isConnectHAuthenticated()) {
+        // Already authenticated, redirect directly
+        console.log('✅ Connect.H already authenticated, redirecting...');
+        window.location.href = '/connect-h/';
+        return;
+    }
+    
+    // Show password modal
+    showConnectHModal();
+}
+
+/**
+ * Show the Connect.H password modal
+ */
+function showConnectHModal() {
+    const overlay = document.getElementById('connecthOverlay');
+    const modal = document.getElementById('connecthPasswordModal');
+    const input = document.getElementById('connecthPasswordInput');
+    const errorEl = document.getElementById('connecthPasswordError');
+    const form = document.getElementById('connecthPasswordForm');
+    
+    if (!overlay || !modal) {
+        console.error('Connect.H modal elements not found');
+        return;
+    }
+    
+    // Clear previous state
+    if (input) input.value = '';
+    if (errorEl) errorEl.textContent = '';
+    
+    // Show modal
+    overlay.classList.add('show');
+    modal.classList.add('show');
+    
+    // Focus input
+    setTimeout(() => {
+        if (input) input.focus();
+    }, 100);
+    
+    // Setup form handler (only once)
+    if (!form.dataset.initialized) {
+        form.dataset.initialized = 'true';
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleConnectHPasswordSubmit();
+        });
+        
+        // ESC key to close
+        document.addEventListener('keydown', function handleConnectHEsc(e) {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeConnectHModal();
+            }
+        });
+        
+        // Click overlay to close
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                closeConnectHModal();
+            }
+        });
+    }
+}
+
+/**
+ * Handle password form submission
+ */
+function handleConnectHPasswordSubmit() {
+    const input = document.getElementById('connecthPasswordInput');
+    const errorEl = document.getElementById('connecthPasswordError');
+    const modal = document.getElementById('connecthPasswordModal');
+    
+    const inputValue = input ? input.value : '';
+    
+    if (inputValue === CONNECTH_PASSWORD) {
+        // Success - set auth and redirect
+        localStorage.setItem(CONNECTH_AUTH_KEY, '1');
+        localStorage.setItem(CONNECTH_AUTH_TS_KEY, Date.now().toString());
+        
+        console.log('✅ Connect.H password correct, redirecting...');
+        closeConnectHModal();
+        window.location.href = '/connect-h/';
+    } else {
+        // Error - show message and shake
+        if (errorEl) {
+            errorEl.textContent = 'Mot de passe incorrect.';
+        }
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        
+        // Shake animation
+        if (modal) {
+            modal.classList.add('shake');
+            setTimeout(() => modal.classList.remove('shake'), 300);
+        }
+    }
+}
+
+/**
+ * Close the Connect.H password modal
+ */
+function closeConnectHModal() {
+    const overlay = document.getElementById('connecthOverlay');
+    const modal = document.getElementById('connecthPasswordModal');
+    
+    if (overlay) overlay.classList.remove('show');
+    if (modal) modal.classList.remove('show');
+}
+
 // Expose functions globally for cross-module access IMMEDIATELY
 // This runs at script load time, before DOMContentLoaded
 console.log('📁 FolderNavigation: Exposing functions to window...');
@@ -498,6 +650,8 @@ window.openQualifR = openQualifR;
 window.openSophiscope = openSophiscope;
 window.openIGI = openIGI;
 window.openIAGallery = openIAGallery;
+window.openConnectHAuth = openConnectHAuth;
+window.closeConnectHModal = closeConnectHModal;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
 
 // Initialize on DOM ready

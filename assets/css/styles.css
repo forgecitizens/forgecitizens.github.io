@@ -855,6 +855,180 @@
             color: #555;
         }
 
+        /* ===== CONNECT.H PASSWORD MODAL ===== */
+        .connecth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 28px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .connecth-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .connecth-password-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, calc(-50% - 14px));
+            width: min(400px, 90vw);
+            background: #1a1a1a;
+            border: 2px solid #333;
+            box-shadow: 0 0 30px rgba(240, 208, 96, 0.1);
+            z-index: 2001;
+            display: none;
+            opacity: 0;
+            transform: translate(-50%, calc(-50% - 14px)) scale(0.9);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .connecth-password-modal.show {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translate(-50%, calc(-50% - 14px)) scale(1);
+        }
+
+        .connecth-modal-header {
+            background: linear-gradient(to right, #2a2a2a 0%, #1a1a1a 100%);
+            color: #f0d060;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .connecth-modal-title {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .connecth-modal-close {
+            width: 20px;
+            height: 18px;
+            background: #333;
+            border: 1px solid #555;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f0d060;
+            line-height: 1;
+        }
+
+        .connecth-modal-close:hover {
+            background: #444;
+        }
+
+        .connecth-modal-close:active {
+            background: #222;
+        }
+
+        .connecth-modal-content {
+            padding: 25px;
+            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            color: #aaa;
+        }
+
+        .connecth-modal-content p {
+            margin: 0 0 20px 0;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .connecth-password-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .connecth-password-input:focus {
+            outline: none;
+            border-color: #f0d060;
+            box-shadow: 0 0 10px rgba(240, 208, 96, 0.2);
+        }
+
+        .connecth-password-error {
+            color: #ff4444;
+            font-size: 11px;
+            min-height: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .connecth-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .connecth-submit-btn,
+        .connecth-cancel-btn {
+            padding: 10px 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .connecth-submit-btn {
+            background: transparent;
+            border: 1px solid #f0d060;
+            color: #f0d060;
+        }
+
+        .connecth-submit-btn:hover,
+        .connecth-submit-btn:focus {
+            background: #f0d060;
+            color: #000;
+            box-shadow: 0 0 15px rgba(240, 208, 96, 0.4);
+        }
+
+        .connecth-cancel-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+        }
+
+        .connecth-cancel-btn:hover,
+        .connecth-cancel-btn:focus {
+            border-color: #888;
+            color: #ccc;
+        }
+
+        @keyframes connecth-shake {
+            0%, 100% { transform: translate(-50%, calc(-50% - 14px)) scale(1); }
+            25% { transform: translate(calc(-50% - 10px), calc(-50% - 14px)) scale(1); }
+            75% { transform: translate(calc(-50% + 10px), calc(-50% - 14px)) scale(1); }
+        }
+
+        .connecth-password-modal.shake {
+            animation: connecth-shake 0.3s ease;
+        }
+
         /* Cosmology Selection Popup */
         .cosmology-selection-popup {
             width: 450px;
