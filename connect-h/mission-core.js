@@ -32,7 +32,10 @@
     const audio = {
         controlRoom: null,
         transmission: null,
-        transmissionPlaying: false  // Flag to prevent overlapping
+        warning: null,
+        transmissionPlaying: false, // Flag to prevent overlapping
+        warningPlaying: false,
+        transmissionQueued: false
     };
 
     /**
@@ -47,10 +50,22 @@
         // Transmission incoming sound (single play)
         audio.transmission = new Audio(CONFIG.SOUNDS_PATH + 'connecth_incoming_transmission.mp3');
         audio.transmission.volume = CONFIG.TRANSMISSION_VOLUME;
+
+        // Warning sound (single play, priority over transmission)
+        audio.warning = new Audio(CONFIG.SOUNDS_PATH + 'connecth_warning_soft.mp3');
+        audio.warning.volume = 0.65;
         
         // Reset flag when transmission sound ends
         audio.transmission.addEventListener('ended', () => {
             audio.transmissionPlaying = false;
+        });
+
+        audio.warning.addEventListener('ended', () => {
+            audio.warningPlaying = false;
+            if (audio.transmissionQueued) {
+                audio.transmissionQueued = false;
+                playTransmissionSound();
+            }
         });
 
         console.log('🔊 Mission audio initialized');
@@ -83,6 +98,11 @@
      */
     function playTransmissionSound() {
         if (!audio.transmission) return;
+
+        if (audio.warningPlaying) {
+            audio.transmissionQueued = true;
+            return;
+        }
         
         // Prevent overlapping - only play if not already playing
         if (audio.transmissionPlaying) {
@@ -99,6 +119,30 @@
     }
 
     /**
+     * Play warning sound (priority over transmission)
+     */
+    function playWarningSound() {
+        if (!audio.warning) return;
+
+        if (audio.warningPlaying) {
+            return;
+        }
+
+        if (audio.transmissionPlaying && audio.transmission) {
+            audio.transmission.pause();
+            audio.transmission.currentTime = 0;
+            audio.transmissionPlaying = false;
+        }
+
+        audio.warningPlaying = true;
+        audio.warning.currentTime = 0;
+        audio.warning.play().catch(e => {
+            console.log('Warning sound failed:', e);
+            audio.warningPlaying = false;
+        });
+    }
+
+    /**
      * Stop all mission audio
      */
     function stopAllAudio() {
@@ -110,6 +154,12 @@
             audio.transmission.pause();
             audio.transmission.currentTime = 0;
             audio.transmissionPlaying = false;
+        }
+        if (audio.warning) {
+            audio.warning.pause();
+            audio.warning.currentTime = 0;
+            audio.warningPlaying = false;
+            audio.transmissionQueued = false;
         }
     }
 
@@ -398,6 +448,10 @@
         line.className = `line tag-${tag}`;
         line.textContent = `[${fmtTime(state.missionTime)}] [${tag}] ${text}`;
         els.console.appendChild(line);
+
+        if (tag === 'WARN') {
+            playWarningSound();
+        }
         
         // Auto-scroll to bottom
         els.console.scrollTop = els.console.scrollHeight;
@@ -1271,9 +1325,9 @@
         // Immediate system logs
         logLine('SYS', 'Initialisation session opérateur…');
         
-        schedule(500, 'SYS_LOG', 'Chargement profil mission: CONNECT.H / EXO-421c');
-        schedule(1000, 'SYS_LOG', 'Liaison longue portée établie.');
-        schedule(1500, 'SYS_LOG', 'Calibration antenne: OK');
+        schedule(2000, 'SYS_LOG', 'Chargement profil mission: CONNECT.H / EXO-421c');
+        schedule(4000, 'SYS_LOG', 'Liaison longue portée établie.');
+        schedule(6000, 'SYS_LOG', 'Calibration antenne: OK');
         
         // Add initial journal entry
         setTimeout(() => {
@@ -1284,12 +1338,12 @@
         }, 2000);
 
         // Cached telemetry (arrives quickly - was stored)
-        schedule(3000, 'SYS_LOG', 'Télémétrie sol récupérée du cache local.');
-        schedule(3500, 'SYS_LOG', 'Trajectoire nominale. Distance: 4.2 années-lumière. Dérive corrigée.');
+        schedule(8000, 'SYS_LOG', 'Télémétrie sol récupérée du cache local.');
+        schedule(10000, 'SYS_LOG', 'Trajectoire nominale. Distance: 4.2 années-lumière. Dérive corrigée.');
         
         // Unlock basic encyclopedia entries
-        schedule(4000, 'UNLOCK_ENTRY', 'exo421c');
-        schedule(4500, 'UNLOCK_ENTRY', 'probe_atlas');
+        schedule(12000, 'UNLOCK_ENTRY', 'exo421c');
+        schedule(14000, 'UNLOCK_ENTRY', 'probe_atlas');
 
         // First real transmission arrives after simulated latency (30 sec)
         schedule(CONFIG.LATENCY_MS, 'RECV_TRANSMISSION', {
