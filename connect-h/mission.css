@@ -341,6 +341,13 @@ body {
     color: var(--accent-cyan);
 }
 
+.op-done {
+    background: linear-gradient(to bottom, #1a2a1a 0%, #0d1a0d 100%);
+    border-color: #4a6a4a;
+    color: #6a9a6a;
+    opacity: 0.7;
+}
+
 .ops-status {
     color: var(--accent-cyan);
     font-size: 10px;
@@ -618,13 +625,134 @@ body {
     color: var(--accent-green);
 }
 
+/* ===== HINT SYSTEM ===== */
+.hint-btn {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px;
+    color: var(--accent-green);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    border: 1px solid var(--accent-green);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.hint-btn:hover {
+    color: var(--text-highlight);
+    background: var(--accent-green);
+    box-shadow: 0 0 8px rgba(0, 204, 102, 0.4);
+}
+
+.hint-btn.hint-read {
+    color: #006644;
+    border-color: #006644;
+    opacity: 0.65;
+}
+
+.hint-btn.hint-read:hover {
+    color: var(--text-highlight);
+    background: #006644;
+    opacity: 0.85;
+    box-shadow: 0 0 6px rgba(0, 102, 68, 0.4);
+}
+
+.hint-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.hint-modal.show {
+    display: flex;
+}
+
+.hint-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+}
+
+.hint-content {
+    position: relative;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-green);
+    padding: 24px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 0 30px rgba(0, 204, 102, 0.3);
+    animation: hintFadeIn 0.2s ease;
+}
+
+@keyframes hintFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.hint-title {
+    color: var(--accent-green);
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hint-body {
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.hint-close {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    background: linear-gradient(to bottom, #1a3a1a 0%, #0d2a0d 100%);
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+
+.hint-close:hover {
+    background: linear-gradient(to bottom, #2a5a2a 0%, #1a3a1a 100%);
+    box-shadow: 0 0 8px rgba(0, 204, 102, 0.3);
+}
+
+.hint-close:active {
+    background: linear-gradient(to bottom, #0d2a0d 0%, #061a06 100%);
+}
+
 /* ===== ACCESSIBILITY ===== */
 @media (prefers-reduced-motion: reduce) {
     .action-btn,
     .tab,
     .image-thumbnail,
-    .lightbox {
+    .lightbox,
+    .hint-btn,
+    .hint-content {
         transition: none;
+        animation: none;
     }
     
     .blink {

@@ -113,6 +113,25 @@
         }
     }
 
+    /**
+     * Safely play a sound without crashing if file is missing
+     * @param {string} filename - Name of the audio file in sounds folder
+     */
+    function safePlaySound(filename) {
+        try {
+            const soundPath = CONFIG.SOUNDS_PATH + filename;
+            const audio = new Audio(soundPath);
+            audio.volume = 0.6;
+            audio.play().catch(err => {
+                // Silently ignore if file doesn't exist or playback fails
+                console.log(`⚠️ Sound playback failed: ${filename}`, err.message);
+            });
+        } catch (err) {
+            // Silently ignore errors
+            console.log(`⚠️ Could not load sound: ${filename}`, err.message);
+        }
+    }
+
     // ========================================================================
     // GLOBAL STATE
     // ========================================================================
@@ -142,7 +161,11 @@
         
         // Operation state
         operationInProgress: null, // null ou opType si une opération est en cours
+        executedOps: new Set(),    // Opérations déjà exécutées (one-shot)
         appliedRules: new Set(),   // Règles déverrouillage déjà appliquées
+        
+        // Hints state
+        readHints: new Set(),      // Hints déjà consultés
         
         // Data stores
         journal: [],
@@ -163,6 +186,13 @@
     // ========================================================================
     
     let els = {};
+    
+    // Cache for operations panel to avoid unnecessary re-renders
+    let operationsPanelCache = {
+        capabilities: '',
+        operationInProgress: null,
+        executedOps: ''
+    };
 
     function cacheElements() {
         els = {
@@ -230,7 +260,8 @@
         }
 
         renderStatus();
-        renderOperationsPanel();
+        // Only re-render operations panel if state changed
+        renderOperationsPanelIfChanged();
     }
 
     /**
@@ -284,11 +315,16 @@
         
         state.inbox.push(tx);
         logLine('TEL', `Transmission reçue: ${tx.id} (${tx.title})`);
-        addJournal(`Transmission ${tx.id}`, tx.summary);
+        addJournal(`Transmission ${tx.id}`, tx.summary, tx.hintKey);
         
         // Add appropriate clue
         if (tx.id === '#0001') {
             state.clues.add('tx_0001_received');
+            updateProgressAndMilestones();
+        }
+        
+        if (tx.id === '#0003') {
+            state.clues.add('tx_0003_received');
             updateProgressAndMilestones();
         }
         
@@ -311,6 +347,16 @@
         // Add appropriate clue
         if (img.id === 'IMG_0001_LOWQ') {
             state.clues.add('img_0001_received');
+            updateProgressAndMilestones();
+        }
+        
+        if (img.id === 'IMG_0002_ENHANCED') {
+            state.clues.add('img_0002_received');
+            updateProgressAndMilestones();
+        }
+        
+        if (img.id === 'IMG_0004_ANGLE_SHIFT') {
+            state.clues.add('angle_shift_observed');
             updateProgressAndMilestones();
         }
         
@@ -360,11 +406,12 @@
     /**
      * Add entry to journal
      */
-    function addJournal(title, body) {
+    function addJournal(title, body, hintKey) {
         state.journal.push({
             t: state.missionTime,
             title,
-            body
+            body,
+            hintKey: hintKey || null
         });
         
         if (state.ui.activeTab === 'journal') {
@@ -372,6 +419,27 @@
         }
     }
 
+    /**
+     * Render operations panel only if state changed
+     */
+    function renderOperationsPanelIfChanged() {
+        const currentCapabilities = Array.from(state.capabilities).sort().join(',');
+        const currentInProgress = state.operationInProgress;
+        const currentExecuted = Array.from(state.executedOps).sort().join(',');
+        
+        // Only re-render if something changed
+        if (currentCapabilities !== operationsPanelCache.capabilities ||
+            currentInProgress !== operationsPanelCache.operationInProgress ||
+            currentExecuted !== operationsPanelCache.executedOps) {
+            
+            operationsPanelCache.capabilities = currentCapabilities;
+            operationsPanelCache.operationInProgress = currentInProgress;
+            operationsPanelCache.executedOps = currentExecuted;
+            
+            renderOperationsPanel();
+        }
+    }
+    
     /**
      * Render operations panel
      */
@@ -394,16 +462,25 @@
             if (!state.capabilities.has(opId)) continue;
 
             const opInfo = OPERATIONS.find(op => op.id === opId);
+            const isExecuted = state.executedOps.has(opId);
             
             const btn = document.createElement('button');
             btn.className = 'op-btn';
-            btn.textContent = opInfo.label;
             
-            // Disable if operation in progress
-            if (state.operationInProgress) {
+            // Modify label if already executed
+            if (isExecuted) {
+                btn.textContent = `${opInfo.label} (Terminé)`;
+                btn.className += ' op-done';
                 btn.disabled = true;
-                if (state.operationInProgress === opId) {
-                    btn.className += ' op-btn--active';
+            } else {
+                btn.textContent = opInfo.label;
+                
+                // Disable if operation in progress
+                if (state.operationInProgress) {
+                    btn.disabled = true;
+                    if (state.operationInProgress === opId) {
+                        btn.className += ' op-btn--active';
+                    }
                 }
             }
             
@@ -467,12 +544,29 @@
         state.journal.slice().reverse().forEach(entry => {
             const card = document.createElement('div');
             card.className = 'entry';
-            card.innerHTML = `
-                <div class="entryTitle">${escapeHtml(entry.title)}</div>
+            
+            // Build title with optional hint button
+            let titleHTML = `<div class="entryTitle">${escapeHtml(entry.title)}`;
+            if (entry.hintKey && HINTS[entry.hintKey]) {
+                const isRead = state.readHints.has(entry.hintKey);
+                const readClass = isRead ? ' hint-read' : '';
+                titleHTML += `<span class="hint-btn${readClass}" data-hint="${escapeHtml(entry.hintKey)}" title="Aide">[?]</span>`;
+            }
+            titleHTML += `</div>`;
+            
+            card.innerHTML = titleHTML + `
                 <div class="entryBody">${escapeHtml(entry.body)}</div>
                 <div class="entryMeta">T+${fmtTime(entry.t)}</div>
             `;
             els.tabBody.appendChild(card);
+        });
+        
+        // Add click handlers for hint buttons
+        els.tabBody.querySelectorAll('.hint-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openHintModal(btn.dataset.hint);
+            });
         });
     }
 
@@ -487,11 +581,28 @@
         unlockedEntries.forEach(entry => {
             const card = document.createElement('div');
             card.className = 'entry';
-            card.innerHTML = `
-                <div class="entryTitle">${escapeHtml(entry.title)}</div>
+            
+            // Build title with optional hint button
+            let titleHTML = `<div class="entryTitle">${escapeHtml(entry.title)}`;
+            if (entry.hintKey && HINTS[entry.hintKey]) {
+                const isRead = state.readHints.has(entry.hintKey);
+                const readClass = isRead ? ' hint-read' : '';
+                titleHTML += `<span class="hint-btn${readClass}" data-hint="${escapeHtml(entry.hintKey)}" title="Aide">[?]</span>`;
+            }
+            titleHTML += `</div>`;
+            
+            card.innerHTML = titleHTML + `
                 <div class="entryBody">${escapeHtml(entry.text)}</div>
             `;
             els.tabBody.appendChild(card);
+        });
+        
+        // Add click handlers for hint buttons
+        els.tabBody.querySelectorAll('.hint-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openHintModal(btn.dataset.hint);
+            });
         });
     }
 
@@ -605,6 +716,86 @@
     }
 
     // ========================================================================
+    // HINT MODAL SYSTEM
+    // ========================================================================
+    
+    let hintModalElement = null;
+
+    /**
+     * Create hint modal element (once)
+     */
+    function createHintModal() {
+        if (hintModalElement) return;
+
+        hintModalElement = document.createElement('div');
+        hintModalElement.className = 'hint-modal';
+        hintModalElement.id = 'hintModal';
+        hintModalElement.innerHTML = `
+            <div class="hint-backdrop"></div>
+            <div class="hint-content">
+                <h3 class="hint-title" id="hintTitle"></h3>
+                <p class="hint-body" id="hintBody"></p>
+                <button class="hint-close" id="hintClose">FERMER</button>
+            </div>
+        `;
+
+        document.body.appendChild(hintModalElement);
+
+        // Close on backdrop click
+        const backdrop = hintModalElement.querySelector('.hint-backdrop');
+        backdrop.addEventListener('click', closeHintModal);
+
+        // Close on button click
+        const closeBtn = hintModalElement.querySelector('#hintClose');
+        closeBtn.addEventListener('click', closeHintModal);
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && hintModalElement.classList.contains('show')) {
+                closeHintModal();
+            }
+        });
+    }
+
+    /**
+     * Open hint modal with hint content
+     */
+    function openHintModal(hintKey) {
+        const hint = HINTS[hintKey];
+        if (!hint) {
+            console.warn('Hint not found:', hintKey);
+            return;
+        }
+
+        createHintModal();
+
+        const titleEl = hintModalElement.querySelector('#hintTitle');
+        const bodyEl = hintModalElement.querySelector('#hintBody');
+
+        titleEl.textContent = hint.title;
+        bodyEl.textContent = hint.body;
+
+        hintModalElement.classList.add('show');
+        
+        // Marquer le hint comme consulté
+        if (!state.readHints.has(hintKey)) {
+            state.readHints.add(hintKey);
+            
+            // Re-render l'onglet actif pour mettre à jour l'apparence du bouton
+            renderTab();
+        }
+    }
+
+    /**
+     * Close hint modal
+     */
+    function closeHintModal() {
+        if (hintModalElement) {
+            hintModalElement.classList.remove('show');
+        }
+    }
+
+    // ========================================================================
     // OPERATIONS DATA
     // ========================================================================
     
@@ -633,9 +824,12 @@
     const CLUE_POINTS = {
         'tx_0001_received': 5,      // Première transmission
         'img_0001_received': 5,     // Première image
-        'lens_clean_done': 10,
-        'camera_recal_done': 10,
-        'mobility_free_done': 10
+        'img_0002_received': 5,     // Image nettoyée
+        'lens_clean_done': 5,       // Nettoyage lentille complété
+        'tx_0003_received': 5,      // Transmission recalibration
+        'camera_recal_done': 5,     // Recalibration complétée
+        'angle_shift_observed': 5,  // Décalage angle observé
+        'mobility_free_done': 5     // Mobilité dégagée
     };
 
     /**
@@ -656,14 +850,30 @@
     
     const UNLOCK_RULES = [
         {
-            id: 'unlock_first_ops',
-            description: 'Déverrouille les 3 premières opérations',
+            id: 'unlock_clean_lens',
+            description: 'Déverrouille OP_CLEAN_LENS',
             condition: (state) => {
                 return state.clues.has('tx_0001_received') && 
                        state.clues.has('img_0001_received') && 
                        state.progress >= 10;
             },
-            grants: ['OP_CLEAN_LENS', 'OP_RECAL_CAMERA', 'OP_FREE_MOBILITY']
+            grants: ['OP_CLEAN_LENS']
+        },
+        {
+            id: 'unlock_recal_camera',
+            description: 'Déverrouille OP_RECAL_CAMERA après IMG_0002',
+            condition: (state) => {
+                return state.clues.has('img_0002_received');
+            },
+            grants: ['OP_RECAL_CAMERA']
+        },
+        {
+            id: 'unlock_free_mobility',
+            description: 'Déverrouille OP_FREE_MOBILITY après recalibration',
+            condition: (state) => {
+                return state.clues.has('camera_recal_done');
+            },
+            grants: ['OP_FREE_MOBILITY']
         }
     ];
 
@@ -723,19 +933,53 @@
         {
             slug: 'decorrelation_prelim',
             title: 'Décorrélation (préliminaire)',
-            text: 'Les mesures locales ne suivent pas les relations attendues entre gravité, période orbitale et flux énergétique. Terme provisoire en attente de modèle explicatif. Origine inconnue.'
+            text: 'Les mesures locales ne suivent pas les relations attendues entre gravité, période orbitale et flux énergétique. Terme provisoire en attente de modèle explicatif. Origine inconnue.',
+            hintKey: 'encyc_decorrelation'
         },
         {
             slug: 'exo421c',
             title: 'EXO-421c',
-            text: 'Exoplanète rocheuse située dans le système Proxima +4.2. Diamètre estimé: 1.12× Terre. Atmosphère ténue détectée. Cible primaire du programme Connect.H.'
+            text: 'Exoplanète rocheuse située dans le système Proxima +4.2. Diamètre estimé: 1.12× Terre. Atmosphère ténue détectée. Cible primaire du programme Connect.H.',
+            hintKey: 'encyc_exo421c'
         },
         {
             slug: 'probe_atlas',
             title: 'Sonde ATLAS-7',
-            text: 'Véhicule robotique d\'exploration de surface. Autonomie: 15 ans terrestres. Équipements: spectromètre, caméra multibande, foreuse, capteurs sismiques.'
+            text: 'Véhicule robotique d\'exploration de surface. Autonomie: 15 ans terrestres. Équipements: spectromètre, caméra multibande, foreuse, capteurs sismiques.',
+            hintKey: 'encyc_atlas7'
         }
     ];
+
+    // ========================================================================
+    // HINTS SYSTEM
+    // ========================================================================
+    
+    const HINTS = {
+        "tx_0001": {
+            title: "Explication simplifiée",
+            body: "Normalement, la gravité d'une étoile et la distance d'une planète permettent de prédire son mouvement. Ici, les calculs ne correspondent pas aux observations, ce qui suggère qu'un facteur inconnu perturbe le système."
+        },
+        
+        "tx_0003": {
+            title: "Explication simplifiée",
+            body: "Une image est composée de plusieurs canaux de couleur. Si ces canaux ne sont pas parfaitement alignés, l'image peut sembler dédoublée. Ici, ce décalage persiste même après recalibration."
+        },
+        
+        "encyc_decorrelation": {
+            title: "Décorrélation expliquée",
+            body: "Quand deux phénomènes sont liés par une loi physique, leurs variations suivent un schéma prévisible. Une décorrélation signifie que ce lien attendu ne fonctionne plus comme prévu."
+        },
+        
+        "encyc_exo421c": {
+            title: "Contexte scientifique",
+            body: "Une exoplanète est une planète située hors de notre système solaire. Proxima 4.2 indique une distance d'environ 4,2 années-lumière."
+        },
+        
+        "encyc_atlas7": {
+            title: "Sonde robotique",
+            body: "Une sonde d'exploration transporte des instruments scientifiques pour collecter des données à distance, sans présence humaine."
+        }
+    };
 
     // ========================================================================
     // OPERATIONS SYSTEM
@@ -751,6 +995,13 @@
             return;
         }
         
+        // Vérifier que l'opération n'a pas déjà été exécutée
+        if (state.executedOps.has(opId)) {
+            const opName = OPERATIONS.find(op => op.id === opId)?.shortName || opId;
+            logLine('WARN', `Opération déjà effectuée: ${opName}.`);
+            return;
+        }
+        
         // Vérifier qu'aucune opération n'est en cours
         if (state.operationInProgress) {
             logLine('WARN', `Une opération est déjà en cours. Impossible d'en lancer une autre.`);
@@ -763,8 +1014,8 @@
         const opName = OPERATIONS.find(op => op.id === opId)?.shortName || opId;
         logLine('SCI', `Opération envoyée: ${opName}`);
         
-        // Disable UI
-        renderOperationsPanel();
+        // Note: renderOperationsPanel() is called automatically by processEvents() every tick
+        // No need to call it here
         
         // Schedule result after latency
         schedule(
@@ -783,6 +1034,9 @@
         const op = OPERATIONS.find(o => o.id === opId);
         if (!op) return;
         
+        // Marquer l'opération comme exécutée (one-shot)
+        state.executedOps.add(opId);
+        
         logLine('SYS', `Résultat opération: ${op.shortName} complétée`);
         
         // Add appropriate clue and modify technical variables
@@ -791,6 +1045,9 @@
                 state.clues.add('lens_clean_done');
                 state.cameraIntegrity = Math.min(100, state.cameraIntegrity + 15);
                 logLine('SCI', 'Lentille nettoyée. Intégrité caméra augmentée.');
+                
+                // Play optional sound
+                safePlaySound('connecth_lens_clean.mp3');
                 
                 // Trigger new image after a short delay
                 schedule(
@@ -808,28 +1065,82 @@
 
             case 'OP_RECAL_CAMERA':
                 state.clues.add('camera_recal_done');
-                state.signalQuality = Math.max(0.65, state.signalQuality - 0.05);
-                logLine('WARN', 'Recalibration en cours. Signal temporairement instable.');
-                logLine('SCI', 'Caméra recalibrée. Sensibilité spectrale améliorée.');
+                
+                // Augmenter légèrement l'intégrité caméra
+                state.cameraIntegrity = Math.min(100, state.cameraIntegrity + 8);
+                
+                // Store original signal quality for restoration
+                const originalSignal = state.signalQuality;
+                
+                // Diminuer temporairement signalQuality
+                state.signalQuality = Math.max(0.65, state.signalQuality - 0.03);
+                
+                logLine('SYS', 'Recalibration capteur complétée.');
+                logLine('WARN', 'Décalage inter-canal détecté.');
+                
+                // Play optional sound
+                safePlaySound('connecth_camera_recalibration.mp3');
+                
+                // Restaurer signal après 30 secondes
+                schedule(
+                    state.missionTime + 30000,
+                    'UPDATE_TELEMETRY',
+                    { signalQuality: Math.min(1.0, originalSignal + 0.01) }
+                );
+                
+                // Schedule image avec overlay recalibration
+                schedule(
+                    state.missionTime + 3000,
+                    'RECV_IMAGE',
+                    {
+                        id: 'IMG_0003_RECAL_OVERLAY',
+                        qualityLabel: 'CALIBRATED',
+                        note: 'Image recalibrée avec correction inter-canaux. Contraste spectral amélioré.',
+                        t: state.missionTime + 3000,
+                        unlocks: []
+                    }
+                );
+                
+                // Injecter transmission TX_0003
+                schedule(
+                    state.missionTime + 5000,
+                    'RECV_TRANSMISSION',
+                    {
+                        id: '#0003',
+                        title: 'Anomalie de cohérence — recalibration caméra',
+                        summary: 'Persistance d\'un déphasage inter-canal corrélé à la topographie.',
+                        body: 'Divergence mesurée entre canaux spectraux. Hypothèse optique locale affaiblie. Recommandation: acquisition angle secondaire.',
+                        unlocks: [],
+                        hintKey: 'tx_0003'
+                    }
+                );
+                
                 break;
 
             case 'OP_FREE_MOBILITY':
                 state.clues.add('mobility_free_done');
                 state.mobility = Math.min(100, state.mobility + 20);
-                logLine('SCI', 'Mécanisme de mobilité libéré. Portée de déplacement augmentée.');
                 
-                // Trigger different angle image
+                logLine('SYS', 'Dégagement mobilité complété.');
+                logLine('SCI', 'Micro-déplacement effectué.');
+                logLine('WARN', 'Décalage spectral persistant à distance.');
+                
+                // Play optional sound
+                safePlaySound('connecth_mobility_servo_short.mp3');
+                
+                // Trigger angle shift image
                 schedule(
-                    state.missionTime + 3000,
+                    state.missionTime + 4000,
                     'RECV_IMAGE',
                     {
-                        id: 'IMG_0003_ANGLE_B',
-                        qualityLabel: 'LOW',
-                        note: 'Prise de vue sous angle B suite à libération mobilité. Nouvelles structures observables.',
-                        t: state.missionTime + 3000,
+                        id: 'IMG_0004_ANGLE_SHIFT',
+                        qualityLabel: 'SECONDARY_ANGLE',
+                        note: 'Acquisition sous angle secondaire. Décalage spectral confirmé à différentes positions.',
+                        t: state.missionTime + 4000,
                         unlocks: []
                     }
                 );
+                
                 break;
         }
         
@@ -986,7 +1297,8 @@
             title: 'Anomalie orbitale — confirmation instrumentale',
             summary: 'Les mesures confirment une période orbitale instable à faible amplitude. Fluctuation énergétique locale corrélée.',
             body: 'Données brutes: ΔP/P ~ 1.6e-4. Flux local: variations non thermiques détectées. Décorrélation observée entre modèles gravitationnels prédits et mesures in situ. Analyse en cours.',
-            unlocks: ['decorrelation_prelim']
+            unlocks: ['decorrelation_prelim'],
+            hintKey: 'tx_0001'
         });
 
         // Image arrives 12 seconds after the transmission
