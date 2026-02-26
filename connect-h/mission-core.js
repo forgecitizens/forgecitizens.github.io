@@ -217,6 +217,16 @@
         // Hints state
         readHints: new Set(),      // Hints déjà consultés
         
+        // Unread tracking
+        unreadJournal: new Set(),  // IDs of unread journal entries
+        unreadEncyclo: new Set(),  // Slugs of unread encyclopedia entries
+        unreadImages: new Set(),   // IDs of unread images
+        
+        // Puzzle system
+        puzzles: {},               // Track solved puzzles
+        puzzleInProgress: null,    // null or puzzle ID if one is running
+        puzzleBlocking: false,     // Whether current puzzle blocks other actions
+        
         // Data stores
         journal: [],
         inbox: [],
@@ -255,6 +265,8 @@
             btnOpenLast: document.getElementById('btnOpenLast'),
             btnMenu: document.getElementById('btnMenu'),
             tabs: document.querySelectorAll('.tab'),
+            tabJournal: document.querySelector('[data-tab="journal"]'),
+            tabEncyclo: document.querySelector('[data-tab="encyclo"]'),
             tabImages: document.querySelector('[data-tab="images"]')
         };
     }
@@ -351,6 +363,10 @@
                 resolveOperation(event.payload.opType);
                 break;
 
+            case 'UPDATE_PROGRESS':
+                updateProgressAndMilestones();
+                break;
+
             default:
                 console.warn('Unknown event type:', event.type);
         }
@@ -378,6 +394,11 @@
             updateProgressAndMilestones();
         }
         
+        if (tx.id === '#0004') {
+            state.clues.add('energy_gradient_detected');
+            updateProgressAndMilestones();
+        }
+        
         if (tx.unlocks && tx.unlocks.length > 0) {
             unlock(tx.unlocks);
         }
@@ -397,26 +418,46 @@
         // Add appropriate clue
         if (img.id === 'IMG_0001_LOWQ') {
             state.clues.add('img_0001_received');
-            updateProgressAndMilestones();
+            // Schedule progress update 30s later to delay operation unlock
+            schedule(state.missionTime + 30000, 'UPDATE_PROGRESS', null);
         }
         
         if (img.id === 'IMG_0002_ENHANCED') {
             state.clues.add('img_0002_received');
-            updateProgressAndMilestones();
+            // Schedule progress update 30s later to delay operation unlock
+            schedule(state.missionTime + 30000, 'UPDATE_PROGRESS', null);
         }
         
         if (img.id === 'IMG_0004_ANGLE_SHIFT') {
             state.clues.add('angle_shift_observed');
-            updateProgressAndMilestones();
+            // Schedule progress update 30s later to delay operation unlock
+            schedule(state.missionTime + 30000, 'UPDATE_PROGRESS', null);
+            
+            // Schedule transmission #0004 30 seconds after this image
+            schedule(
+                state.missionTime + 30000,
+                'RECV_TRANSMISSION',
+                {
+                    id: '#0004',
+                    title: 'Gradient énergétique directionnel',
+                    summary: 'Augmentation progressive de l\'intensité électromagnétique en direction de la structure distante.',
+                    body: 'Mesures spectrales indiquent une élévation non uniforme du champ électromagnétique selon l\'azimut 173°. Intensité croissante corrélée à la direction de la structure observée. Oscillation basse fréquence détectée. Origine indéterminée. Recommandation : approche prudente et caractérisation fréquentielle.',
+                    unlocks: ['champ_em_local'],
+                    hintKey: 'tx_0004'
+                }
+            );
         }
         
         if (img.unlocks && img.unlocks.length > 0) {
             unlock(img.unlocks);
         }
         
+        // Mark image as unread
+        state.unreadImages.add(img.id);
+        
         // Add notification to images tab (unless already active)
         if (state.ui.activeTab !== 'images' && els.tabImages) {
-            els.tabImages.classList.add('has-update');
+            els.tabImages.classList.add('has-update', 'has-update-images');
         }
         
         if (state.ui.activeTab === 'images') {
@@ -431,8 +472,18 @@
         for (const slug of slugs) {
             if (!state.unlocks.has(slug)) {
                 state.unlocks.add(slug);
+                state.unreadEncyclo.add(slug);
                 logLine('SCI', `Nouvelle entrée encyclopédie débloquée.`);
+                
+                // Add notification to encyclo tab (unless already active)
+                if (state.ui.activeTab !== 'encyclo' && els.tabEncyclo) {
+                    els.tabEncyclo.classList.add('has-update', 'has-update-encyclo');
+                }
             }
+        }
+        
+        if (state.ui.activeTab === 'encyclo') {
+            renderTab();
         }
     }
 
@@ -461,12 +512,22 @@
      * Add entry to journal
      */
     function addJournal(title, body, hintKey) {
+        const entryId = `journal_${state.journal.length}`;
         state.journal.push({
+            id: entryId,
             t: state.missionTime,
             title,
             body,
             hintKey: hintKey || null
         });
+        
+        // Mark as unread
+        state.unreadJournal.add(entryId);
+        
+        // Add notification to journal tab (unless already active)
+        if (state.ui.activeTab !== 'journal' && els.tabJournal) {
+            els.tabJournal.classList.add('has-update', 'has-update-journal');
+        }
         
         if (state.ui.activeTab === 'journal') {
             renderTab();
@@ -597,7 +658,9 @@
         // Show newest first
         state.journal.slice().reverse().forEach(entry => {
             const card = document.createElement('div');
-            card.className = 'entry';
+            const isUnread = state.unreadJournal.has(entry.id);
+            card.className = 'entry' + (isUnread ? ' entry--unread' : '');
+            card.dataset.entryId = entry.id;
             
             // Build title with optional hint button
             let titleHTML = `<div class="entryTitle">${escapeHtml(entry.title)}`;
@@ -612,6 +675,18 @@
                 <div class="entryBody">${escapeHtml(entry.body)}</div>
                 <div class="entryMeta">T+${fmtTime(entry.t)}</div>
             `;
+            
+            // Mark as read on hover or click
+            const markAsRead = () => {
+                if (state.unreadJournal.has(entry.id)) {
+                    state.unreadJournal.delete(entry.id);
+                    card.classList.remove('entry--unread');
+                    checkAndClearJournalNotification();
+                }
+            };
+            card.addEventListener('mouseenter', markAsRead);
+            card.addEventListener('click', markAsRead);
+            
             els.tabBody.appendChild(card);
         });
         
@@ -622,10 +697,18 @@
                 openHintModal(btn.dataset.hint);
             });
         });
+        
+        // Clear notification if all read
+        checkAndClearJournalNotification();
     }
 
     function renderEncycloTab() {
-        const unlockedEntries = ENCYC_ENTRIES.filter(e => state.unlocks.has(e.slug));
+        // Get unlockedEntries in reverse order (most recent first)
+        // state.unlocks is a Set that maintains insertion order
+        const unlockedSlugs = Array.from(state.unlocks).reverse();
+        const unlockedEntries = unlockedSlugs
+            .map(slug => ENCYC_ENTRIES.find(e => e.slug === slug))
+            .filter(e => e !== undefined);
         
         if (unlockedEntries.length === 0) {
             els.tabBody.innerHTML = '<div class="emptyState">Aucune entrée débloquée.</div>';
@@ -634,7 +717,9 @@
 
         unlockedEntries.forEach(entry => {
             const card = document.createElement('div');
-            card.className = 'entry';
+            const isUnread = state.unreadEncyclo.has(entry.slug);
+            card.className = 'entry' + (isUnread ? ' entry--unread' : '');
+            card.dataset.entrySlug = entry.slug;
             
             // Build title with optional hint button
             let titleHTML = `<div class="entryTitle">${escapeHtml(entry.title)}`;
@@ -648,6 +733,18 @@
             card.innerHTML = titleHTML + `
                 <div class="entryBody">${escapeHtml(entry.text)}</div>
             `;
+            
+            // Mark as read on hover or click
+            const markAsRead = () => {
+                if (state.unreadEncyclo.has(entry.slug)) {
+                    state.unreadEncyclo.delete(entry.slug);
+                    card.classList.remove('entry--unread');
+                    checkAndClearEncycloNotification();
+                }
+            };
+            card.addEventListener('mouseenter', markAsRead);
+            card.addEventListener('click', markAsRead);
+            
             els.tabBody.appendChild(card);
         });
         
@@ -658,6 +755,9 @@
                 openHintModal(btn.dataset.hint);
             });
         });
+        
+        // Clear notification if all read
+        checkAndClearEncycloNotification();
     }
 
     function renderImagesTab() {
@@ -669,7 +769,9 @@
         // Newest first
         state.images.slice().reverse().forEach(img => {
             const card = document.createElement('div');
-            card.className = 'entry entry--image';
+            const isUnread = state.unreadImages.has(img.id);
+            card.className = 'entry entry--image' + (isUnread ? ' entry--unread' : '');
+            card.dataset.imageId = img.id;
             
             // Build image path
             const imagePath = img.imagePath || (CONFIG.IMAGES_PATH + img.id + '.png');
@@ -694,8 +796,22 @@
                 openLightbox(imagePath, img.id);
             });
             
+            // Mark as read on hover or click
+            const markAsRead = () => {
+                if (state.unreadImages.has(img.id)) {
+                    state.unreadImages.delete(img.id);
+                    card.classList.remove('entry--unread');
+                    checkAndClearImagesNotification();
+                }
+            };
+            card.addEventListener('mouseenter', markAsRead);
+            card.addEventListener('click', markAsRead);
+            
             els.tabBody.appendChild(card);
         });
+        
+        // Clear notification if all read
+        checkAndClearImagesNotification();
     }
 
     /**
@@ -850,6 +966,381 @@
     }
 
     // ========================================================================
+    // PUZZLE MODAL SYSTEM (Transverse)
+    // ========================================================================
+    
+    let puzzleModalElement = null;
+    let currentPuzzleInstance = null;
+
+    /**
+     * Create puzzle modal element (once)
+     */
+    function createPuzzleModal() {
+        if (puzzleModalElement) return;
+
+        puzzleModalElement = document.createElement('div');
+        puzzleModalElement.className = 'puzzle-modal';
+        puzzleModalElement.id = 'puzzleModal';
+        puzzleModalElement.innerHTML = `
+            <div class="puzzle-backdrop"></div>
+            <div class="puzzle-content">
+                <div class="puzzle-header">
+                    <h2 class="puzzle-title" id="puzzleTitle">Énigme</h2>
+                </div>
+                <div class="puzzle-instructions" id="puzzleInstructions"></div>
+                <div class="puzzle-game-container" id="puzzleGameContainer"></div>
+                <div class="puzzle-feedback" id="puzzleFeedback"></div>
+                <div class="puzzle-actions">
+                    <button class="puzzle-btn" id="puzzleValidate">VALIDER</button>
+                    <button class="puzzle-btn puzzle-btn--secondary" id="puzzleClose">FERMER</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(puzzleModalElement);
+
+        // Close on backdrop click
+        const backdrop = puzzleModalElement.querySelector('.puzzle-backdrop');
+        backdrop.addEventListener('click', () => {
+            if (currentPuzzleInstance && !currentPuzzleInstance.blocking) {
+                closePuzzleModal();
+            }
+        });
+
+        // Close button
+        const closeBtn = puzzleModalElement.querySelector('#puzzleClose');
+        closeBtn.addEventListener('click', () => {
+            if (currentPuzzleInstance && !currentPuzzleInstance.blocking) {
+                closePuzzleModal();
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && puzzleModalElement.classList.contains('show')) {
+                if (currentPuzzleInstance && !currentPuzzleInstance.blocking) {
+                    closePuzzleModal();
+                }
+            }
+        });
+    }
+
+    /**
+     * Open puzzle modal
+     */
+    function openPuzzleModal(puzzleConfig) {
+        createPuzzleModal();
+        
+        state.puzzleInProgress = puzzleConfig.id;
+        state.puzzleBlocking = puzzleConfig.blocking !== false;
+        
+        // Set title and instructions
+        const titleEl = puzzleModalElement.querySelector('#puzzleTitle');
+        const instructionsEl = puzzleModalElement.querySelector('#puzzleInstructions');
+        const gameContainerEl = puzzleModalElement.querySelector('#puzzleGameContainer');
+        const feedbackEl = puzzleModalElement.querySelector('#puzzleFeedback');
+        const validateBtn = puzzleModalElement.querySelector('#puzzleValidate');
+        const closeBtn = puzzleModalElement.querySelector('#puzzleClose');
+        
+        titleEl.textContent = puzzleConfig.title || 'Énigme';
+        instructionsEl.textContent = puzzleConfig.instructions || '';
+        gameContainerEl.innerHTML = '';
+        feedbackEl.innerHTML = '';
+        
+        // Disable close button if blocking
+        closeBtn.disabled = state.puzzleBlocking;
+        
+        // Initialize puzzle instance
+        currentPuzzleInstance = puzzleConfig.init({
+            gameContainer: gameContainerEl,
+            feedbackElement: feedbackEl
+        });
+        
+        // Set validate handler
+        validateBtn.onclick = () => {
+            const result = currentPuzzleInstance.validate();
+            if (result.success) {
+                handlePuzzleSuccess(puzzleConfig, result);
+            } else {
+                handlePuzzleFail(puzzleConfig, result);
+            }
+        };
+        
+        puzzleModalElement.classList.add('show');
+        setTimeout(() => validateBtn.focus(), 100);
+    }
+
+    /**
+     * Handle puzzle success
+     */
+    function handlePuzzleSuccess(puzzleConfig, result) {
+        const feedbackEl = puzzleModalElement.querySelector('#puzzleFeedback');
+        feedbackEl.innerHTML = `<div class="feedback feedback--success">${result.message || 'Réussi !'}</div>`;
+        
+        // Mark puzzle as solved
+        state.puzzles[puzzleConfig.id] = true;
+        
+        // Add clue if specified
+        if (puzzleConfig.clue) {
+            state.clues.add(puzzleConfig.clue);
+        }
+        
+        // Add journal entry if specified
+        if (puzzleConfig.journalEntry) {
+            addJournal(puzzleConfig.journalEntry.title, puzzleConfig.journalEntry.body, puzzleConfig.journalEntry.hintKey);
+        }
+        
+        // Log success
+        logLine('SCI', result.logMessage || 'Action complétée.');
+        
+        // Close modal after delay
+        setTimeout(() => {
+            closePuzzleModal();
+            if (puzzleConfig.onSuccess) {
+                puzzleConfig.onSuccess();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Handle puzzle failure
+     */
+    function handlePuzzleFail(puzzleConfig, result) {
+        const feedbackEl = puzzleModalElement.querySelector('#puzzleFeedback');
+        feedbackEl.innerHTML = `<div class="feedback feedback--error">${result.message || 'Échoué.'}</div>`;
+        
+        // Visual feedback (respect prefers-reduced-motion)
+        const gameContainerEl = puzzleModalElement.querySelector('#puzzleGameContainer');
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            gameContainerEl.classList.add('shake');
+            setTimeout(() => gameContainerEl.classList.remove('shake'), 500);
+        }
+        
+        logLine('WARN', result.logMessage || 'Tentative échouée.');
+    }
+
+    /**
+     * Close puzzle modal and reset
+     */
+    function closePuzzleModal() {
+        if (!puzzleModalElement) return;
+        
+        puzzleModalElement.classList.remove('show');
+        state.puzzleInProgress = null;
+        state.puzzleBlocking = false;
+        
+        if (currentPuzzleInstance && currentPuzzleInstance.cleanup) {
+            currentPuzzleInstance.cleanup();
+        }
+        currentPuzzleInstance = null;
+    }
+
+    /**
+     * Check and clear journal notification if all entries are read
+     */
+    function checkAndClearJournalNotification() {
+        if (state.unreadJournal.size === 0 && els.tabJournal) {
+            els.tabJournal.classList.remove('has-update', 'has-update-journal');
+        }
+    }
+
+    /**
+     * Check and clear encyclo notification if all entries are read
+     */
+    function checkAndClearEncycloNotification() {
+        if (state.unreadEncyclo.size === 0 && els.tabEncyclo) {
+            els.tabEncyclo.classList.remove('has-update', 'has-update-encyclo');
+        }
+    }
+
+    /**
+     * Check and clear images notification if all entries are read
+     */
+    function checkAndClearImagesNotification() {
+        if (state.unreadImages.size === 0 && els.tabImages) {
+            els.tabImages.classList.remove('has-update', 'has-update-images');
+        }
+    }
+
+    // ========================================================================
+    // PUZZLE: SPECTRAL ALIGNMENT V1
+    // ========================================================================
+    
+    /**
+     * Initialize spectral alignment puzzle
+     */
+    function initSpectralAlignmentPuzzle(context) {
+        const gameContainer = context.gameContainer;
+        
+        const bandColors = [
+            { id: 'r', name: 'Rouge', color: '#cc3333' },
+            { id: 'g', name: 'Vert', color: '#33cc77' },
+            { id: 'b', name: 'Bleu', color: '#3366ff' }
+        ];
+        
+        const containerWidth = 400;
+        const bandWidth = containerWidth / 3;
+        
+        // Initial offset positions
+        const positions = {
+            r: Math.random() * 60 - 30,
+            g: Math.random() * 60 - 30,
+            b: Math.random() * 60 - 30
+        };
+        
+        let selectedBand = 'r';
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartPos = 0;
+        
+        // Create game container
+        gameContainer.style.cssText = `
+            width: 100%;
+            max-width: 500px;
+            height: 200px;
+            background: #000000;
+            border: 2px solid var(--border-color);
+            position: relative;
+            margin: 20px auto;
+            overflow: hidden;
+        `;
+        
+        // Create band elements
+        const bandElements = {};
+        bandColors.forEach((band, idx) => {
+            const bandEl = document.createElement('div');
+            bandEl.style.cssText = `
+                position: absolute;
+                left: ${idx * bandWidth + positions[band.id]}px;
+                top: 0;
+                width: ${bandWidth}px;
+                height: 100%;
+                background: ${band.color};
+                opacity: 0.7;
+                cursor: pointer;
+                transition: opacity 0.2s;
+                border: 2px solid transparent;
+            `;
+            bandEl.dataset.band = band.id;
+            bandEl.classList.add('spectral-band');
+            
+            gameContainer.appendChild(bandEl);
+            bandElements[band.id] = bandEl;
+        });
+        
+        // Update visual selection
+        function updateSelection() {
+            Object.keys(bandElements).forEach(bandId => {
+                const el = bandElements[bandId];
+                if (bandId === selectedBand) {
+                    el.style.border = '2px solid var(--accent-cyan)';
+                    el.style.opacity = '0.9';
+                    el.style.boxShadow = '0 0 12px rgba(68, 204, 204, 0.5) inset';
+                } else {
+                    el.style.border = '2px solid transparent';
+                    el.style.opacity = '0.7';
+                    el.style.boxShadow = 'none';
+                }
+            });
+        }
+        
+        // Move band
+        function moveBand(bandId, deltaX) {
+            positions[bandId] = Math.max(
+                -bandWidth * 0.4,
+                Math.min(bandWidth * 0.4, positions[bandId] + deltaX)
+            );
+            const bandEl = bandElements[bandId];
+            const idx = bandColors.findIndex(b => b.id === bandId);
+            bandEl.style.left = (idx * bandWidth + positions[bandId]) + 'px';
+        }
+        
+        // Click to select band
+        Object.values(bandElements).forEach(el => {
+            el.addEventListener('click', (e) => {
+                selectedBand = e.target.dataset.band;
+                updateSelection();
+            });
+            
+            // Drag handlers
+            el.addEventListener('mousedown', (e) => {
+                selectedBand = e.target.dataset.band;
+                updateSelection();
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartPos = positions[selectedBand];
+            });
+        });
+        
+        // Keyboard controls
+        const keyHandler = (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                moveBand(selectedBand, -4);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                moveBand(selectedBand, 4);
+            }
+        };
+        
+        // Global drag handlers
+        const mouseMoveHandler = (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - dragStartX;
+                positions[selectedBand] = Math.max(
+                    -bandWidth * 0.4,
+                    Math.min(bandWidth * 0.4, dragStartPos + deltaX)
+                );
+                const bandEl = bandElements[selectedBand];
+                const idx = bandColors.findIndex(b => b.id === selectedBand);
+                bandEl.style.left = (idx * bandWidth + positions[selectedBand]) + 'px';
+            }
+        };
+        
+        const mouseUpHandler = () => {
+            isDragging = false;
+        };
+        
+        document.addEventListener('keydown', keyHandler);
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        
+        updateSelection();
+        
+        return {
+            validate: () => {
+                const tolerance = 10;
+                const avgPos = (positions.r + positions.g + positions.b) / 3;
+                const maxDeviation = Math.max(
+                    Math.abs(positions.r - avgPos),
+                    Math.abs(positions.g - avgPos),
+                    Math.abs(positions.b - avgPos)
+                );
+                
+                if (maxDeviation <= tolerance) {
+                    return {
+                        success: true,
+                        message: 'Cohérence inter-canal restaurée.',
+                        logMessage: 'Alignement spectral réussi.'
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: 'Alignement incorrect. Le décalage inter-canal persiste.',
+                        logMessage: 'Réalignement échoué.'
+                    };
+                }
+            },
+            cleanup: () => {
+                document.removeEventListener('keydown', keyHandler);
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            },
+            blocking: true
+        };
+    }
+
+    // ========================================================================
     // OPERATIONS DATA
     // ========================================================================
     
@@ -868,6 +1359,11 @@
             id: 'OP_FREE_MOBILITY',
             label: 'Dégagement mobilité',
             shortName: 'FREE_MOBILITY'
+        },
+        {
+            id: 'OP_APPROACH_STRUCTURE',
+            label: 'Approche contrôlée',
+            shortName: 'APPROACH_STRUCTURE'
         }
     ];
 
@@ -883,7 +1379,9 @@
         'tx_0003_received': 5,      // Transmission recalibration
         'camera_recal_done': 5,     // Recalibration complétée
         'angle_shift_observed': 5,  // Décalage angle observé
-        'mobility_free_done': 5     // Mobilité dégagée
+        'mobility_free_done': 5,    // Mobilité dégagée
+        'energy_gradient_detected': 5,  // Gradient énergétique détecté
+        'spectral_alignment_done': 5    // Alignement spectral complété
     };
 
     /**
@@ -928,6 +1426,16 @@
                 return state.clues.has('camera_recal_done');
             },
             grants: ['OP_FREE_MOBILITY']
+        },
+        {
+            id: 'unlock_approach_structure',
+            description: 'Déverrouille OP_APPROACH_STRUCTURE après détection gradient',
+            condition: (state) => {
+                return state.clues.has('energy_gradient_detected') &&
+                       state.clues.has('mobility_free_done') &&
+                       state.progress >= 30;
+            },
+            grants: ['OP_APPROACH_STRUCTURE']
         }
     ];
 
@@ -947,7 +1455,9 @@
                 for (const capId of rule.grants) {
                     if (!state.capabilities.has(capId)) {
                         state.capabilities.add(capId);
-                        logLine('SCI', `Opération déverrouillée: ${OPERATIONS.find(op => op.id === capId)?.label || capId}`);
+                        const opLabel = OPERATIONS.find(op => op.id === capId)?.label || capId;
+                        logLine('SCI', `Opération déverrouillée: ${opLabel}`);
+                        safePlaySound('operation_unlocked.mp3');
                     }
                 }
             }
@@ -1001,6 +1511,12 @@
             title: 'Sonde ATLAS-7',
             text: 'Véhicule robotique d\'exploration de surface. Autonomie: 15 ans terrestres. Équipements: spectromètre, caméra multibande, foreuse, capteurs sismiques.',
             hintKey: 'encyc_atlas7'
+        },
+        {
+            slug: 'champ_em_local',
+            title: 'Champ électromagnétique (local)',
+            text: 'Un champ électromagnétique est une distribution d\'énergie associée aux forces électriques et magnétiques. Des variations locales peuvent résulter d\'activités géologiques, atmosphériques ou de phénomènes inconnus. Une oscillation basse fréquence stable suggère un phénomène périodique structuré.',
+            hintKey: 'encyc_champ_em'
         }
     ];
 
@@ -1019,6 +1535,11 @@
             body: "Une image est composée de plusieurs canaux de couleur. Si ces canaux ne sont pas parfaitement alignés, l'image peut sembler dédoublée. Ici, ce décalage persiste même après recalibration."
         },
         
+        "tx_0004": {
+            title: "Gradient énergétique expliqué",
+            body: "Un gradient signifie qu'une valeur augmente progressivement dans une direction donnée. Ici, l'énergie mesurée devient plus forte quand la sonde pointe vers la structure. Cela suggère qu'elle influence son environnement."
+        },
+        
         "encyc_decorrelation": {
             title: "Décorrélation expliquée",
             body: "Quand deux phénomènes sont liés par une loi physique, leurs variations suivent un schéma prévisible. Une décorrélation signifie que ce lien attendu ne fonctionne plus comme prévu."
@@ -1032,6 +1553,11 @@
         "encyc_atlas7": {
             title: "Sonde robotique",
             body: "Une sonde d'exploration transporte des instruments scientifiques pour collecter des données à distance, sans présence humaine."
+        },
+        
+        "encyc_champ_em": {
+            title: "Champ électromagnétique simplifié",
+            body: "Un champ électromagnétique est une forme d'énergie invisible capable de transporter des ondes et des informations. Les radios et les télécommunications fonctionnent grâce à ce principe."
         }
     };
 
@@ -1196,6 +1722,34 @@
                 );
                 
                 break;
+            
+            case 'OP_APPROACH_STRUCTURE':
+                logLine('SYS', 'Approche structure initiée.');
+                logLine('WARN', 'Perturbation locale. Cohérence inter-canal instable.');
+                logLine('SCI', 'Action requise: réalignement spectral.');
+                
+                // Open puzzle modal after short delay
+                setTimeout(() => {
+                    openPuzzleModal({
+                        id: 'PUZZLE_SPECTRAL_ALIGN_V1',
+                        title: 'Alignement spectral',
+                        instructions: 'Les canaux spectraux sont désynchronisés. Aligne les trois bandes pour restaurer la cohérence.',
+                        init: initSpectralAlignmentPuzzle,
+                        clue: 'spectral_alignment_done',
+                        journalEntry: {
+                            title: 'Réalignement spectral',
+                            body: 'Réalignement manuel des canaux. Cohérence restaurée à proximité.',
+                            hintKey: null
+                        },
+                        blocking: true,
+                        onSuccess: () => {
+                            updateProgressAndMilestones();
+                            renderOperationsPanel();
+                        }
+                    });
+                }, 500);
+                
+                break;
         }
         
         // Update progress
@@ -1210,6 +1764,8 @@
     // ========================================================================
     
     function handlePing() {
+        if (state.puzzleBlocking) return;
+        
         logLine('SCI', 'Ping envoyé à la sonde. Attente accusé de réception…');
         els.btnPing.disabled = true;
         
@@ -1227,6 +1783,8 @@
     }
 
     function handleSync() {
+        if (state.puzzleBlocking) return;
+        
         logLine('SCI', 'Synchronisation dossier demandée. Fenêtre de transmission ouverte.');
         
         // Small signal fluctuation
@@ -1245,6 +1803,8 @@
     }
 
     function handleOpenLast() {
+        if (state.puzzleBlocking) return;
+        
         const last = state.inbox[state.inbox.length - 1];
         
         if (!last) {
@@ -1281,9 +1841,13 @@
                 btn.classList.add('active');
                 btn.setAttribute('aria-selected', 'true');
                 
-                // Remove notification when viewing images tab
+                // Remove notification when viewing tab
                 if (btn.dataset.tab === 'images') {
-                    btn.classList.remove('has-update');
+                    btn.classList.remove('has-update', 'has-update-images');
+                } else if (btn.dataset.tab === 'journal') {
+                    btn.classList.remove('has-update', 'has-update-journal');
+                } else if (btn.dataset.tab === 'encyclo') {
+                    btn.classList.remove('has-update', 'has-update-encyclo');
                 }
                 
                 // Update state and render

@@ -198,6 +198,19 @@ body {
     animation: tabPulse 1.5s ease-in-out infinite;
 }
 
+/* Notification animations for each tab type */
+.tab.has-update-journal {
+    animation: tabPulseOrange 1.5s ease-in-out infinite !important;
+}
+
+.tab.has-update-encyclo {
+    animation: tabPulseYellow 1.5s ease-in-out infinite !important;
+}
+
+.tab.has-update-images {
+    animation: tabPulse 1.5s ease-in-out infinite !important;
+}
+
 @keyframes tabPulse {
     0% {
         color: var(--text-secondary);
@@ -206,6 +219,36 @@ body {
     50% {
         color: var(--accent-cyan);
         text-shadow: 0 0 8px rgba(68, 204, 204, 0.6);
+    }
+    100% {
+        color: var(--text-secondary);
+        text-shadow: none;
+    }
+}
+
+@keyframes tabPulseOrange {
+    0% {
+        color: var(--text-secondary);
+        text-shadow: none;
+    }
+    50% {
+        color: #ff9944;
+        text-shadow: 0 0 8px rgba(255, 153, 68, 0.6);
+    }
+    100% {
+        color: var(--text-secondary);
+        text-shadow: none;
+    }
+}
+
+@keyframes tabPulseYellow {
+    0% {
+        color: var(--text-secondary);
+        text-shadow: none;
+    }
+    50% {
+        color: #ffcc44;
+        text-shadow: 0 0 8px rgba(255, 204, 68, 0.6);
     }
     100% {
         color: var(--text-secondary);
@@ -242,10 +285,23 @@ body {
     border-left: 3px solid var(--accent-green);
     padding: 10px 12px;
     margin-bottom: 10px;
+    transition: all 0.2s ease;
 }
 
 .entry:last-child {
     margin-bottom: 0;
+}
+
+/* Unread entries have a subtle glow */
+.entry--unread {
+    background: rgba(68, 204, 204, 0.05);
+    border-left-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(68, 204, 204, 0.15);
+}
+
+.entry:hover {
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
 }
 
 .entryTitle {
@@ -741,6 +797,173 @@ body {
 
 .hint-close:active {
     background: linear-gradient(to bottom, #0d2a0d 0%, #061a06 100%);
+}
+
+/* ===== PUZZLE MODAL ===== */
+.puzzle-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+}
+
+.puzzle-modal.show {
+    display: flex;
+}
+
+.puzzle-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.puzzle-content {
+    position: relative;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-green);
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(0, 204, 102, 0.2);
+    animation: puzzleFadeIn 0.3s ease;
+}
+
+@keyframes puzzleFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.puzzle-header {
+    border-bottom: 1px solid var(--border-accent);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+
+.puzzle-title {
+    color: var(--accent-green);
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.puzzle-instructions {
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: rgba(0, 204, 102, 0.05);
+    border-left: 2px solid var(--accent-cyan);
+}
+
+.puzzle-game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    margin: 20px 0;
+}
+
+.puzzle-feedback {
+    margin: 16px 0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feedback {
+    padding: 12px 16px;
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+}
+
+.feedback--success {
+    background: rgba(0, 204, 102, 0.15);
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    box-shadow: 0 0 12px rgba(0, 204, 102, 0.2);
+}
+
+.feedback--error {
+    background: rgba(255, 68, 68, 0.15);
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    box-shadow: 0 0 12px rgba(255, 68, 68, 0.2);
+}
+
+.puzzle-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.puzzle-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: linear-gradient(to bottom, #1a3a1a 0%, #0d2a0d 100%);
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.puzzle-btn:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #2a5a2a 0%, #1a3a1a 100%);
+    box-shadow: 0 0 12px rgba(0, 204, 102, 0.3);
+}
+
+.puzzle-btn:active:not(:disabled) {
+    background: linear-gradient(to bottom, #0d2a0d 0%, #061a06 100%);
+}
+
+.puzzle-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.puzzle-btn--secondary {
+    background: linear-gradient(to bottom, #3a2a1a 0%, #2a1a0d 100%);
+    border-color: var(--border-accent);
+    color: var(--text-secondary);
+}
+
+.puzzle-btn--secondary:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #4a3a2a 0%, #3a2a1a 100%);
+    box-shadow: 0 0 8px rgba(128, 128, 128, 0.2);
+}
+
+/* Shake animation for failed puzzle */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
 }
 
 /* ===== ACCESSIBILITY ===== */
