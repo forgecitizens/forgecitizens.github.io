@@ -448,6 +448,26 @@
             );
         }
         
+        if (img.id === 'IMG_0005_STABILIZED') {
+            state.clues.add('stabilized_visual_confirmed');
+            
+            // Schedule scientific logs (10 seconds after image)
+            schedule(state.missionTime + 10000, 'SCI_LOG', 'Motif directionnel persistant.');
+            schedule(state.missionTime + 10500, 'WARN_LOG', 'Perturbation locale toujours détectable.');
+            
+            // Add journal entry after short delay
+            setTimeout(() => {
+                addJournal(
+                    'Stabilisation inter-canal',
+                    'Réalignement appliqué. Cohérence restaurée à proximité.\n\nUne structure directionnelle persiste malgré la correction.',
+                    'spectral_stabilization'
+                );
+            }, 1000);
+            
+            // Schedule progress update
+            schedule(state.missionTime + 2000, 'UPDATE_PROGRESS', null);
+        }
+        
         if (img.unlocks && img.unlocks.length > 0) {
             unlock(img.unlocks);
         }
@@ -1381,7 +1401,8 @@
         'angle_shift_observed': 5,  // Décalage angle observé
         'mobility_free_done': 5,    // Mobilité dégagée
         'energy_gradient_detected': 5,  // Gradient énergétique détecté
-        'spectral_alignment_done': 5    // Alignement spectral complété
+        'spectral_alignment_done': 5,   // Alignement spectral complété
+        'stabilized_visual_confirmed': 5 // Visualisation stabilisée confirmée
     };
 
     /**
@@ -1743,6 +1764,24 @@
                         },
                         blocking: true,
                         onSuccess: () => {
+                            // Schedule stabilization logs (300-600ms after success)
+                            schedule(state.missionTime + 400, 'SYS_LOG', 'Compensation appliquée.');
+                            schedule(state.missionTime + 600, 'SCI_LOG', 'Cohérence inter-canal confirmée.');
+                            schedule(state.missionTime + 800, 'SCI_LOG', 'Contours stabilisés.');
+                            
+                            // Schedule IMG_0005_STABILIZED reception (30 seconds after success)
+                            schedule(
+                                state.missionTime + 30000,
+                                'RECV_IMAGE',
+                                {
+                                    id: 'IMG_0005_STABILIZED',
+                                    qualityLabel: 'COHERENT_SPECTRAL',
+                                    note: 'Compensation spectrale appliquée. Cohérence inter-canal restaurée. Contours nets. Motif directionnel persistant malgré correction.',
+                                    t: state.missionTime + 30000,
+                                    unlocks: []
+                                }
+                            );
+                            
                             updateProgressAndMilestones();
                             renderOperationsPanel();
                         }
