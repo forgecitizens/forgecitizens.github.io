@@ -1,14 +1,12 @@
 {
   "global_instability_index": {
-    "value": 551,
+    "value": 580,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-02-14",
-    "last_updated": "2026-02-14T20:00:00Z",
-    "version": "1.17",
-    "note": "Progression très lente et graduelle au-dessus de 500. Hausse minime aujourd’hui due à la poursuite de l’escalade régionale au Moyen-Orient (frappes israéliennes quotidiennes sur le Hezbollah, lourdes pertes et déplacements massifs persistants) et à la tension USA-Iran toujours très élevée (négociations Oman du 6 février n’ont pas abouti à un accord, menaces réciproques maintenues, armada US toujours positionnée, annulations vols prolongées). Tensions transatlantiques stables mais non résolues. Justification du score : Moyen-Orient reste le principal moteur (Israël-Hezbollah en surchauffe continue) ; Iran à haut risque de dérapage sans percée diplomatique ; Groenland/OTAN toujours fracturé ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas d’événement majeur changeant la donne aujourd’hui (pas de frappe US-Iran, pas de rupture OTAN, pas de crise systémique marchés). Règle appliquée : hausses de 20-30+ points réservées à événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
-  },
-
-  "history": [
+    "calculation_date": "2026-02-28",
+    "last_updated": "2026-02-28T20:00:00Z",
+    "version": "1.18",
+    "note": "Hausse plus marquée aujourd'hui due à l'escalade majeure USA-Israël contre l'Iran (frappes massives sur Téhéran et autres villes, plus de 200 morts rapportés, Trump appelle au changement de régime, ripostes iraniennes sur Israël et bases US dans la région, explosions et fermeture d'espaces aériens). Tensions Moyen-Orient persistantes (Israël-Hezbollah). Justification du score : Iran domine avec conflit ouvert USA-Israël-Iran (game-changer régional, risque propagation) ; Israël-Hezbollah en surchauffe ; tensions transatlantiques stables ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Événement majeur justifiant hausse de +30 points. Règle appliquée : hausses de 20-30+ points pour événements majeurs ; progression graduelle à partir de 500, 900 seuil nucléaire critique."
+  },  "history": [
     { "date": "2026-01-01", "value": 365 },
     { "date": "2026-01-02", "value": 363 },
     { "date": "2026-01-03", "value": 366 },
@@ -35,42 +33,56 @@
     { "date": "2026-01-24", "value": 500 },
     { "date": "2026-01-25", "value": 508 },
     { "date": "2026-01-26", "value": 518 },
-    { "date": "2026-01-27", "value": 522 },
-    { "date": "2026-01-28", "value": 524 },
-    { "date": "2026-01-29", "value": 526 },
-    { "date": "2026-01-30", "value": 527 },
-    { "date": "2026-01-31", "value": 528 },
-    { "date": "2026-02-01", "value": 520 },
-    { "date": "2026-02-02", "value": 523 },
-    { "date": "2026-02-03", "value": 525 },
-    { "date": "2026-02-04", "value": 530 },
-    { "date": "2026-02-05", "value": 532 },
+    { "date": "2026-01-27", "value": 515 },
+    { "date": "2026-01-28", "value": 510 },
+    { "date": "2026-01-29", "value": 513 },
+    { "date": "2026-01-30", "value": 520 },
+    { "date": "2026-01-31", "value": 524 },
+    { "date": "2026-02-01", "value": 515 },
+    { "date": "2026-02-02", "value": 516 },
+    { "date": "2026-02-03", "value": 521 },
+    { "date": "2026-02-04", "value": 523 },
+    { "date": "2026-02-05", "value": 530 },
     { "date": "2026-02-06", "value": 535 },
     { "date": "2026-02-07", "value": 537 },
     { "date": "2026-02-08", "value": 539 },
     { "date": "2026-02-09", "value": 541 },
-    { "date": "2026-02-10", "value": 543 },
-    { "date": "2026-02-11", "value": 545 },
-    { "date": "2026-02-12", "value": 547 },
+    { "date": "2026-02-10", "value": 541 },
+    { "date": "2026-02-11", "value": 542 },
+    { "date": "2026-02-12", "value": 543 },
     { "date": "2026-02-13", "value": 549 },
-    { "date": "2026-02-14", "value": 551 }
-  ],
-
-  "major_contributors": [
+    { "date": "2026-02-14", "value": 551 },
+    { "date": "2026-02-15", "value": 553 },
+    { "date": "2026-02-16", "value": 555 },
+    { "date": "2026-02-17", "value": 555 },
+    { "date": "2026-02-18", "value": 556 },
+    { "date": "2026-02-19", "value": 567 },
+    { "date": "2026-02-20", "value": 568 },
+    { "date": "2026-02-21", "value": 569 },
+    { "date": "2026-02-22", "value": 567 },
+    { "date": "2026-02-23", "value": 569 },
+    { "date": "2026-02-24", "value": 571 },
+    { "date": "2026-02-25", "value": 572 },
+    { "date": "2026-02-26", "value": 573 },
+    { "date": "2026-02-27", "value": 577 },
+    { "date": "2026-02-28", "value": 580, "event": "Début guerre USA/Israël vs Iran - Ali Khamenei tué" }
+  ],  "events": {
+    "2026-02-28": "Début guerre USA/Israël vs Iran - Ali Khamenei tué"
+  },  "major_contributors": [
     {
       "country_or_region": "Iran",
-      "fig_weight": 0.074,
+      "fig_weight": 0.075,
       "daily_instability_score": 13,
-      "weighted_contribution": 0.962,
-      "events": "Tension USA-Iran toujours extrêmement élevée : négociations Oman du 6 février n’ont pas abouti à un accord, menaces Trump intensifiées ('Supreme Leader should be worried'), armada navale US toujours positionnée, Iran maintient fermeture airspace prolongée et annulations vols massives, menaces réciproques sans frappe ouverte, répression interne brutale continue",
-      "gravity": "Très élevé (Fibonacci 13 : risque d’échec négos + confrontation directe + instabilité régime/nucléaire)"
+      "weighted_contribution": 0.975,
+      "events": "Escalade majeure : frappes massives USA-Israël sur Téhéran et autres villes, plus de 200 morts rapportés, Trump appelle au changement de régime, ripostes iraniennes sur Israël et bases US dans la région (Qatar, UAE, Kuwait, Bahrain, Jordan, Saudi Arabia, Iraq), explosions et fermeture d'espaces aériens, ONU condamne l'agression",
+      "gravity": "Très élevé (Fibonacci 13 : conflit ouvert + risque propagation régionale)"
     },
     {
       "country_or_region": "Israël / Hezbollah / Moyen-Orient",
       "fig_weight": 0.068,
       "daily_instability_score": 13,
       "weighted_contribution": 0.884,
-      "events": "Escalade persistante : frappes israéliennes quotidiennes intenses sur Hezbollah (Liban sud + Syrie), lourdes pertes, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d’embrasement régional toujours très élevé",
+      "events": "Escalade persistante : frappes israéliennes quotidiennes intenses sur Hezbollah (Liban sud + Syrie), lourdes pertes, milliers de déplacés supplémentaires, bombardements infrastructures et commandants, risque d'embrasement régional toujours très élevé",
       "gravity": "Très élevé (Fibonacci 13 : escalade militaire régionale + risque propagation)"
     },
     {
@@ -102,21 +114,17 @@
       "fig_weight": 0.110,
       "daily_instability_score": 5,
       "weighted_contribution": 0.550,
-      "events": "Tensions régionales stables, exercices récents simulant blocus, rhétorique expansionniste chinoise, menace continue sans nouveau développement explosif le 4 février",
+      "events": "Tensions régionales stables, exercices récents simulant blocus, rhétorique expansionniste chinoise, menace continue sans nouveau développement explosif le 28 février",
       "gravity": "Modéré (Fibonacci 5)"
     }
-  ],
-
-  "summary": {
-    "total_weighted_sum": 7.98,
+  ],  "summary": {
+    "total_weighted_sum": 8.7,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée – progression lente mais inexorable au-dessus de 500. USA-Iran : négociations Oman du 6 février sans accord, menaces Trump accrues, risque de dérapage toujours très élevé ; Israël-Hezbollah en surchauffe continue ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Pas de rupture majeure aujourd’hui. 900 reste le seuil nucléaire critique."
-  },
-
-  "metadata": {
+    "interpretation": "Instabilité très élevée – hausse marquée aujourd’hui avec conflit ouvert USA-Israël-Iran. Iran domine avec frappes massives et ripostes ; Israël-Hezbollah en surchauffe ; tensions transatlantiques persistantes ; Soudan famine catastrophique ; Ukraine hiver sans énergie. Événement majeur justifiant hausse de +30 points. 900 reste le seuil nucléaire critique."
+  },  "metadata": {
     "sources": [
-      "Reuters, Al Jazeera, AP News, Axios, ISW (USA-Iran : négociations Oman, menaces Trump, désaccords missiles/proxies, armada, annulations vols)",
+      "Reuters, Al Jazeera, AP News, NBC News, CNN, Understanding War (USA-Israël frappes Iran, ripostes iraniennes, morts, changement de régime)",
       "Times of Israel, Al Jazeera, Reuters (Israël-Hezbollah : frappes quotidiennes, pertes, déplacés)",
       "Bloomberg, POLITICO, France24 (tensions transatlantiques, menaces Canada)",
       "UN OCHA, WFP (Soudan famine)",
@@ -126,6 +134,7 @@
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
-    "next_update_planned": "2026-02-05"
+    "next_update_planned": "2026-03-01"
   }
 }
+

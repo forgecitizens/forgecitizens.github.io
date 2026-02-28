@@ -488,12 +488,36 @@
             color: #888888;
             font-size: 10px;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-tooltip-bullet {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #555555;
+            flex-shrink: 0;
+        }
+
+        .chart-tooltip-bullet.with-event {
+            background-color: #ff4444;
         }
 
         .chart-tooltip-value {
             font-size: 16px;
             font-weight: bold;
             color: #ffffff;
+        }
+
+        .chart-tooltip-event {
+            font-size: 11px;
+            color: #ff9999;
+            margin-top: 6px;
+            max-width: 200px;
+            white-space: normal;
+            line-height: 1.3;
         }
 
         /* Slider de timeline */
@@ -586,8 +610,12 @@
     
     <!-- Tooltip pour le graphique -->
     <div class="chart-tooltip" id="chart-tooltip">
-        <div class="chart-tooltip-day"></div>
+        <div class="chart-tooltip-day">
+            <div class="chart-tooltip-bullet"></div>
+            <span class="chart-tooltip-day-text"></span>
+        </div>
         <div class="chart-tooltip-value"></div>
+        <div class="chart-tooltip-event" style="display: none;"></div>
     </div>
 
     <!-- Slider de timeline -->
@@ -811,7 +839,9 @@
             
             async function loadIGI() {
                 try {
-                    const response = await fetch(IGI_JSON_PATH);
+                    // Ajouter un paramètre de cache-busting
+                    const url = IGI_JSON_PATH + '?v=' + Date.now();
+                    const response = await fetch(url);
 
                     if (!response.ok) {
                         throw new Error('network');
@@ -826,6 +856,14 @@
 
                     // Stocker les données pour le graphique
                     igiJsonData = data;
+                    
+                    // Debug: log les données chargées
+                    console.log('IGI Data loaded:', {
+                        historyLength: data.history?.length,
+                        lastDate: data.history?.[data.history.length - 1]?.date,
+                        lastValue: data.history?.[data.history.length - 1]?.value,
+                        events: data.events
+                    });
                     
                     // Mettre à jour la note "Aujourd'hui"
                     const noteEl = document.getElementById('today-note-content');
@@ -926,6 +964,12 @@
             const WINDOW_DAYS = 30;
             let allRawData = []; // Données brutes stockées globalement
             
+            // Fonction pour parser une date au format YYYY-MM-DD de manière fiable
+            function parseISODate(dateStr) {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            }
+            
             function renderBackgroundChart(endDate = null) {
                 const chartContainer = document.getElementById('background-chart');
                 if (!chartContainer) return;
@@ -936,12 +980,17 @@
                 // Récupérer l'historique depuis le JSON chargé
                 if (allRawData.length === 0 && igiJsonData && igiJsonData.history && Array.isArray(igiJsonData.history)) {
                     allRawData = igiJsonData.history.map(entry => ({
-                        date: new Date(entry.date),
+                        date: parseISODate(entry.date),
                         dateStr: entry.date,
                         value: entry.value
                     }));
                     // Trier par date
                     allRawData.sort((a, b) => a.date - b.date);
+                    console.log('Données parsées:', {
+                        count: allRawData.length,
+                        first: allRawData[0].dateStr,
+                        last: allRawData[allRawData.length - 1].dateStr
+                    });
                 }
                 
                 // Si pas de données, ne pas afficher le graphique
@@ -963,6 +1012,14 @@
                 
                 // Filtrer les données pour la fenêtre
                 const igiData = allRawData.filter(d => d.date >= windowStart && d.date <= windowEnd);
+                
+                console.log('Fenêtre:', {
+                    windowStart: windowStart.toLocaleDateString(),
+                    windowEnd: windowEnd.toLocaleDateString(),
+                    pointsFiltrés: igiData.length,
+                    premier: igiData[0]?.dateStr,
+                    dernier: igiData[igiData.length - 1]?.dateStr
+                });
                 
                 // Si pas de données dans la fenêtre, ne pas afficher
                 if (igiData.length === 0) {
@@ -1103,7 +1160,7 @@
                 // Calculer l'index de chaque point dans la fenêtre de 30 jours
                 igiData.forEach((point, index) => {
                     // Calculer le nombre de jours depuis le début de la fenêtre
-                    const dayIndex = Math.round((point.date - windowStart) / (1000 * 60 * 60 * 24));
+                    const dayIndex = Math.floor((point.date - windowStart) / (1000 * 60 * 60 * 24));
                     const x = xScale(dayIndex);
                     const y = yScale(point.value);
                     
@@ -1138,8 +1195,10 @@
 
                 // Tooltip
                 const tooltip = document.getElementById('chart-tooltip');
-                const tooltipDay = tooltip.querySelector('.chart-tooltip-day');
+                const tooltipDay = tooltip.querySelector('.chart-tooltip-day-text');
+                const tooltipBullet = tooltip.querySelector('.chart-tooltip-bullet');
                 const tooltipValue = tooltip.querySelector('.chart-tooltip-value');
+                const tooltipEvent = tooltip.querySelector('.chart-tooltip-event');
 
                 // Points sur la courbe
                 igiData.forEach((point, index) => {
@@ -1167,6 +1226,17 @@
                         
                         tooltipDay.textContent = formattedDate;
                         tooltipValue.textContent = value;
+                        
+                        // Vérifier s'il y a un événement pour cette date
+                        const event = igiJsonData.events && igiJsonData.events[dateStr];
+                        if (event) {
+                            tooltipBullet.classList.add('with-event');
+                            tooltipEvent.textContent = event;
+                            tooltipEvent.style.display = 'block';
+                        } else {
+                            tooltipBullet.classList.remove('with-event');
+                            tooltipEvent.style.display = 'none';
+                        }
                         
                         // Positionner la tooltip
                         const rect = this.getBoundingClientRect();
