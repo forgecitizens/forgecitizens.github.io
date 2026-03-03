@@ -33,9 +33,16 @@
         controlRoom: null,
         transmission: null,
         warning: null,
-        transmissionPlaying: false, // Flag to prevent overlapping
-        warningPlaying: false,
-        transmissionQueued: false
+
+        // Audio queue for sequential playback
+        queue: [],
+        isProcessingQueue: false,
+        currentAudioElement: null,
+        currentAudioType: null,
+
+        // Audio settings
+        playbackMode: 'all', // all | none | warn-only | warn-tel
+        ambientMuted: false
     };
 
     /**
@@ -55,20 +62,61 @@
         audio.warning = new Audio(CONFIG.SOUNDS_PATH + 'connecth_warning_soft.mp3');
         audio.warning.volume = 0.65;
         
-        // Reset flag when transmission sound ends
-        audio.transmission.addEventListener('ended', () => {
-            audio.transmissionPlaying = false;
-        });
-
-        audio.warning.addEventListener('ended', () => {
-            audio.warningPlaying = false;
-            if (audio.transmissionQueued) {
-                audio.transmissionQueued = false;
-                playTransmissionSound();
-            }
-        });
-
         console.log('🔊 Mission audio initialized');
+    }
+
+    /**
+     * Check if a sound type is allowed with current audio settings
+     * @param {string} type - warning | transmission | effect
+     */
+    function canPlaySoundType(type) {
+        switch (audio.playbackMode) {
+            case 'none':
+                return false;
+            case 'warn-only':
+                return type === 'warning';
+            case 'warn-tel':
+                return type === 'warning' || type === 'transmission';
+            case 'all':
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Apply ambient audio state according to settings
+     */
+    function applyAmbientAudioState() {
+        if (!audio.controlRoom) return;
+
+        if (audio.ambientMuted) {
+            audio.controlRoom.pause();
+            audio.controlRoom.currentTime = 0;
+            return;
+        }
+
+        const playPromise = audio.controlRoom.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Ignore autoplay restrictions here; startControlRoomAudio already handles first interaction
+            });
+        }
+    }
+
+    /**
+     * Ensure currently playing queued audio still matches active settings
+     */
+    function enforceCurrentAudioPolicy() {
+        if (!audio.currentAudioElement || !audio.currentAudioType) return;
+
+        if (!canPlaySoundType(audio.currentAudioType)) {
+            audio.currentAudioElement.pause();
+            audio.currentAudioElement.currentTime = 0;
+            audio.currentAudioElement = null;
+            audio.currentAudioType = null;
+            audio.isProcessingQueue = false;
+            processAudioQueue();
+        }
     }
 
     /**
@@ -76,6 +124,10 @@
      */
     function startControlRoomAudio() {
         if (!audio.controlRoom) return;
+
+        if (audio.ambientMuted) {
+            return;
+        }
 
         const playPromise = audio.controlRoom.play();
 
@@ -86,6 +138,10 @@
                 console.log('🔇 Autoplay blocked, waiting for user interaction...');
                 // Start on first click
                 document.addEventListener('click', function startOnClick() {
+                    if (audio.ambientMuted) {
+                        document.removeEventListener('click', startOnClick);
+                        return;
+                    }
                     audio.controlRoom.play().catch(e => console.log('Audio failed:', e));
                     document.removeEventListener('click', startOnClick);
                 }, { once: true });
@@ -94,52 +150,124 @@
     }
 
     /**
-     * Play transmission incoming sound (prevents overlapping)
+     * Play transmission incoming sound
      */
     function playTransmissionSound() {
         if (!audio.transmission) return;
 
-        if (audio.warningPlaying) {
-            audio.transmissionQueued = true;
-            return;
-        }
-        
-        // Prevent overlapping - only play if not already playing
-        if (audio.transmissionPlaying) {
-            console.log('🔔 Transmission sound already playing, skipping');
-            return;
-        }
-
-        audio.transmissionPlaying = true;
-        audio.transmission.currentTime = 0;
-        audio.transmission.play().catch(e => {
-            console.log('Transmission sound failed:', e);
-            audio.transmissionPlaying = false;
+        queueAudioEvent({
+            type: 'transmission',
+            element: audio.transmission
         });
     }
 
     /**
-     * Play warning sound (priority over transmission)
+     * Play warning sound
      */
     function playWarningSound() {
         if (!audio.warning) return;
 
-        if (audio.warningPlaying) {
+        queueAudioEvent({
+            type: 'warning',
+            element: audio.warning
+        });
+    }
+
+    /**
+     * Add an audio event to the queue for sequential playback
+     */
+    function queueAudioEvent(audioEvent) {
+        if (!canPlaySoundType(audioEvent.type)) {
             return;
         }
 
-        if (audio.transmissionPlaying && audio.transmission) {
-            audio.transmission.pause();
-            audio.transmission.currentTime = 0;
-            audio.transmissionPlaying = false;
+        audio.queue.push(audioEvent);
+        if (!audio.isProcessingQueue) {
+            processAudioQueue();
+        }
+    }
+
+    /**
+     * Process the audio queue - play one audio at a time
+     */
+    function processAudioQueue() {
+        if (audio.queue.length === 0) {
+            audio.isProcessingQueue = false;
+            audio.currentAudioElement = null;
+            audio.currentAudioType = null;
+            return;
         }
 
-        audio.warningPlaying = true;
-        audio.warning.currentTime = 0;
-        audio.warning.play().catch(e => {
-            console.log('Warning sound failed:', e);
-            audio.warningPlaying = false;
-        });
+        audio.isProcessingQueue = true;
+        const nextAllowedIndex = audio.queue.findIndex(item => canPlaySoundType(item.type));
+
+        if (nextAllowedIndex === -1) {
+            audio.queue = [];
+            audio.isProcessingQueue = false;
+            audio.currentAudioElement = null;
+            audio.currentAudioType = null;
+            return;
+        }
+
+        if (nextAllowedIndex > 0) {
+            audio.queue.splice(0, nextAllowedIndex);
+        }
+
+        const audioEvent = audio.queue.shift();
+        const audioElement = audioEvent.element;
+
+        audio.currentAudioElement = audioElement;
+        audio.currentAudioType = audioEvent.type;
+
+        audioElement.currentTime = 0;
+        const playPromise = audioElement.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.log('Audio playback failed:', err);
+                if (audioEvent.callback) {
+                    audioEvent.callback();
+                }
+                audio.currentAudioElement = null;
+                audio.currentAudioType = null;
+                processAudioQueue();
+            });
+        }
+
+        const endHandler = () => {
+            audioElement.removeEventListener('ended', endHandler);
+            if (audioEvent.callback) {
+                audioEvent.callback();
+            }
+            audio.currentAudioElement = null;
+            audio.currentAudioType = null;
+            processAudioQueue();
+        };
+
+        audioElement.addEventListener('ended', endHandler);
+    }
+
+    /**
+     * Safely play a sound without crashing if file is missing
+     * Adds sound to queue for sequential playback
+     * @param {string} filename - Name of the audio file in sounds folder
+     */
+    function safePlaySound(filename) {
+        try {
+            const soundPath = CONFIG.SOUNDS_PATH + filename;
+            const audioElement = new Audio(soundPath);
+            audioElement.volume = 0.6;
+            
+            queueAudioEvent({
+                type: 'effect',
+                element: audioElement,
+                callback: () => {
+                    // Cleanup
+                }
+            });
+        } catch (err) {
+            console.log(`⚠️ Could not load sound: ${filename}`, err.message);
+        }
     }
 
     /**
@@ -153,32 +281,18 @@
         if (audio.transmission) {
             audio.transmission.pause();
             audio.transmission.currentTime = 0;
-            audio.transmissionPlaying = false;
         }
         if (audio.warning) {
             audio.warning.pause();
             audio.warning.currentTime = 0;
-            audio.warningPlaying = false;
-            audio.transmissionQueued = false;
         }
-    }
-
-    /**
-     * Safely play a sound without crashing if file is missing
-     * @param {string} filename - Name of the audio file in sounds folder
-     */
-    function safePlaySound(filename) {
-        try {
-            const soundPath = CONFIG.SOUNDS_PATH + filename;
-            const audio = new Audio(soundPath);
-            audio.volume = 0.6;
-            audio.play().catch(err => {
-                // Silently ignore if file doesn't exist or playback fails
-                console.log(`⚠️ Sound playback failed: ${filename}`, err.message);
-            });
-        } catch (err) {
-            // Silently ignore errors
-            console.log(`⚠️ Could not load sound: ${filename}`, err.message);
+        audio.queue = [];
+        audio.isProcessingQueue = false;
+        audio.currentAudioType = null;
+        if (audio.currentAudioElement) {
+            audio.currentAudioElement.pause();
+            audio.currentAudioElement.currentTime = 0;
+            audio.currentAudioElement = null;
         }
     }
 
@@ -983,6 +1097,204 @@
         if (hintModalElement) {
             hintModalElement.classList.remove('show');
         }
+    }
+
+    // ========================================================================
+    // MISSION MENU MODAL
+    // ========================================================================
+
+    let menuModalElement = null;
+
+    function getAudioModeLabel(mode) {
+        switch (mode) {
+            case 'none':
+                return 'Tous les sons désactivés';
+            case 'warn-only':
+                return 'Uniquement alertes [WARN]';
+            case 'warn-tel':
+                return 'Alertes [WARN] + télétransmissions [TEL]';
+            case 'all':
+            default:
+                return 'Mode audio complet';
+        }
+    }
+
+    function showMenuFeedback(message) {
+        if (!menuModalElement) return;
+
+        const feedbackEl = menuModalElement.querySelector('#menuFeedback');
+        if (!feedbackEl) return;
+
+        feedbackEl.textContent = message;
+        feedbackEl.classList.remove('show');
+        void feedbackEl.offsetWidth;
+        feedbackEl.classList.add('show');
+    }
+
+    function updateMenuAudioSettingsUI() {
+        if (!menuModalElement) return;
+
+        const modeButtons = menuModalElement.querySelectorAll('.menu-audio-option');
+        modeButtons.forEach(btn => {
+            const isActive = btn.dataset.audioMode === audio.playbackMode;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        const ambientBtn = menuModalElement.querySelector('#menuAmbientToggleBtn');
+        if (ambientBtn) {
+            ambientBtn.classList.toggle('active', audio.ambientMuted);
+            ambientBtn.setAttribute('aria-pressed', audio.ambientMuted ? 'true' : 'false');
+            ambientBtn.textContent = audio.ambientMuted
+                ? 'Réactiver le fond sonore'
+                : 'Désactiver le fond sonore';
+        }
+
+        const statusEl = menuModalElement.querySelector('#menuAudioStatus');
+        if (statusEl) {
+            const ambientLabel = audio.ambientMuted ? 'Fond sonore: OFF' : 'Fond sonore: ON';
+            statusEl.textContent = `${getAudioModeLabel(audio.playbackMode)} • ${ambientLabel}`;
+        }
+    }
+
+    function setAudioPlaybackMode(mode) {
+        audio.playbackMode = mode;
+
+        if (mode === 'none' || mode === 'warn-only' || mode === 'warn-tel') {
+            audio.ambientMuted = true;
+        }
+
+        applyAmbientAudioState();
+        enforceCurrentAudioPolicy();
+        updateMenuAudioSettingsUI();
+        showMenuFeedback(`Paramètre appliqué: ${getAudioModeLabel(mode)}`);
+    }
+
+    function toggleAmbientAudio() {
+        audio.ambientMuted = !audio.ambientMuted;
+        applyAmbientAudioState();
+        updateMenuAudioSettingsUI();
+        showMenuFeedback(audio.ambientMuted
+            ? 'Paramètre appliqué: fond sonore désactivé'
+            : 'Paramètre appliqué: fond sonore activé');
+    }
+
+    function showMenuView(viewName) {
+        if (!menuModalElement) return;
+
+        const mainView = menuModalElement.querySelector('#menuMainView');
+        const settingsView = menuModalElement.querySelector('#menuSettingsView');
+
+        if (mainView) {
+            mainView.classList.toggle('show', viewName === 'main');
+        }
+        if (settingsView) {
+            settingsView.classList.toggle('show', viewName === 'settings');
+        }
+    }
+
+    function createMenuModal() {
+        if (menuModalElement) return;
+
+        menuModalElement = document.createElement('div');
+        menuModalElement.className = 'menu-modal';
+        menuModalElement.id = 'menuModal';
+        menuModalElement.innerHTML = `
+            <div class="menu-backdrop"></div>
+            <div class="menu-content">
+                <div class="menu-header">
+                    <h3 class="menu-title">Menu mission</h3>
+                    <button class="menu-close" id="menuCloseBtn" aria-label="Fermer">×</button>
+                </div>
+
+                <div class="menu-view" id="menuMainView">
+                    <button class="menu-action-btn" id="menuSaveBtn">Sauvegarder la partie</button>
+                    <button class="menu-action-btn" id="menuHomeBtn">Menu principal</button>
+                    <button class="menu-action-btn" id="menuSettingsBtn">Paramètres</button>
+                </div>
+
+                <div class="menu-view" id="menuSettingsView">
+                    <div class="menu-category">Options sonores</div>
+                    <button class="menu-action-btn menu-audio-option" data-audio-mode="none">Désactiver tous les sons</button>
+                    <button class="menu-action-btn menu-audio-option" data-audio-mode="warn-only">Garder uniquement les sons d'alerte [WARN]</button>
+                    <button class="menu-action-btn menu-audio-option" data-audio-mode="warn-tel">Garder sons d'alerte et télétransmission</button>
+                    <button class="menu-action-btn menu-toggle-btn" id="menuAmbientToggleBtn">Désactiver le fond sonore</button>
+                    <div class="menu-audio-status" id="menuAudioStatus"></div>
+                    <button class="menu-action-btn menu-back-btn" id="menuBackBtn">Retour</button>
+                </div>
+
+                <div class="menu-feedback" id="menuFeedback" aria-live="polite"></div>
+            </div>
+        `;
+
+        document.body.appendChild(menuModalElement);
+
+        const backdrop = menuModalElement.querySelector('.menu-backdrop');
+        backdrop.addEventListener('click', closeMenuModal);
+
+        const closeBtn = menuModalElement.querySelector('#menuCloseBtn');
+        closeBtn.addEventListener('click', closeMenuModal);
+
+        const saveBtn = menuModalElement.querySelector('#menuSaveBtn');
+        saveBtn.addEventListener('click', () => {
+            showMenuFeedback('Sauvegarde non disponible pour le moment.');
+        });
+
+        const homeBtn = menuModalElement.querySelector('#menuHomeBtn');
+        homeBtn.addEventListener('click', () => {
+            stopAllAudio();
+            window.location.href = '/connect-h/';
+        });
+
+        const settingsBtn = menuModalElement.querySelector('#menuSettingsBtn');
+        settingsBtn.addEventListener('click', () => {
+            showMenuView('settings');
+            updateMenuAudioSettingsUI();
+        });
+
+        const backBtn = menuModalElement.querySelector('#menuBackBtn');
+        backBtn.addEventListener('click', () => {
+            showMenuView('main');
+        });
+
+        const modeButtons = menuModalElement.querySelectorAll('.menu-audio-option');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setAudioPlaybackMode(btn.dataset.audioMode);
+            });
+        });
+
+        const ambientBtn = menuModalElement.querySelector('#menuAmbientToggleBtn');
+        ambientBtn.addEventListener('click', toggleAmbientAudio);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && menuModalElement.classList.contains('show')) {
+                closeMenuModal();
+            }
+        });
+
+        showMenuView('main');
+        updateMenuAudioSettingsUI();
+    }
+
+    function openMenuModal(defaultView = 'main') {
+        createMenuModal();
+        showMenuView(defaultView);
+        updateMenuAudioSettingsUI();
+        menuModalElement.classList.add('show');
+    }
+
+    function closeMenuModal() {
+        if (menuModalElement) {
+            menuModalElement.classList.remove('show');
+        }
+    }
+
+    function isAnyModalOpen() {
+        const hintOpen = hintModalElement && hintModalElement.classList.contains('show');
+        const puzzleOpen = puzzleModalElement && puzzleModalElement.classList.contains('show');
+        const menuOpen = menuModalElement && menuModalElement.classList.contains('show');
+        return Boolean(hintOpen || puzzleOpen || menuOpen);
     }
 
     // ========================================================================
@@ -1858,10 +2170,7 @@
     }
 
     function handleMenu() {
-        if (confirm('Retourner au menu principal ? La progression sera perdue.')) {
-            stopAllAudio();
-            window.location.href = '/connect-h/';
-        }
+        openMenuModal('main');
     }
 
     // ========================================================================
@@ -1905,6 +2214,15 @@
         document.addEventListener('keydown', (e) => {
             // ESC to menu
             if (e.key === 'Escape') {
+                if (menuModalElement && menuModalElement.classList.contains('show')) {
+                    closeMenuModal();
+                    return;
+                }
+
+                if (isAnyModalOpen()) {
+                    return;
+                }
+
                 handleMenu();
             }
             // 1, 2, 3 for tabs

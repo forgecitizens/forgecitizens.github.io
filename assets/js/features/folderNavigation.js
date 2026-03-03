@@ -28,7 +28,7 @@ const fileSystem = {
                     },
                     'Sophiscope': {
                         type: 'file',
-                        icon: 'img/lock.svg',
+                        icon: 'img/sophiscope.png',
                         action: 'openSophiscope'
                     }
                 }
