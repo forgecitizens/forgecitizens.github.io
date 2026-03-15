@@ -619,6 +619,29 @@
         <div class="resize-handle"></div>
     </div>
 
+    <!-- PDF Reader Modal -->
+    <div class="modal" id="pdf-reader-modal">
+        <div class="modal-header">
+            <div class="modal-title" id="pdf-reader-title">Document PDF</div>
+            <div class="modal-controls">
+                <div class="modal-button" onclick="minimizeModal('pdf-reader-modal')">_</div>
+                <div class="modal-button" onclick="maximizeModal('pdf-reader-modal')">□</div>
+                <div class="modal-button" onclick="closePdfReader()">×</div>
+            </div>
+        </div>
+        <div class="modal-content pdf-reader-content">
+            <iframe
+                id="pdf-reader-frame"
+                class="pdf-reader-frame"
+                title="Lecteur PDF intégré"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                allow="fullscreen">
+            </iframe>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
     <!-- Start Menu Modals -->
     <div class="modal" id="programs-modal">
         <div class="modal-header">

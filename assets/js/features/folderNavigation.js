@@ -59,6 +59,19 @@ const fileSystem = {
                         action: 'openIAGallery'
                     }
                 }
+            },
+            'Essais': {
+                type: 'folder',
+                icon: 'img/document.png',
+                children: {
+                    'Comment une société devient cyberpunk (mars 2026)': {
+                        type: 'file',
+                        icon: 'img/pdf.png',
+                        action: 'openPdfDocument',
+                        url: '/articles/Comment une société devient cyberpunk_mars_2026.pdf',
+                        title: 'Comment une société devient cyberpunk (mars 2026)'
+                    }
+                }
             }
         }
     }
@@ -392,7 +405,7 @@ function openFile(filePath, fileData) {
     if (fileData && fileData.action) {
         const actionFn = window[fileData.action];
         if (typeof actionFn === 'function') {
-            actionFn();
+            actionFn(fileData, filePath);
             return;
         } else {
             console.warn('Action function not found:', fileData.action);
@@ -478,6 +491,53 @@ function openIAGallery() {
     console.log('🎨 Opening IA Gallery...');
     if (typeof openModal === 'function') {
         openModal('ia-gallery-modal');
+    }
+}
+
+/**
+ * Open a PDF document from file metadata
+ */
+function openPdfDocument(fileData) {
+    if (!fileData || !fileData.url) {
+        console.warn('PDF metadata missing:', fileData);
+        return;
+    }
+
+    openPdfReader(fileData.url, fileData.title || 'Document PDF');
+}
+
+/**
+ * Open the embedded PDF reader modal and load the selected document
+ */
+function openPdfReader(pdfPath, documentTitle = 'Document PDF') {
+    const titleEl = document.getElementById('pdf-reader-title');
+    const frameEl = document.getElementById('pdf-reader-frame');
+
+    if (!titleEl || !frameEl) {
+        // Fallback: open in a new tab if reader modal is unavailable
+        window.open(encodeURI(pdfPath), '_blank');
+        return;
+    }
+
+    titleEl.textContent = documentTitle;
+    frameEl.src = encodeURI(pdfPath);
+
+    if (typeof openModal === 'function') {
+        openModal('pdf-reader-modal');
+    }
+}
+
+/**
+ * Close the PDF reader modal and unload the document
+ */
+function closePdfReader() {
+    const frameEl = document.getElementById('pdf-reader-frame');
+    if (frameEl) {
+        frameEl.removeAttribute('src');
+    }
+
+    if (typeof closeModal === 'function') {
+        closeModal('pdf-reader-modal');
     }
 }
 
@@ -650,6 +710,9 @@ window.openQualifR = openQualifR;
 window.openSophiscope = openSophiscope;
 window.openIGI = openIGI;
 window.openIAGallery = openIAGallery;
+window.openPdfDocument = openPdfDocument;
+window.openPdfReader = openPdfReader;
+window.closePdfReader = closePdfReader;
 window.openConnectHAuth = openConnectHAuth;
 window.closeConnectHModal = closeConnectHModal;
 console.log('✅ FolderNavigation: window.openFolderExplorer =', typeof window.openFolderExplorer);
