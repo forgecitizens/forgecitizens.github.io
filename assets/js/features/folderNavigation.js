@@ -507,20 +507,67 @@ function openPdfDocument(fileData) {
 }
 
 /**
+ * Build a safe absolute URL for PDF paths containing spaces/accents.
+ */
+function buildSafePdfUrl(pdfPath) {
+    if (!pdfPath || typeof pdfPath !== 'string') {
+        return '';
+    }
+
+    try {
+        const url = new URL(pdfPath, window.location.origin);
+        const encodedPath = url.pathname
+            .split('/')
+            .map((segment) => {
+                if (!segment) return segment;
+                try {
+                    return encodeURIComponent(decodeURIComponent(segment));
+                } catch (_error) {
+                    return encodeURIComponent(segment);
+                }
+            })
+            .join('/');
+
+        url.pathname = encodedPath;
+        return url.toString();
+    } catch (_error) {
+        return encodeURI(pdfPath);
+    }
+}
+
+/**
+ * Android mobile browsers often fail to render PDFs in iframe reliably.
+ */
+function shouldOpenPdfInNewTab() {
+    const userAgent = navigator.userAgent || '';
+    const isAndroid = /Android/i.test(userAgent);
+    const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+
+    return isAndroid || (isMobileViewport && isTouchDevice);
+}
+
+/**
  * Open the embedded PDF reader modal and load the selected document
  */
 function openPdfReader(pdfPath, documentTitle = 'Document PDF') {
     const titleEl = document.getElementById('pdf-reader-title');
     const frameEl = document.getElementById('pdf-reader-frame');
+    const safePdfUrl = buildSafePdfUrl(pdfPath);
 
-    if (!titleEl || !frameEl) {
+    if (!safePdfUrl) {
+        console.warn('Invalid PDF path:', pdfPath);
+        return;
+    }
+
+    if (!titleEl || !frameEl || shouldOpenPdfInNewTab()) {
         // Fallback: open in a new tab if reader modal is unavailable
-        window.open(encodeURI(pdfPath), '_blank');
+        window.open(safePdfUrl, '_blank', 'noopener');
         return;
     }
 
     titleEl.textContent = documentTitle;
-    frameEl.src = encodeURI(pdfPath);
+    frameEl.src = safePdfUrl;
 
     if (typeof openModal === 'function') {
         openModal('pdf-reader-modal');
