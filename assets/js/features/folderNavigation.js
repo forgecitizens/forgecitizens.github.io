@@ -68,7 +68,7 @@ const fileSystem = {
                         type: 'file',
                         icon: 'img/pdf.png',
                         action: 'openPdfDocument',
-                        url: '/articles/Comment une société devient cyberpunk_mars_2026.pdf',
+                        url: '/articles/Comment une société devient cyberpunk_2026.pdf',
                         title: 'Comment une société devient cyberpunk (mars 2026)'
                     }
                 }
