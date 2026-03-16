@@ -74,6 +74,12 @@ class RetroCalendar {
                 text: 'Sophiscope est un jeu interactif pour apprendre à reconnaître les sophismes sur les réseaux sociaux, dans les débats, dans les journaux.',
                 link: null,
                 linkText: null
+            },
+            '2026-03-16': {
+                title: 'Comment une société devient cyberpunk',
+                text: 'Essai sur les causes qui poussent une société développée à devenir cyberpunk. Disponible dans Programmes > Essais',
+                link: null,
+                linkText: null
             }
         };
         
