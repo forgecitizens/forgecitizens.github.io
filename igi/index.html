@@ -460,6 +460,22 @@
             fill: rgba(200, 170, 255, 1);
         }
 
+        .chart-dot-event {
+            fill: rgba(255, 68, 68, 0.9);
+        }
+
+        .chart-dot-event:hover {
+            fill: rgba(255, 120, 120, 1);
+        }
+
+        .chart-dot-current.chart-dot-event {
+            fill: rgba(255, 68, 68, 0.98);
+        }
+
+        .chart-dot-current.chart-dot-event:hover {
+            fill: rgba(255, 140, 140, 1);
+        }
+
         /* Tooltip pour le graphique */
         .chart-tooltip {
             position: fixed;
@@ -862,7 +878,8 @@
                         historyLength: data.history?.length,
                         lastDate: data.history?.[data.history.length - 1]?.date,
                         lastValue: data.history?.[data.history.length - 1]?.value,
-                        events: data.events
+                        events: data.events,
+                        historyEvents: data.history?.filter(entry => typeof entry.event === 'string' && entry.event.trim()).length
                     });
                     
                     // Mettre à jour la note "Aujourd'hui"
@@ -982,7 +999,12 @@
                     allRawData = igiJsonData.history.map(entry => ({
                         date: parseISODate(entry.date),
                         dateStr: entry.date,
-                        value: entry.value
+                        value: entry.value,
+                        event: typeof entry.event === 'string' && entry.event.trim()
+                            ? entry.event.trim()
+                            : (igiJsonData.events && typeof igiJsonData.events[entry.date] === 'string'
+                                ? igiJsonData.events[entry.date]
+                                : '')
                     }));
                     // Trier par date
                     allRawData.sort((a, b) => a.date - b.date);
@@ -1205,19 +1227,23 @@
                     const x = xScale(point.dayIndex);
                     const y = yScale(point.value);
                     const circle = document.createElementNS(svgNS, 'circle');
+                    const hasEvent = Boolean(point.event);
+                    const baseClass = index === igiData.length - 1 ? 'chart-dot-current' : 'chart-dot';
                     circle.setAttribute('cx', x);
                     circle.setAttribute('cy', y);
                     circle.setAttribute('r', index === igiData.length - 1 ? 5 : 3);
-                    circle.setAttribute('class', index === igiData.length - 1 ? 'chart-dot-current' : 'chart-dot');
+                    circle.setAttribute('class', hasEvent ? `${baseClass} chart-dot-event` : baseClass);
                     
                     // Stocker les données sur l'élément
                     circle.dataset.dateStr = point.dateStr;
                     circle.dataset.value = point.value;
+                    circle.dataset.event = point.event || '';
 
                     // Événements de survol
                     circle.addEventListener('mouseenter', function(e) {
                         const dateStr = this.dataset.dateStr;
                         const value = this.dataset.value;
+                        const eventText = this.dataset.event;
                         
                         // Formater la date
                         const date = new Date(dateStr);
@@ -1228,7 +1254,7 @@
                         tooltipValue.textContent = value;
                         
                         // Vérifier s'il y a un événement pour cette date
-                        const event = igiJsonData.events && igiJsonData.events[dateStr];
+                        const event = eventText || (igiJsonData.events && igiJsonData.events[dateStr]);
                         if (event) {
                             tooltipBullet.classList.add('with-event');
                             tooltipEvent.textContent = event;
