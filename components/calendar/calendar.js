@@ -80,6 +80,12 @@ class RetroCalendar {
                 text: 'Essai sur les causes qui poussent une société développée à devenir cyberpunk. Disponible dans Programmes > Essais',
                 link: null,
                 linkText: null
+            },
+            '2026-03-24': {
+                title: 'Publication de "Rompre le monolithe - un cadre diagnostique pour l\'origine des trous noirs supermassifs primordiaux"',
+                text: 'Ce travail défend qu\'il est essentiel d\'abandonner l\'idée comme quoi les trous noirs supermassifs primordiaux se seraient crées à travers un phénomène unique. Cette idée est à remplacer par plusieurs voies possibles à savoir les avalanches d\'accrétion froide chaotique, l\'effondrement direct monolithique et les fusions hiérarchiques rapides',
+                link: null,
+                linkText: null
             }
         };
         
