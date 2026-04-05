@@ -69,6 +69,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            overscroll-behavior: none;
             font-family: 'MS Sans Serif', Tahoma, sans-serif;
         }
 
@@ -536,87 +537,31 @@
             line-height: 1.3;
         }
 
-        /* Slider de timeline */
-        .timeline-slider-container {
+        .chart-zoom-indicator {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60%;
-            max-width: 600px;
-            z-index: 60;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
-        }
-
-        .timeline-slider-container:hover {
-            opacity: 0.9;
-        }
-
-        .timeline-slider-container.hidden {
-            display: none;
-        }
-
-        .timeline-slider-label {
+            padding: 6px 10px;
+            border: 1px solid rgba(60, 60, 60, 0.8);
+            border-radius: 4px;
+            background: rgba(10, 10, 10, 0.55);
+            color: #666666;
             font-family: 'Courier New', monospace;
             font-size: 10px;
-            color: #666666;
             letter-spacing: 0.05em;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 60;
         }
 
-        .timeline-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right, rgba(80, 80, 80, 0.6), rgba(147, 112, 219, 0.4));
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .timeline-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            background: rgba(147, 112, 219, 0.8);
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid rgba(180, 150, 240, 0.6);
-            transition: all 0.2s ease;
-        }
-
-        .timeline-slider::-webkit-slider-thumb:hover {
-            background: rgba(180, 150, 240, 1);
-            transform: scale(1.2);
-        }
-
-        .timeline-slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            background: rgba(147, 112, 219, 0.8);
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid rgba(180, 150, 240, 0.6);
-            transition: all 0.2s ease;
-        }
-
-        .timeline-slider::-moz-range-thumb:hover {
-            background: rgba(180, 150, 240, 1);
-        }
-
-        .timeline-dates {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            font-family: 'Courier New', monospace;
-            font-size: 9px;
-            color: #555555;
+        @media (max-width: 640px) {
+            .chart-zoom-indicator {
+                max-width: calc(100vw - 24px);
+                font-size: 9px;
+                text-align: center;
+                white-space: normal;
+            }
         }
     </style>
 </head>
@@ -634,15 +579,7 @@
         <div class="chart-tooltip-event" style="display: none;"></div>
     </div>
 
-    <!-- Slider de timeline -->
-    <div class="timeline-slider-container hidden" id="timeline-slider-container">
-        <div class="timeline-slider-label" id="timeline-label">30 derniers jours</div>
-        <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="100" value="100">
-        <div class="timeline-dates">
-            <span id="timeline-start"></span>
-            <span id="timeline-end"></span>
-        </div>
-    </div>
+    <div class="chart-zoom-indicator" id="chart-zoom-indicator">Vue annuelle · molette / pincement pour zoomer</div>
 
     <a href="/" class="back-link">← Retour</a>
     <img src="/img/igi.png" alt="IGI" class="igi-icon">
@@ -978,26 +915,120 @@
             loadIGI();
 
             // ========== GRAPHIQUE EN ARRIÈRE-PLAN ==========
-            const WINDOW_DAYS = 30;
-            let allRawData = []; // Données brutes stockées globalement
-            
-            // Fonction pour parser une date au format YYYY-MM-DD de manière fiable
+            const DAY_IN_MS = 1000 * 60 * 60 * 24;
+            const ZOOM_LEVELS = [
+                { key: 'year', label: 'Année complète', days: null },
+                { key: '30d', label: '30 derniers jours', days: 30 },
+                { key: '15d', label: '15 derniers jours', days: 15 },
+                { key: '7d', label: '7 derniers jours', days: 7 }
+            ];
+
+            let currentZoomIndex = 0;
+            let allRawData = [];
+            let lastWheelZoomAt = 0;
+            let pinchStartDistance = null;
+            let lastPinchZoomAt = 0;
+
             function parseISODate(dateStr) {
                 const [year, month, day] = dateStr.split('-').map(Number);
                 return new Date(year, month - 1, day);
             }
-            
-            function renderBackgroundChart(endDate = null) {
+
+            function toStartOfDay(date) {
+                const normalized = new Date(date);
+                normalized.setHours(0, 0, 0, 0);
+                return normalized;
+            }
+
+            function isAnyModalOpen() {
+                return Boolean(document.querySelector('.info-modal-overlay.show'));
+            }
+
+            function getCurrentZoomWindow() {
+                const windowEnd = toStartOfDay(new Date());
+                const zoomLevel = ZOOM_LEVELS[currentZoomIndex];
+                let windowStart;
+
+                if (zoomLevel.days === null) {
+                    windowStart = new Date(windowEnd.getFullYear(), 0, 1);
+                } else {
+                    windowStart = new Date(windowEnd);
+                    windowStart.setDate(windowStart.getDate() - zoomLevel.days + 1);
+                }
+
+                return {
+                    windowStart: toStartOfDay(windowStart),
+                    windowEnd,
+                    zoomLevel
+                };
+            }
+
+            function updateZoomIndicator(windowStart, windowEnd, zoomLevel) {
+                const indicator = document.getElementById('chart-zoom-indicator');
+                if (!indicator) return;
+
+                if (zoomLevel.key === 'year') {
+                    indicator.textContent = `Vue annuelle ${windowEnd.getFullYear()} · molette / pincement pour zoomer`;
+                    return;
+                }
+
+                const shortOptions = { day: 'numeric', month: 'short' };
+                indicator.textContent = `${zoomLevel.label} · ${windowStart.toLocaleDateString('fr-FR', shortOptions)} — ${windowEnd.toLocaleDateString('fr-FR', shortOptions)} · molette / pincement pour zoomer`;
+            }
+
+            function buildXAxisTicks(windowStart, windowEnd, zoomLevel) {
+                const ticks = [];
+                const pushTick = (date, label) => {
+                    const tickDate = toStartOfDay(date);
+                    const dayIndex = Math.round((tickDate - windowStart) / DAY_IN_MS);
+                    ticks.push({ dayIndex, label });
+                };
+
+                if (zoomLevel.key === 'year') {
+                    const cursor = new Date(windowStart.getFullYear(), 0, 1);
+
+                    while (cursor <= windowEnd) {
+                        const monthLabel = cursor
+                            .toLocaleDateString('fr-FR', { month: 'short' })
+                            .replace('.', '');
+                        pushTick(cursor, monthLabel);
+                        cursor.setMonth(cursor.getMonth() + 1, 1);
+                    }
+                } else {
+                    const totalSpanDays = Math.max(1, Math.round((windowEnd - windowStart) / DAY_IN_MS));
+                    const step = zoomLevel.days <= 7 ? 1 : (zoomLevel.days <= 15 ? 2 : 5);
+
+                    for (let dayOffset = 0; dayOffset <= totalSpanDays; dayOffset += step) {
+                        const tickDate = new Date(windowStart);
+                        tickDate.setDate(tickDate.getDate() + dayOffset);
+
+                        const label = (dayOffset === 0 || tickDate.getDate() === 1 || dayOffset + step > totalSpanDays)
+                            ? tickDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+                            : tickDate.toLocaleDateString('fr-FR', { day: 'numeric' });
+
+                        ticks.push({ dayIndex: dayOffset, label });
+                    }
+
+                    if (ticks.length === 0 || ticks[ticks.length - 1].dayIndex !== totalSpanDays) {
+                        ticks.push({
+                            dayIndex: totalSpanDays,
+                            label: windowEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+                        });
+                    }
+                }
+
+                return ticks.filter((tick, index, array) => index === 0 || tick.dayIndex !== array[index - 1].dayIndex);
+            }
+
+            function renderBackgroundChart() {
                 const chartContainer = document.getElementById('background-chart');
                 if (!chartContainer) return;
-                
-                // Vider le conteneur
+
                 chartContainer.innerHTML = '';
 
-                // Récupérer l'historique depuis le JSON chargé
                 if (allRawData.length === 0 && igiJsonData && igiJsonData.history && Array.isArray(igiJsonData.history)) {
                     allRawData = igiJsonData.history.map(entry => ({
-                        date: parseISODate(entry.date),
+                        date: toStartOfDay(parseISODate(entry.date)),
                         dateStr: entry.date,
                         value: entry.value,
                         event: typeof entry.event === 'string' && entry.event.trim()
@@ -1006,7 +1037,7 @@
                                 ? igiJsonData.events[entry.date]
                                 : '')
                     }));
-                    // Trier par date
+
                     allRawData.sort((a, b) => a.date - b.date);
                     console.log('Données parsées:', {
                         count: allRawData.length,
@@ -1014,56 +1045,38 @@
                         last: allRawData[allRawData.length - 1].dateStr
                     });
                 }
-                
-                // Si pas de données, ne pas afficher le graphique
+
                 if (allRawData.length === 0) {
                     console.warn('Aucune donnée historique IGI disponible');
                     return;
                 }
 
-                // Date de fin de la fenêtre (par défaut aujourd'hui)
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                const windowEnd = endDate ? new Date(endDate) : today;
-                windowEnd.setHours(0, 0, 0, 0);
-                
-                // Date de début de la fenêtre (30 jours avant la fin)
-                const windowStart = new Date(windowEnd);
-                windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
-                
-                // Filtrer les données pour la fenêtre
-                const igiData = allRawData.filter(d => d.date >= windowStart && d.date <= windowEnd);
-                
-                console.log('Fenêtre:', {
+                const { windowStart, windowEnd, zoomLevel } = getCurrentZoomWindow();
+                const igiData = allRawData.filter(point => point.date >= windowStart && point.date <= windowEnd);
+
+                console.log('Fenêtre active:', {
+                    zoom: zoomLevel.label,
                     windowStart: windowStart.toLocaleDateString(),
                     windowEnd: windowEnd.toLocaleDateString(),
                     pointsFiltrés: igiData.length,
                     premier: igiData[0]?.dateStr,
                     dernier: igiData[igiData.length - 1]?.dateStr
                 });
-                
-                // Si pas de données dans la fenêtre, ne pas afficher
+
+                updateZoomIndicator(windowStart, windowEnd, zoomLevel);
+
                 if (igiData.length === 0) {
-                    console.warn('Aucune donnée dans la fenêtre de 30 jours');
+                    console.warn('Aucune donnée dans la fenêtre affichée');
                     return;
                 }
-                
-                // Configurer le slider
-                setupTimelineSlider(windowEnd);
 
-                // Dimensions du graphique
                 const padding = { top: 30, right: 30, bottom: 40, left: 50 };
-                
-                // Valeurs min/max pour l'axe Y (avec marge)
-                const dataMin = Math.min(...igiData.map(d => d.value));
-                const dataMax = Math.max(...igiData.map(d => d.value));
-                
-                // Fonction pour calculer les paliers dynamiques
+                const dataMin = Math.min(...igiData.map(point => point.value));
+                const dataMax = Math.max(...igiData.map(point => point.value));
+
                 function calculateTicks(min, max) {
-                    const range = max - min;
-                    
-                    // Déterminer l'intervalle approprié selon la plage
+                    const range = Math.max(1, max - min);
+
                     let interval;
                     if (range <= 30) {
                         interval = 5;
@@ -1078,33 +1091,31 @@
                     } else {
                         interval = 200;
                     }
-                    
-                    // Arrondir min vers le bas et max vers le haut au multiple de l'intervalle
+
                     const tickMin = Math.floor(min / interval) * interval;
                     const tickMax = Math.ceil(max / interval) * interval;
-                    
-                    // Générer les ticks
                     const ticks = [];
+
                     for (let tick = tickMin; tick <= tickMax; tick += interval) {
                         ticks.push(tick);
                     }
-                    
-                    return { ticks, tickMin, tickMax };
-                }
-                
-                const { ticks: yTicks, tickMin, tickMax } = calculateTicks(dataMin, dataMax);
-                
-                // Utiliser les bornes arrondies pour l'axe Y (avec petite marge)
-                const minValue = tickMin - (yTicks[1] - yTicks[0]) * 0.2;
-                const maxValue = tickMax + (yTicks[1] - yTicks[0]) * 0.5;
 
-                // Création du SVG
+                    if (ticks.length === 1) {
+                        ticks.push(tickMin + interval);
+                    }
+
+                    return { ticks, tickMin, tickMax, interval };
+                }
+
+                const { ticks: yTicks, tickMin, tickMax, interval } = calculateTicks(dataMin, dataMax);
+                const minValue = tickMin - interval * 0.2;
+                const maxValue = tickMax + interval * 0.5;
+
                 const svgNS = 'http://www.w3.org/2000/svg';
                 const svg = document.createElementNS(svgNS, 'svg');
                 svg.setAttribute('viewBox', '0 0 1000 600');
                 svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-                // Dégradé pour l'aire sous la courbe
                 const defs = document.createElementNS(svgNS, 'defs');
                 const gradient = document.createElementNS(svgNS, 'linearGradient');
                 gradient.setAttribute('id', 'chartGradient');
@@ -1112,29 +1123,27 @@
                 gradient.setAttribute('y1', '0%');
                 gradient.setAttribute('x2', '0%');
                 gradient.setAttribute('y2', '100%');
-                
+
                 const stop1 = document.createElementNS(svgNS, 'stop');
                 stop1.setAttribute('offset', '0%');
                 stop1.setAttribute('stop-color', 'rgba(147, 112, 219, 0.4)');
-                
+
                 const stop2 = document.createElementNS(svgNS, 'stop');
                 stop2.setAttribute('offset', '100%');
                 stop2.setAttribute('stop-color', 'rgba(147, 112, 219, 0)');
-                
+
                 gradient.appendChild(stop1);
                 gradient.appendChild(stop2);
                 defs.appendChild(gradient);
                 svg.appendChild(defs);
 
-                // Dimensions utiles
                 const chartWidth = 1000 - padding.left - padding.right;
                 const chartHeight = 600 - padding.top - padding.bottom;
+                const totalSpanDays = Math.max(1, Math.round((windowEnd - windowStart) / DAY_IN_MS));
 
-                // Fonction pour calculer la position X basée sur l'index dans la fenêtre
-                const xScale = (index) => padding.left + (index / (WINDOW_DAYS - 1)) * chartWidth;
-                const yScale = (value) => padding.top + ((maxValue - value) / (maxValue - minValue)) * chartHeight;
+                const xScale = (dayIndex) => padding.left + (dayIndex / totalSpanDays) * chartWidth;
+                const yScale = (value) => padding.top + ((maxValue - value) / (maxValue - minValue || 1)) * chartHeight;
 
-                // Lignes de grille horizontales (paliers calculés dynamiquement)
                 yTicks.forEach(tick => {
                     const y = yScale(tick);
                     if (y > padding.top && y < 600 - padding.bottom) {
@@ -1146,7 +1155,6 @@
                         line.setAttribute('class', 'chart-grid-line');
                         svg.appendChild(line);
 
-                        // Labels Y
                         const label = document.createElementNS(svgNS, 'text');
                         label.setAttribute('x', padding.left - 10);
                         label.setAttribute('y', y + 4);
@@ -1157,38 +1165,28 @@
                     }
                 });
 
-                // Générer les dates pour l'axe X (afficher ~6 repères)
-                const xTickPositions = [0, 5, 10, 15, 20, 25, WINDOW_DAYS - 1];
-                xTickPositions.forEach(dayOffset => {
-                    if (dayOffset >= WINDOW_DAYS) return;
-                    
-                    const tickDate = new Date(windowStart);
-                    tickDate.setDate(tickDate.getDate() + dayOffset);
-                    
-                    const x = xScale(dayOffset);
+                const xTicks = buildXAxisTicks(windowStart, windowEnd, zoomLevel);
+                xTicks.forEach(tick => {
+                    const x = xScale(tick.dayIndex);
                     const label = document.createElementNS(svgNS, 'text');
                     label.setAttribute('x', x);
                     label.setAttribute('y', 600 - padding.bottom + 20);
                     label.setAttribute('text-anchor', 'middle');
                     label.setAttribute('class', 'chart-axis-label');
-                    label.textContent = tickDate.getDate();
+                    label.textContent = tick.label;
                     svg.appendChild(label);
                 });
 
-                // Créer le chemin de la courbe
                 let pathD = '';
                 let areaD = '';
-                
-                // Calculer l'index de chaque point dans la fenêtre de 30 jours
+
                 igiData.forEach((point, index) => {
-                    // Calculer le nombre de jours depuis le début de la fenêtre
-                    const dayIndex = Math.floor((point.date - windowStart) / (1000 * 60 * 60 * 24));
+                    const dayIndex = Math.round((point.date - windowStart) / DAY_IN_MS);
                     const x = xScale(dayIndex);
                     const y = yScale(point.value);
-                    
-                    // Stocker l'index pour les points
+
                     point.dayIndex = dayIndex;
-                    
+
                     if (index === 0) {
                         pathD += `M ${x} ${y}`;
                         areaD += `M ${x} ${600 - padding.bottom} L ${x} ${y}`;
@@ -1198,31 +1196,25 @@
                     }
                 });
 
-                // Fermer l'aire
                 const lastPoint = igiData[igiData.length - 1];
-                const lastDayIndex = lastPoint.dayIndex;
-                areaD += ` L ${xScale(lastDayIndex)} ${600 - padding.bottom} Z`;
+                areaD += ` L ${xScale(lastPoint.dayIndex)} ${600 - padding.bottom} Z`;
 
-                // Aire sous la courbe
                 const area = document.createElementNS(svgNS, 'path');
                 area.setAttribute('d', areaD);
                 area.setAttribute('class', 'chart-area');
                 svg.appendChild(area);
 
-                // Ligne de la courbe
                 const path = document.createElementNS(svgNS, 'path');
                 path.setAttribute('d', pathD);
                 path.setAttribute('class', 'chart-line');
                 svg.appendChild(path);
 
-                // Tooltip
                 const tooltip = document.getElementById('chart-tooltip');
                 const tooltipDay = tooltip.querySelector('.chart-tooltip-day-text');
                 const tooltipBullet = tooltip.querySelector('.chart-tooltip-bullet');
                 const tooltipValue = tooltip.querySelector('.chart-tooltip-value');
                 const tooltipEvent = tooltip.querySelector('.chart-tooltip-event');
 
-                // Points sur la courbe
                 igiData.forEach((point, index) => {
                     const x = xScale(point.dayIndex);
                     const y = yScale(point.value);
@@ -1233,46 +1225,38 @@
                     circle.setAttribute('cy', y);
                     circle.setAttribute('r', index === igiData.length - 1 ? 5 : 3);
                     circle.setAttribute('class', hasEvent ? `${baseClass} chart-dot-event` : baseClass);
-                    
-                    // Stocker les données sur l'élément
+
                     circle.dataset.dateStr = point.dateStr;
                     circle.dataset.value = point.value;
                     circle.dataset.event = point.event || '';
 
-                    // Événements de survol
-                    circle.addEventListener('mouseenter', function(e) {
+                    circle.addEventListener('mouseenter', function() {
                         const dateStr = this.dataset.dateStr;
                         const value = this.dataset.value;
                         const eventText = this.dataset.event;
-                        
-                        // Formater la date
-                        const date = new Date(dateStr);
+
+                        const date = parseISODate(dateStr);
                         const options = { day: 'numeric', month: 'long', year: 'numeric' };
                         const formattedDate = date.toLocaleDateString('fr-FR', options);
-                        
+
                         tooltipDay.textContent = formattedDate;
                         tooltipValue.textContent = value;
-                        
-                        // Vérifier s'il y a un événement pour cette date
-                        const event = eventText || (igiJsonData.events && igiJsonData.events[dateStr]);
-                        if (event) {
+
+                        const eventDescription = eventText || (igiJsonData.events && igiJsonData.events[dateStr]);
+                        if (eventDescription) {
                             tooltipBullet.classList.add('with-event');
-                            tooltipEvent.textContent = event;
+                            tooltipEvent.textContent = eventDescription;
                             tooltipEvent.style.display = 'block';
                         } else {
                             tooltipBullet.classList.remove('with-event');
                             tooltipEvent.style.display = 'none';
                         }
-                        
-                        // Positionner la tooltip
+
                         const rect = this.getBoundingClientRect();
                         tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
                         tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
-                        
-                        // Afficher
+
                         tooltip.classList.add('visible');
-                        
-                        // Agrandir le point
                         this.setAttribute('r', index === igiData.length - 1 ? 7 : 5);
                     });
 
@@ -1284,125 +1268,108 @@
                     svg.appendChild(circle);
                 });
 
-                // Label du mois (afficher le mois de fin de la fenêtre)
-                const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
-                                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-                const monthLabel = document.createElementNS(svgNS, 'text');
-                monthLabel.setAttribute('x', 1000 - padding.right);
-                monthLabel.setAttribute('y', 600 - padding.bottom + 35);
-                monthLabel.setAttribute('text-anchor', 'end');
-                monthLabel.setAttribute('class', 'chart-axis-label');
-                monthLabel.textContent = `${monthNames[windowEnd.getMonth()]} ${windowEnd.getFullYear()}`;
-                svg.appendChild(monthLabel);
+                const rangeLabel = document.createElementNS(svgNS, 'text');
+                rangeLabel.setAttribute('x', 1000 - padding.right);
+                rangeLabel.setAttribute('y', 600 - padding.bottom + 35);
+                rangeLabel.setAttribute('text-anchor', 'end');
+                rangeLabel.setAttribute('class', 'chart-axis-label');
+                rangeLabel.textContent = zoomLevel.key === 'year'
+                    ? `${windowEnd.getFullYear()}`
+                    : zoomLevel.label;
+                svg.appendChild(rangeLabel);
 
                 chartContainer.appendChild(svg);
             }
-            
-            // ========== SLIDER DE TIMELINE ==========
-            function setupTimelineSlider(currentEndDate) {
-                const sliderContainer = document.getElementById('timeline-slider-container');
-                const slider = document.getElementById('timeline-slider');
-                const sliderLabel = document.getElementById('timeline-label');
-                const timelineStart = document.getElementById('timeline-start');
-                const timelineEnd = document.getElementById('timeline-end');
-                
-                if (!sliderContainer || !slider || allRawData.length === 0) return;
-                
-                // Dates extrêmes des données
-                const dataStartDate = allRawData[0].date;
-                const dataEndDate = allRawData[allRawData.length - 1].date;
-                
-                // Calculer le nombre de jours total dans les données
-                const totalDays = Math.round((dataEndDate - dataStartDate) / (1000 * 60 * 60 * 24));
-                
-                // Si moins de 30 jours de données, cacher le slider
-                if (totalDays < WINDOW_DAYS) {
-                    sliderContainer.classList.add('hidden');
+
+            function applyZoomStep(step) {
+                const nextZoomIndex = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, currentZoomIndex + step));
+                if (nextZoomIndex === currentZoomIndex) {
                     return;
                 }
-                
-                // Afficher le slider
-                sliderContainer.classList.remove('hidden');
-                
-                // Le slider va de 0 (données les plus anciennes) à 100 (aujourd'hui)
-                // La valeur représente la position de la fenêtre de 30 jours
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Calculer la position actuelle du slider
-                const daysFromEnd = Math.round((today - currentEndDate) / (1000 * 60 * 60 * 24));
-                const maxOffset = totalDays - WINDOW_DAYS + 1;
-                const sliderValue = maxOffset > 0 ? Math.round(((maxOffset - daysFromEnd) / maxOffset) * 100) : 100;
-                
-                slider.value = sliderValue;
-                
-                // Formater les dates pour l'affichage
-                const formatShortDate = (date) => {
-                    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-                };
-                
-                // Afficher les dates extrêmes
-                const earliestWindowEnd = new Date(dataStartDate);
-                earliestWindowEnd.setDate(earliestWindowEnd.getDate() + WINDOW_DAYS - 1);
-                
-                timelineStart.textContent = formatShortDate(dataStartDate);
-                timelineEnd.textContent = formatShortDate(today);
-                
-                // Mettre à jour le label
-                const isToday = currentEndDate.getTime() === today.getTime();
-                if (isToday) {
-                    sliderLabel.textContent = '30 derniers jours';
-                } else {
-                    const windowStart = new Date(currentEndDate);
-                    windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
-                    sliderLabel.textContent = `${formatShortDate(windowStart)} — ${formatShortDate(currentEndDate)}`;
-                }
-                
-                // Événement de changement du slider
-                slider.onchange = function() {
-                    const value = parseInt(this.value);
-                    const offset = Math.round((1 - value / 100) * maxOffset);
-                    
-                    const newEndDate = new Date(today);
-                    newEndDate.setDate(newEndDate.getDate() - offset);
-                    
-                    // Ne pas aller avant la date minimale possible
-                    const minEndDate = new Date(dataStartDate);
-                    minEndDate.setDate(minEndDate.getDate() + WINDOW_DAYS - 1);
-                    
-                    if (newEndDate < minEndDate) {
-                        newEndDate.setTime(minEndDate.getTime());
-                    }
-                    
-                    renderBackgroundChart(newEndDate);
-                };
-                
-                // Mise à jour en temps réel pendant le glissement
-                slider.oninput = function() {
-                    const value = parseInt(this.value);
-                    const offset = Math.round((1 - value / 100) * maxOffset);
-                    
-                    const newEndDate = new Date(today);
-                    newEndDate.setDate(newEndDate.getDate() - offset);
-                    
-                    const minEndDate = new Date(dataStartDate);
-                    minEndDate.setDate(minEndDate.getDate() + WINDOW_DAYS - 1);
-                    
-                    if (newEndDate < minEndDate) {
-                        newEndDate.setTime(minEndDate.getTime());
-                    }
-                    
-                    const windowStart = new Date(newEndDate);
-                    windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
-                    
-                    const isNow = newEndDate.getTime() === today.getTime();
-                    if (isNow) {
-                        sliderLabel.textContent = '30 derniers jours';
-                    } else {
-                        sliderLabel.textContent = `${formatShortDate(windowStart)} — ${formatShortDate(newEndDate)}`;
-                    }
-                };
+
+                currentZoomIndex = nextZoomIndex;
+                renderBackgroundChart();
             }
+
+            function handleWheelZoom(event) {
+                if (isAnyModalOpen() || Math.abs(event.deltaY) < 10) {
+                    return;
+                }
+
+                const now = Date.now();
+                if (now - lastWheelZoomAt < 180) {
+                    return;
+                }
+
+                lastWheelZoomAt = now;
+                event.preventDefault();
+
+                if (event.deltaY < 0) {
+                    applyZoomStep(1);
+                } else {
+                    applyZoomStep(-1);
+                }
+            }
+
+            function getTouchDistance(touches) {
+                if (touches.length < 2) return 0;
+
+                const [firstTouch, secondTouch] = touches;
+                return Math.hypot(
+                    secondTouch.clientX - firstTouch.clientX,
+                    secondTouch.clientY - firstTouch.clientY
+                );
+            }
+
+            window.addEventListener('wheel', handleWheelZoom, { passive: false });
+
+            window.addEventListener('touchstart', function(event) {
+                if (isAnyModalOpen() || event.touches.length !== 2) {
+                    return;
+                }
+
+                pinchStartDistance = getTouchDistance(event.touches);
+            }, { passive: true });
+
+            window.addEventListener('touchmove', function(event) {
+                if (isAnyModalOpen() || event.touches.length !== 2) {
+                    return;
+                }
+
+                const currentDistance = getTouchDistance(event.touches);
+                if (!pinchStartDistance) {
+                    pinchStartDistance = currentDistance;
+                    return;
+                }
+
+                const now = Date.now();
+                if (now - lastPinchZoomAt < 180) {
+                    return;
+                }
+
+                const distanceRatio = currentDistance / pinchStartDistance;
+                if (distanceRatio > 1.12) {
+                    event.preventDefault();
+                    applyZoomStep(1);
+                    pinchStartDistance = currentDistance;
+                    lastPinchZoomAt = now;
+                } else if (distanceRatio < 0.88) {
+                    event.preventDefault();
+                    applyZoomStep(-1);
+                    pinchStartDistance = currentDistance;
+                    lastPinchZoomAt = now;
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchend', function(event) {
+                if (event.touches.length < 2) {
+                    pinchStartDistance = null;
+                }
+            });
+
+            window.addEventListener('touchcancel', function() {
+                pinchStartDistance = null;
+            });
 
             // Gestion de la modale Aujourd'hui
             const todayButton = document.getElementById('today-button');
