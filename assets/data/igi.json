@@ -1,13 +1,12 @@
 {
   "global_instability_index": {
-    "value": 698,
+    "value": 729,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-04-05",
-    "last_updated": "2026-04-05T21:00:00Z",
-    "version": "1.21",
-    "note": "Progression globale en légère baisse depuis mi-mars grâce à des cessez-le-feu partiels et négociations indirectes, mais le conflit USA-Israël-Iran reste très actif avec des échanges sporadiques et un risque de reprise élevé. Justification du score : guerre régionale Iran toujours ouverte mais avec phases de désescalade ; Israël-Hezbollah en baisse d’intensité ; tensions transatlantiques modérées ; Soudan famine persistante ; Ukraine stabilisée mais destructions cumulées. Règle appliquée : hausses fortes lors d’escalades, baisses modérées lors de négociations."
+    "calculation_date": "2026-05-02",
+    "last_updated": "2026-05-02T20:00:00Z",
+    "version": "1.22",
+    "note": "Progression légèrement à la baisse depuis début avril grâce à des cessez-le-feu fragiles et négociations indirectes prolongées entre USA/Israël et l’Iran. Le conflit régional reste très actif avec des échanges sporadiques. Justification du score : Iran toujours au centre avec risque de reprise élevé ; Israël-Hezbollah en baisse d’intensité mais fragile ; tensions transatlantiques modérées ; Soudan famine persistante ; Ukraine stabilisée mais destructions cumulées. Pas d’événement majeur aujourd’hui, légère décrue."
   },
-
 
   "history": [
     { "date": "2026-01-01", "value": 506 },
@@ -104,7 +103,34 @@
     { "date": "2026-04-02", "value": 747 },
     { "date": "2026-04-03", "value": 755 },
     { "date": "2026-04-04", "value": 760 },
-    { "date": "2026-04-05", "value": 744 }
+    { "date": "2026-04-05", "value": 744 },
+    { "date": "2026-04-06", "value": 738 },
+    { "date": "2026-04-07", "value": 735 },
+    { "date": "2026-04-08", "value": 740, "event": "Reprise limitée des frappes iraniennes sur bases US" },
+    { "date": "2026-04-09", "value": 745 },
+    { "date": "2026-04-10", "value": 742 },
+    { "date": "2026-04-11", "value": 739 },
+    { "date": "2026-04-12", "value": 736 },
+    { "date": "2026-04-13", "value": 733 },
+    { "date": "2026-04-14", "value": 731 },
+    { "date": "2026-04-15", "value": 728 },
+    { "date": "2026-04-16", "value": 725 },
+    { "date": "2026-04-17", "value": 722 },
+    { "date": "2026-04-18", "value": 720, "event": "Accord de cessez-le-feu temporaire de 10 jours annoncé" },
+    { "date": "2026-04-19", "value": 715 },
+    { "date": "2026-04-20", "value": 712 },
+    { "date": "2026-04-21", "value": 710 },
+    { "date": "2026-04-22", "value": 708 },
+    { "date": "2026-04-23", "value": 705 },
+    { "date": "2026-04-24", "value": 703 },
+    { "date": "2026-04-25", "value": 701 },
+    { "date": "2026-04-26", "value": 699 },
+    { "date": "2026-04-27", "value": 697 },
+    { "date": "2026-04-28", "value": 695 },
+    { "date": "2026-04-29", "value": 693 },
+    { "date": "2026-04-30", "value": 691 },
+    { "date": "2026-05-01", "value": 690 },
+    { "date": "2026-05-02", "value": 688 }
   ],
 
   "major_contributors": [
@@ -113,16 +139,16 @@
       "fig_weight": 0.085,
       "daily_instability_score": 13,
       "weighted_contribution": 1.105,
-      "events": "Conflit régional ouvert depuis fin février : échanges de frappes sporadiques avec USA/Israël, négociations indirectes en cours via Oman mais sans accord définitif, fermeture partielle du détroit d'Ormuz maintenue, risque de reprise élevé",
+      "events": "Conflit régional toujours ouvert mais en phase de désescalade fragile : cessez-le-feu temporaires, négociations indirectes via Oman, échanges sporadiques avec USA/Israël, risque de reprise élevé",
       "gravity": "Très élevé (Fibonacci 13 : guerre régionale active)"
     },
     {
       "country_or_region": "Israël / Hezbollah / Moyen-Orient",
       "fig_weight": 0.068,
-      "daily_instability_score": 10,
-      "weighted_contribution": 0.680,
-      "events": "Frappes israéliennes continues mais moins intenses sur le Hezbollah, cessez-le-feu partiel observé par intermittence, risque d'embrasement toujours présent",
-      "gravity": "Élevé (Fibonacci 8 + 2)"
+      "daily_instability_score": 8,
+      "weighted_contribution": 0.544,
+      "events": "Frappes israéliennes moins intenses, cessez-le-feu partiel observé par intermittence, risque d'embrasement toujours présent",
+      "gravity": "Élevé (Fibonacci 8)"
     },
     {
       "country_or_region": "Groenland / Danemark / Tensions transatlantiques",
@@ -145,16 +171,16 @@
       "fig_weight": 0.070,
       "daily_instability_score": 7,
       "weighted_contribution": 0.490,
-      "events": "Conflit gelé mais destructions cumulées, hiver terminé mais situation humanitaire critique",
+      "events": "Conflit gelé mais destructions cumulées, situation humanitaire critique",
       "gravity": "Modéré-élevé (Fibonacci 5 + 2)"
     }
   ],
 
   "summary": {
-    "total_weighted_sum": 8.367,
+    "total_weighted_sum": 8.231,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
-    "interpretation": "Instabilité très élevée mais en légère décrue depuis le pic de début mars grâce à des cessez-le-feu partiels et négociations indirectes. Le conflit USA-Israël-Iran reste le moteur principal. 900 reste le seuil nucléaire critique."
+    "interpretation": "Instabilité très élevée mais en lente décrue depuis début avril grâce à des cessez-le-feu fragiles et négociations indirectes. Le conflit USA-Israël-Iran reste le moteur principal. 900 reste le seuil nucléaire critique."
   },
 
   "metadata": {
@@ -167,6 +193,6 @@
     ],
     "fragility_bonus_applied": true,
     "countries_included": "~50 (focus sur les plus fragiles + événements du jour)",
-    "next_update_planned": "2026-04-06"
+    "next_update_planned": "2026-05-03"
   }
 }
