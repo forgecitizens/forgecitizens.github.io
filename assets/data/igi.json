@@ -1,10 +1,10 @@
 {
   "global_instability_index": {
-    "value": 681,
+    "value": 679,
     "scale": "0 = paix mondiale → 1000 = chaos absolu",
-    "calculation_date": "2026-05-05",
-    "last_updated": "2026-05-05T21:00:00Z",
-    "version": "1.23",
+    "calculation_date": "2026-05-13",
+    "last_updated": "2026-05-13T21:00:00Z",
+    "version": "1.24",
     "note": "Progression globale en légère baisse depuis mi-mars grâce à des cessez-le-feu partiels et négociations indirectes, mais le conflit USA-Israël-Iran reste très actif. Nouvelles attaques iraniennes sur l'Arabie saoudite et frappes ukrainiennes sur des villes russes ont été enregistrées ces derniers jours, augmentant le risque de propagation régionale. Justification du score : guerre régionale Iran toujours ouverte avec phases de désescalade ; Israël-Hezbollah en baisse d’intensité ; tensions transatlantiques modérées ; Soudan famine persistante ; Ukraine stabilisée mais destructions cumulées. Règle appliquée : hausses fortes lors d’escalades, baisses modérées lors de négociations."
   },
 
@@ -133,7 +133,15 @@
     { "date": "2026-05-02", "value": 688 },
     { "date": "2026-05-03", "value": 685 },
     { "date": "2026-05-04", "value": 683 },
-    { "date": "2026-05-05", "value": 681 }
+    { "date": "2026-05-05", "value": 681 },
+    { "date": "2026-05-06", "value": 679 },
+    { "date": "2026-05-07", "value": 677 },
+    { "date": "2026-05-08", "value": 678, "event": "Attaque iranienne sur installations saoudiennes" },
+    { "date": "2026-05-09", "value": 676 },
+    { "date": "2026-05-10", "value": 674, "event": "Frappes ukrainiennes massives sur des villes russes (Moscou et Saint-Pétersbourg)" },
+    { "date": "2026-05-11", "value": 675 },
+    { "date": "2026-05-12", "value": 677 },
+    { "date": "2026-05-13", "value": 679 }
   ],
 
   "major_contributors": [
@@ -180,7 +188,7 @@
   ],
 
   "summary": {
-    "total_weighted_sum": 8.15,
+    "total_weighted_sum": 8.12,
     "normalization_max": 15,
     "formula": "IIM = (total_weighted_sum / normalization_max) * 1000",
     "interpretation": "Instabilité très élevée mais en lente décrue. Le conflit USA-Israël-Iran reste le moteur principal avec des cessez-le-feu fragiles et négociations indirectes. 900 reste le seuil nucléaire critique."
