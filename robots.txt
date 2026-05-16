@@ -13,6 +13,7 @@ Disallow: /*.json$
 
 # Allow crawling of all main content
 Allow: /drafter.html
+Allow: /consoscope.html
 Allow: /qualif'R/
 Allow: /mapper/
 Allow: /igi/

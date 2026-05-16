@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consoscope – Simulateur de crédit à la consommation - gratuit, sans inscription !</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    /* Sync range thumb color with accent */
+    input[type=range] { accent-color: #2563eb; }
+    /* Scrollable amortization table */
+    #table-container { max-height: 400px; overflow-y: auto; }
+    /* Sticky table header */
+    #table-container thead th { position: sticky; top: 0; z-index: 1; }
+    /* Tab active state */
+    .tab-btn.active { background-color: #2563eb; color: #fff; border-color: #2563eb; }
+    .tab-btn { transition: background-color 0.15s, color 0.15s; }
+    /* Card shadow */
+    .card { box-shadow: 0 1px 6px 0 rgba(0,0,0,0.08); }
+    /* ── Bouton d'aide pédagogique ── */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: #f1f5f9; color: #94a3b8;
+      font-size: 9px; font-weight: 700; font-style: italic; line-height: 1;
+      cursor: pointer; border: none; padding: 0; flex-shrink: 0;
+      transition: background 0.12s, color 0.12s;
+    }
+    .info-btn:hover, .info-btn:focus { background: #dbeafe; color: #2563eb; outline: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+  <!-- ═══════════════════════════════════════════════════════ HEADER ══ -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl font-bold text-blue-600 tracking-tight">Consoscope</span>
+      <span class="hidden sm:inline text-sm text-slate-500">Simulateur de crédit à la consommation</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="openImportModal()"
+        class="text-sm px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-1.5 font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+        Importer une offre banque
+      </button>
+      <button type="button" class="info-btn" aria-label="En savoir plus sur l'import d'offre"
+        onclick="showInfoTooltip(this, 'Collez le texte des petits caractères de votre banque pour que Consoscope remplisse automatiquement tous les champs.')">i</button>
+      <button onclick="resetAll()"
+        class="text-sm px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-100 transition">
+        Réinitialiser
+      </button>
+      <button onclick="exportCSV()"
+        class="text-sm px-3 py-1.5 rounded border border-green-500 text-green-700 hover:bg-green-50 transition">
+        Exporter CSV
+      </button>
+      <button onclick="window.close()"
+        class="text-sm px-3 py-1.5 rounded bg-red-500 text-white hover:bg-red-600 transition">
+        Fermer ✕
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════ MAIN LAYOUT ══ -->
+  <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
+
+    <!-- ─────────────────────────────────────────── LEFT PANEL: INPUTS ── -->
+    <aside>
+      <!-- Mode tabs -->
+      <div class="bg-white card rounded-xl p-4 mb-4">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Mode de calcul</p>
+        <div class="flex flex-wrap gap-2">
+          <button id="tab-mensualite" class="tab-btn active text-xs font-medium px-3 py-1.5 rounded border border-blue-600"
+            onclick="setMode('mensualite')">Montant + Durée → Mensualité</button>
+          <button id="tab-montant" class="tab-btn text-xs font-medium px-3 py-1.5 rounded border border-slate-300 text-slate-600"
+            onclick="setMode('montant')">Mensualité max + Durée → Montant</button>
+          <button id="tab-duree" class="tab-btn text-xs font-medium px-3 py-1.5 rounded border border-slate-300 text-slate-600"
+            onclick="setMode('duree')">Montant + Mensualité → Durée</button>
+          <button id="tab-alma" class="tab-btn text-xs font-medium px-3 py-1.5 rounded border border-slate-300 text-slate-600"
+            onclick="setMode('alma')">Paiement en X fois (Alma-style)</button>
+          <button type="button" class="info-btn self-center" aria-label="En savoir plus sur le mode Alma"
+            onclick="showInfoTooltip(this, 'Mode pour les crédits type Alma, Cetelem, Floa… où la mensualité est fixe et le montant finançable est calculé en fonction de ce que vous pouvez payer par mois.')">i</button>
+        </div>
+      </div>
+
+      <!-- Inputs card -->
+      <div class="bg-white card rounded-xl p-5 space-y-5">
+
+        <!-- Montant -->
+        <div id="group-montant">
+          <label for="inp-montant" class="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+            Montant du crédit
+            <button type="button" class="info-btn" aria-label="En savoir plus sur le montant du crédit"
+              onclick="showInfoTooltip(this, 'Le capital que vous allez emprunter (hors apport/acompte). C\'est la somme que la banque va vous prêter.')">i</button>
+          </label>
+          <div class="flex items-center gap-2">
+            <input id="inp-montant" type="number" min="200" max="75000" step="100" value="10000"
+              class="w-28 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">€</span>
+          </div>
+          <input id="sl-montant" type="range" min="200" max="75000" step="100" value="10000"
+            class="w-full mt-2" />
+          <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>200 €</span><span>75 000 €</span></div>
+        </div>
+
+        <!-- Mensualité max (mode montant) -->
+        <div id="group-mensualite-max" class="hidden">
+          <label for="inp-mensualite-max" class="block text-sm font-semibold text-slate-700 mb-1">
+            Mensualité maximum
+          </label>
+          <div class="flex items-center gap-2">
+            <input id="inp-mensualite-max" type="number" min="10" max="5000" step="10" value="300"
+              class="w-28 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">€/mois</span>
+          </div>
+          <input id="sl-mensualite-max" type="range" min="10" max="5000" step="10" value="300"
+            class="w-full mt-2" />
+          <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>10 €</span><span>5 000 €</span></div>
+        </div>
+
+        <!-- Durée -->
+        <div id="group-duree">
+          <label for="inp-duree" class="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+            Durée du crédit
+            <button type="button" class="info-btn" aria-label="En savoir plus sur la durée du crédit"
+              onclick="showInfoTooltip(this, 'Nombre de mois pendant lesquels vous rembourserez le crédit. Plus c\'est long, plus la mensualité est faible… mais plus vous payez d\'intérêts au total.')">i</button>
+          </label>
+          <div class="flex items-center gap-2">
+            <input id="inp-duree" type="number" min="12" max="120" step="6" value="48"
+              class="w-24 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">mois</span>
+          </div>
+          <input id="sl-duree" type="range" min="12" max="120" step="6" value="48"
+            class="w-full mt-2" />
+          <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>12 mois</span><span>120 mois</span></div>
+        </div>
+
+        <!-- Taux nominal -->
+        <div>
+          <label for="inp-taux" class="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+            Taux nominal annuel
+            <button type="button" class="info-btn" aria-label="En savoir plus sur le taux nominal"
+              onclick="showInfoTooltip(this, 'Le taux d\'intérêt « brut » annoncé par la banque (hors assurance et frais). C\'est la base du calcul des intérêts.')">i</button>
+          </label>
+          <div class="flex items-center gap-2">
+            <input id="inp-taux" type="number" min="0" max="20" step="0.01" value="5.50"
+              class="w-24 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">%</span>
+          </div>
+          <input id="sl-taux" type="range" min="0" max="20" step="0.01" value="5.50"
+            class="w-full mt-2" />
+          <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>0 %</span><span>20 %</span></div>
+        </div>
+
+        <!-- Assurance -->
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <input id="chk-assurance" type="checkbox" checked
+              class="w-4 h-4 accent-blue-600 cursor-pointer" />
+            <label for="chk-assurance" class="flex items-center gap-1 text-sm font-semibold text-slate-700 cursor-pointer">
+              Assurance emprunteur
+              <button type="button" class="info-btn" aria-label="En savoir plus sur l'assurance emprunteur"
+                onclick="showInfoTooltip(this, 'Assurance facultative qui prend en charge vos mensualités en cas de décès, invalidité ou perte d\'emploi. Elle augmente le coût total mais vous protège.')">i</button>
+            </label>
+          </div>
+          <div id="group-taux-assurance" class="ml-6 flex items-center gap-2">
+            <input id="inp-taux-assurance" type="number" min="0" max="2" step="0.01" value="0.45"
+              class="w-24 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">% / an sur capital initial</span>
+          </div>
+        </div>
+
+        <!-- Frais de dossier -->
+        <div>
+          <label for="inp-frais" class="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+            Frais de dossier
+            <button type="button" class="info-btn" aria-label="En savoir plus sur les frais de dossier"
+              onclick="showInfoTooltip(this, 'Frais fixes facturés par la banque au début du crédit. Ils sont souvent ajoutés à la première mensualité.')">i</button>
+          </label>
+          <div class="flex items-center gap-2">
+            <input id="inp-frais" type="number" min="0" max="500" step="1" value="0"
+              class="w-24 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span class="text-sm text-slate-500">€ (ajouté à la 1re mensualité)</span>
+          </div>
+        </div>
+
+        <!-- Date première mensualité -->
+        <div>
+          <label for="inp-date" class="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+            Date de la 1re mensualité
+            <button type="button" class="info-btn" aria-label="En savoir plus sur la date de première mensualité"
+              onclick="showInfoTooltip(this, 'Permet d\'avoir un vrai calendrier avec les dates réelles de prélèvement (très utile pour anticiper votre budget).')">i</button>
+          </label>
+          <input id="inp-date" type="month"
+            class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- ═══ MODE ALMA : Paiement en X fois ══════════════════════════ -->
+        <div id="group-alma" class="hidden space-y-4">
+
+          <!-- Boutons preset rapides -->
+          <div>
+            <p class="text-sm font-semibold text-slate-700 mb-1.5">Nombre de fois</p>
+            <div class="flex flex-wrap gap-1.5">
+              <button class="alma-preset text-sm font-bold px-3 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-800 hover:text-white hover:border-slate-800 transition" onclick="setAlmaPreset(3)">3×</button>
+              <button class="alma-preset text-sm font-bold px-3 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-800 hover:text-white hover:border-slate-800 transition" onclick="setAlmaPreset(4)">4×</button>
+              <button class="alma-preset text-sm font-bold px-3 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-800 hover:text-white hover:border-slate-800 transition" onclick="setAlmaPreset(10)">10×</button>
+              <button class="alma-preset text-sm font-bold px-3 py-1 rounded-lg border border-slate-800 bg-slate-800 text-white transition" onclick="setAlmaPreset(12)">12×</button>
+              <button class="alma-preset text-sm font-bold px-3 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-800 hover:text-white hover:border-slate-800 transition" onclick="setAlmaPreset(24)">24×</button>
+            </div>
+            <p class="text-xs text-slate-400 mt-1.5">Comme Alma, Cetelem, Floa, etc.</p>
+          </div>
+
+          <!-- Nombre de mensualités -->
+          <div>
+            <label for="inp-alma-n" class="block text-sm font-semibold text-slate-700 mb-1">Nombre de mensualités</label>
+            <div class="flex items-center gap-2">
+              <input id="inp-alma-n" type="number" min="2" max="60" step="1" value="12"
+                class="w-24 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              <span class="text-sm text-slate-500">fois</span>
+            </div>
+            <input id="sl-alma-n" type="range" min="2" max="60" step="1" value="12" class="w-full mt-2" />
+            <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>2</span><span>60</span></div>
+          </div>
+
+          <!-- Mensualité souhaitée -->
+          <div>
+            <label for="inp-alma-mens" class="block text-sm font-semibold text-slate-700 mb-1">Mensualité souhaitée</label>
+            <div class="flex items-center gap-2">
+              <input id="inp-alma-mens" type="number" min="10" max="2000" step="10" value="200"
+                class="w-28 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              <span class="text-sm text-slate-500">€ / mois</span>
+            </div>
+            <input id="sl-alma-mens" type="range" min="10" max="2000" step="10" value="200" class="w-full mt-2" />
+            <div class="flex justify-between text-xs text-slate-400 mt-0.5"><span>10 €</span><span>2 000 €</span></div>
+          </div>
+
+          <!-- Montant calculé (lecture seule) -->
+          <div>
+            <p class="text-sm font-semibold text-slate-700 mb-1">Montant maximum finançable</p>
+            <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
+              <span id="alma-computed-capital" class="text-2xl font-bold text-blue-700">–</span>
+              <span class="text-sm text-slate-500">€</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Calculé depuis la mensualité et la durée choisies</p>
+          </div>
+
+        </div><!-- /group-alma -->
+
+      </div><!-- /inputs card -->
+    </aside>
+
+    <!-- ─────────────────────────────────────────── RIGHT PANEL: RESULTS ── -->
+    <section class="space-y-6">
+
+      <div class="bg-white card rounded-xl p-5">
+        <!-- Bandeau d'erreur : placé à l'intérieur de la carte pour éviter le décalage
+             causé par le sélecteur space-y :not([hidden]) ~ :not([hidden]) -->
+        <div id="error-banner" class="hidden bg-red-50 border border-red-300 text-red-700 rounded-xl px-4 py-3 text-sm mb-4"></div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Résultats</p>
+
+        <!-- ── Hero : mensualité mensuelle ─────────────────────────────── -->
+        <div class="mb-5 pb-5 border-b border-slate-100">
+          <p class="text-sm text-slate-500 mb-1.5">Tu paieras <strong class="text-slate-700">chaque mois</strong> sur ton compte :</p>
+          <div class="flex items-baseline gap-2">
+            <span id="res-mensualite" class="text-5xl font-black text-blue-600">–</span>
+            <span class="text-2xl font-bold text-blue-400">€</span>
+          </div>
+          <p class="text-sm text-slate-500 mt-1">
+            pendant <span id="res-duree" class="font-semibold text-slate-700">–</span> mois
+          </p>
+          <p class="text-xs text-slate-400 mt-1 italic">Chaque mois, ce montant sera prélevé automatiquement sur ton compte bancaire.</p>
+        </div>
+
+        <!-- ── Coûts en 3 colonnes ─────────────────────────────────────── -->
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="bg-slate-50 rounded-xl p-3">
+            <p class="text-xs text-slate-500 mb-1 flex items-center gap-0.5">
+              Coût total
+              <button type="button" class="info-btn" aria-label="En savoir plus sur le coût total"
+                onclick="showInfoTooltip(this, 'C\'est le coût supplémentaire du crédit (intérêts + assurance). Ce n\'est PAS le montant que tu empruntes. Par exemple : tu empruntes environ 2 008 € mais tu paieras 522 € de plus au total à la banque.')">i</button>
+            </p>
+            <p id="res-cout-total" class="text-lg font-bold text-slate-800">–</p>
+            <p class="text-xs text-slate-400">€</p>
+          </div>
+          <div class="bg-orange-50 rounded-xl p-3">
+            <p class="text-xs text-slate-500 mb-1 flex items-center gap-0.5">
+              Dont intérêts
+              <button type="button" class="info-btn" aria-label="En savoir plus sur les intérêts"
+                onclick="showInfoTooltip(this, 'C\'est l\'argent que tu donnes à la banque simplement parce qu\'elle t\'a prêté de l\'argent. Ce n\'est pas du capital remboursé, c\'est le &quot;prix&quot; du crédit.')">i</button>
+            </p>
+            <p id="res-interets" class="text-lg font-bold text-orange-500">–</p>
+            <p class="text-xs text-slate-400">€</p>
+          </div>
+          <div class="bg-violet-50 rounded-xl p-3">
+            <p class="text-xs text-slate-500 mb-1 flex items-center gap-0.5">
+              Dont assurance
+              <button type="button" class="info-btn" aria-label="En savoir plus sur l'assurance"
+                onclick="showInfoTooltip(this, 'Partie de ta mensualité qui sert à payer l\'assurance emprunteur (facultative). Elle protège en cas de problème.')">i</button>
+            </p>
+            <p id="res-assurance" class="text-lg font-bold text-violet-500">–</p>
+            <p class="text-xs text-slate-400">€</p>
+          </div>
+        </div>
+
+        <!-- ── Montant emprunté réel (boîte bleue) ─────────────────────── -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-4">
+          <p class="text-xs text-slate-500 mb-0.5 flex items-center gap-1">
+            Montant que tu empruntes réellement
+            <button type="button" class="info-btn" aria-label="En savoir plus sur le montant emprunté"
+              onclick="showInfoTooltip(this, 'C\'est le vrai montant que la banque te prête. Le reste (coût total − montant finançable) = intérêts + assurance.')">i</button>
+          </p>
+          <div class="flex items-baseline gap-1">
+            <p id="res-capital" class="text-xl font-bold text-blue-700">–</p>
+            <span class="text-sm text-blue-400">€</span>
+          </div>
+        </div>
+
+        <!-- ── TAEG ───────────────────────────────────────────────────── -->
+        <div class="bg-emerald-50 rounded-xl px-4 py-3">
+          <p class="text-xs text-slate-500 mb-0.5 flex items-center gap-1">
+            TAEG estimé
+            <button type="button" class="info-btn" aria-label="En savoir plus sur le TAEG"
+              onclick="showInfoTooltip(this, 'Taux Annuel Effectif Global : le vrai coût total du crédit (intérêts + assurance + frais). C\'est l\'indicateur le plus important à comparer entre banques.')">i</button>
+          </p>
+          <div class="flex items-baseline gap-1">
+            <p id="res-taeg" class="text-2xl font-bold text-emerald-600">–</p>
+            <span class="text-sm font-semibold text-emerald-400">%</span>
+          </div>
+        </div>
+
+        <!-- Callout calculé (modes montant / durée / alma) -->
+        <div id="computed-callout" class="hidden mt-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm text-blue-800">
+          <span id="computed-callout-text"></span>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white card rounded-xl p-4">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Capital restant dû</p>
+          <canvas id="chart-capital" height="220"></canvas>
+        </div>
+        <div class="bg-white card rounded-xl p-4">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Décomposition des mensualités</p>
+          <canvas id="chart-decomposition" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Amortization table -->
+      <div class="bg-white card rounded-xl p-5">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Tableau d'amortissement</p>
+        <div id="table-container" class="rounded-lg overflow-hidden border border-slate-200">
+          <table class="w-full text-xs text-left min-w-[600px]">
+            <thead class="bg-slate-100 text-slate-600 font-semibold">
+              <tr>
+                <th class="px-3 py-2">Mois</th>
+                <th class="px-3 py-2">Date</th>
+                <!-- En-têtes avec bouton ⓘ pédagogique (réutilise showInfoTooltip) -->
+                <th class="px-3 py-2 text-right">
+                  <span class="inline-flex items-center justify-end gap-1">Mensualité
+                    <button type="button" class="info-btn" aria-label="En savoir plus sur la mensualité"
+                      onclick="showInfoTooltip(this, 'C\'est le montant fixe que tu paies chaque mois à la banque. Il se décompose en 3 parties : intérêts + capital remboursé + assurance (si tu en as pris une).')">i</button>
+                  </span>
+                </th>
+                <th class="px-3 py-2 text-right">
+                  <span class="inline-flex items-center justify-end gap-1">Intérêts
+                    <button type="button" class="info-btn" aria-label="En savoir plus sur les intérêts"
+                      onclick="showInfoTooltip(this, 'C\'est l\'argent que tu donnes à la banque pour t\'avoir prêté de l\'argent. Au début du crédit, la plus grande partie de ta mensualité sert à payer ces intérêts.')">i</button>
+                  </span>
+                </th>
+                <th class="px-3 py-2 text-right">
+                  <span class="inline-flex items-center justify-end gap-1">Capital
+                    <button type="button" class="info-btn" aria-label="En savoir plus sur le capital remboursé"
+                      onclick="showInfoTooltip(this, 'C\'est la partie de ta mensualité qui rembourse vraiment le montant que tu as emprunté. Au fur et à mesure des mois, cette partie augmente et tu rembourses de plus en plus vite ton capital.')">i</button>
+                  </span>
+                </th>
+                <th class="px-3 py-2 text-right">
+                  <span class="inline-flex items-center justify-end gap-1">Assurance
+                    <button type="button" class="info-btn" aria-label="En savoir plus sur l'assurance"
+                      onclick="showInfoTooltip(this, 'Montant payé chaque mois pour ton assurance emprunteur (facultative). Elle protège tes proches et toi en cas de coup dur (perte d\'emploi, maladie, décès) en prenant en charge tes mensualités.')">i</button>
+                  </span>
+                </th>
+                <th class="px-3 py-2 text-right">
+                  <span class="inline-flex items-center justify-end gap-1">Reste dû
+                    <button type="button" class="info-btn" aria-label="En savoir plus sur le reste dû"
+                      onclick="showInfoTooltip(this, 'C\'est ce qu\'il te reste encore à rembourser à la banque à la fin du mois. Il diminue progressivement jusqu\'à zéro à la fin du crédit. C\'est ton &quot;niveau de dette&quot; qui baisse.')">i</button>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+  /* ===================================================================
+   * CONSOSCOPE – Simulateur de crédit à la consommation
+   * ===================================================================
+   * Modes :
+   *   mensualite : montant + durée → calcule la mensualité
+   *   montant    : mensualité max + durée → calcule le montant empruntable
+   *   duree      : montant + mensualité fixe → calcule la durée
+   *
+   * Assurance : calculée sur le capital initial (méthode la plus courante
+   * en France pour les crédits à la consommation). La prime mensuelle est
+   * fixe tout au long du prêt = capital × tauxAnnuelAssurance / 12.
+   *
+   * TAEG estimé : calculé par méthode de Newton-Raphson (taux interne de
+   * rendement des flux) incluant frais de dossier et assurance.
+   * =================================================================== */
+
+  // ── Constantes & état global ──────────────────────────────────────────
+  let currentMode = 'mensualite';
+  let chartCapital = null;
+  let chartDecomp = null;
+  let debounceTimer = null;
+
+  // ── Initialisation ────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    setDefaultDate();
+    bindEvents();
+    setAlmaPreset(12, false); // pré-sélectionne le bouton 12× au chargement
+    recalculate();
+  });
+
+  function setDefaultDate() {
+    const now = new Date();
+    // mois prochain
+    const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const yyyy = next.getFullYear();
+    const mm = String(next.getMonth() + 1).padStart(2, '0');
+    document.getElementById('inp-date').value = `${yyyy}-${mm}`;
+  }
+
+  // ── Liaison des événements ────────────────────────────────────────────
+  function bindEvents() {
+    const syncPairs = [
+      ['inp-montant',        'sl-montant'],
+      ['inp-duree',          'sl-duree'],
+      ['inp-taux',           'sl-taux'],
+      ['inp-mensualite-max', 'sl-mensualite-max'],
+      ['inp-alma-n',         'sl-alma-n'],
+      ['inp-alma-mens',      'sl-alma-mens'],
+    ];
+
+    syncPairs.forEach(([inputId, sliderId]) => {
+      const inp = document.getElementById(inputId);
+      const sl  = document.getElementById(sliderId);
+      if (!inp || !sl) return;
+      inp.addEventListener('input', () => { sl.value = inp.value; debouncedRecalc(); });
+      sl.addEventListener('input',  () => { inp.value = sl.value; debouncedRecalc(); });
+    });
+
+    ['inp-taux-assurance', 'inp-frais', 'inp-date'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', debouncedRecalc);
+    });
+
+    document.getElementById('chk-assurance').addEventListener('change', () => {
+      document.getElementById('group-taux-assurance').classList.toggle(
+        'hidden', !document.getElementById('chk-assurance').checked
+      );
+      debouncedRecalc();
+    });
+  }
+
+  function debouncedRecalc() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(recalculate, 50);
+  }
+
+  // ── Gestion des modes ─────────────────────────────────────────────────
+  function setMode(mode) {
+    currentMode = mode;
+    const isAlma = mode === 'alma';
+
+    ['mensualite', 'montant', 'duree', 'alma'].forEach(m => {
+      const btn = document.getElementById(`tab-${m}`);
+      if (!btn) return;
+      btn.classList.toggle('active',          m === mode);
+      btn.classList.toggle('border-blue-600', m === mode);
+      btn.classList.toggle('text-slate-600',  m !== mode);
+      btn.classList.toggle('border-slate-300', m !== mode);
+    });
+
+    // Afficher/masquer les groupes selon le mode
+    document.getElementById('group-montant').classList.toggle('hidden',        mode === 'montant' || isAlma);
+    document.getElementById('group-mensualite-max').classList.toggle('hidden', mode !== 'montant' || isAlma);
+    document.getElementById('group-duree').classList.toggle('hidden',          mode === 'duree'   || isAlma);
+    document.getElementById('group-alma').classList.toggle('hidden',           !isAlma);
+
+    recalculate();
+  }
+
+  /**
+   * setAlmaPreset(n, triggerRecalc)
+   * Active visuellement le bouton de preset correspondant et met à jour les champs.
+   * @param {number}  n            - nombre de fois (2–60)
+   * @param {boolean} triggerRecalc - déclenche le recalcul si true (défaut: true)
+   */
+  function setAlmaPreset(n, triggerRecalc = true) {
+    document.getElementById('inp-alma-n').value = n;
+    document.getElementById('sl-alma-n').value  = n;
+    document.querySelectorAll('.alma-preset').forEach(btn => {
+      const btnN    = parseInt(btn.textContent);
+      const isActive = btnN === n;
+      btn.classList.toggle('bg-slate-800',    isActive);
+      btn.classList.toggle('text-white',      isActive);
+      btn.classList.toggle('border-slate-800', isActive);
+      btn.classList.toggle('text-slate-700',  !isActive);
+      btn.classList.toggle('border-slate-300', !isActive);
+    });
+    if (triggerRecalc) debouncedRecalc();
+  }
+
+  // ── Lecture des entrées ───────────────────────────────────────────────
+  function getInputs() {
+    return {
+      montant:        parseFloat(document.getElementById('inp-montant').value)        || 0,
+      duree:          parseInt(document.getElementById('inp-duree').value)            || 0,
+      taux:           parseFloat(document.getElementById('inp-taux').value)           || 0,
+      mensualiteMax:  parseFloat(document.getElementById('inp-mensualite-max').value) || 0,
+      avecAssurance:  document.getElementById('chk-assurance').checked,
+      tauxAssurance:  parseFloat(document.getElementById('inp-taux-assurance').value) || 0,
+      frais:          parseFloat(document.getElementById('inp-frais').value)          || 0,
+      dateDebut:      document.getElementById('inp-date').value,
+      // Mode alma
+      almaN:          parseInt(document.getElementById('inp-alma-n')?.value)          || 12,
+      almaMensualite: parseFloat(document.getElementById('inp-alma-mens')?.value)     || 0,
+    };
+  }
+
+  // ── Formule mensualité (taux actuariel, méthode française) ────────────
+  /**
+   * Calcule la mensualité hors assurance.
+   * @param {number} capital - montant emprunté
+   * @param {number} tauxMensuel - taux d'intérêt mensuel (décimal)
+   * @param {number} n - nombre de mensualités
+   */
+  function calculateMonthlyPayment(capital, tauxMensuel, n) {
+    if (tauxMensuel === 0) return capital / n;
+    return capital * (tauxMensuel * Math.pow(1 + tauxMensuel, n)) /
+           (Math.pow(1 + tauxMensuel, n) - 1);
+  }
+
+  /**
+   * Calcule le nombre de mensualités nécessaires pour rembourser.
+   * Résout : capital = m * (1 - (1+r)^-n) / r
+   */
+  function calculateDuration(capital, tauxMensuel, mensualite) {
+    if (tauxMensuel === 0) return Math.ceil(capital / mensualite);
+    if (mensualite <= capital * tauxMensuel) return Infinity; // mensualité trop faible
+    return Math.ceil(-Math.log(1 - (capital * tauxMensuel) / mensualite) / Math.log(1 + tauxMensuel));
+  }
+
+  // ── Calcul du TAEG par Newton-Raphson ─────────────────────────────────
+  /**
+   * Estime le TAEG annuel en trouvant le taux i tel que :
+   *   capital - frais = Σ [ (mensualité + assurance_m) / (1+i/12)^k ]
+   * Retourne le taux annuel en %.
+   */
+  function estimateTAEG(capital, frais, rows) {
+    const montantNet = capital - frais; // capital effectivement reçu
+    if (montantNet <= 0 || rows.length === 0) return 0;
+
+    let r = 0.005; // estimation initiale : ~6 % annuel
+    for (let iter = 0; iter < 1000; iter++) {
+      let f  = -montantNet;
+      let df = 0;
+      rows.forEach((row, k) => {
+        const flux = row.mensualite + row.assurance + (k === 0 ? frais : 0);
+        const disc = Math.pow(1 + r, k + 1);
+        f  += flux / disc;
+        df -= (k + 1) * flux / (disc * (1 + r));
+      });
+      if (Math.abs(df) < 1e-12) break;
+      const rNew = r - f / df;
+      if (Math.abs(rNew - r) < 1e-8) { r = rNew; break; }
+      r = rNew < 0 ? 0.0001 : rNew; // garde r positif
+    }
+    return Math.pow(1 + r, 12) - 1; // taux annuel effectif global
+  }
+
+  // ── Génération du tableau d'amortissement ────────────────────────────
+  /**
+   * Retourne un tableau de lignes :
+   *   { mois, date, mensualite, interets, capital, assurance, restedu }
+   *
+   * Assurance calculée sur capital initial (méthode fixe, la plus répandue
+   * en France pour les crédits conso : prime mensuelle constante).
+   */
+  function generateAmortizationTable(capital, mensualite, tauxMensuel, n, tauxAssuranceAnnuel, dateDebutStr) {
+    const rows = [];
+    let resteDu = capital;
+    const primeAssuranceMensuelle = tauxAssuranceAnnuel > 0
+      ? capital * (tauxAssuranceAnnuel / 100) / 12
+      : 0;
+
+    // Parsing de la date de départ
+    let annee = new Date().getFullYear();
+    let moisDebut = new Date().getMonth() + 2; // mois prochain par défaut
+    if (dateDebutStr) {
+      const parts = dateDebutStr.split('-');
+      annee    = parseInt(parts[0]);
+      moisDebut = parseInt(parts[1]);
+    }
+
+    for (let k = 1; k <= n; k++) {
+      const interets = resteDu * tauxMensuel;
+      let remboursementCapital = mensualite - interets;
+      // Dernière mensualité : on clôture le solde
+      if (k === n || remboursementCapital >= resteDu) {
+        remboursementCapital = resteDu;
+      }
+      resteDu = Math.max(0, resteDu - remboursementCapital);
+
+      // Calcul de la date
+      const dateEcheance = new Date(annee, moisDebut - 1 + k - 1, 1);
+      const dateStr = dateEcheance.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+
+      rows.push({
+        mois: k,
+        date: dateStr,
+        mensualite: remboursementCapital + interets,
+        interets: interets,
+        capital: remboursementCapital,
+        assurance: primeAssuranceMensuelle,
+        restedu: resteDu,
+      });
+
+      if (resteDu <= 0.01) break;
+    }
+    return rows;
+  }
+
+  // ── Moteur de calcul principal ────────────────────────────────────────
+  function recalculate() {
+    const inp = getInputs();
+    const errBanner = document.getElementById('error-banner');
+    errBanner.classList.add('hidden');
+
+    // Validation
+    const errors = [];
+    const isAlmaMode = currentMode === 'alma';
+    if (currentMode !== 'montant' && !isAlmaMode && inp.montant <= 0)     errors.push('Le montant doit être supérieur à 0.');
+    if (currentMode !== 'duree'  && !isAlmaMode && inp.duree <= 0)        errors.push('La durée doit être supérieure à 0.');
+    if (currentMode === 'montant' && inp.mensualiteMax <= 0)              errors.push('La mensualité maximale doit être supérieure à 0.');
+    if (isAlmaMode && inp.almaMensualite <= 0)                            errors.push('La mensualité souhaitée doit être supérieure à 0.');
+    if (inp.taux < 0) errors.push('Le taux nominal ne peut pas être négatif.');
+
+    if (errors.length) {
+      errBanner.textContent = errors.join(' ');
+      errBanner.classList.remove('hidden');
+      return;
+    }
+
+    const tauxMensuel = inp.taux / 100 / 12;
+    const tauxAssurance = inp.avecAssurance ? inp.tauxAssurance : 0;
+
+    // ── Résolution selon le mode ──
+    let capital, mensualiteBase, n;
+    const callout = document.getElementById('computed-callout');
+    const calloutText = document.getElementById('computed-callout-text');
+    callout.classList.add('hidden');
+
+    if (currentMode === 'mensualite') {
+      capital       = inp.montant;
+      n             = inp.duree;
+      mensualiteBase = calculateMonthlyPayment(capital, tauxMensuel, n);
+
+    } else if (currentMode === 'montant') {
+      // mensualité max inclut assurance → mensualité hors assurance = max - prime
+      // Prime inconnue car capital inconnu → on itère (convergence rapide)
+      n = inp.duree;
+      let m = inp.mensualiteMax;
+      for (let i = 0; i < 50; i++) {
+        capital = tauxMensuel === 0
+          ? m * n
+          : m * (1 - Math.pow(1 + tauxMensuel, -n)) / tauxMensuel;
+        const prime = tauxAssurance > 0 ? capital * (tauxAssurance / 100) / 12 : 0;
+        m = inp.mensualiteMax - prime;
+        if (m <= 0) { m = 1; break; }
+      }
+      mensualiteBase = m;
+      capital = tauxMensuel === 0
+        ? m * n
+        : m * (1 - Math.pow(1 + tauxMensuel, -n)) / tauxMensuel;
+      // MAJ champ montant pour cohérence visuelle
+      document.getElementById('inp-montant').value  = capital.toFixed(0);
+      document.getElementById('sl-montant').value   = Math.min(75000, Math.max(200, capital)).toFixed(0);
+      calloutText.textContent = `Montant empruntable calculé : ${fmt(capital)} €`;
+      callout.classList.remove('hidden');
+
+    } else if (currentMode === 'duree') {
+      capital = inp.montant;
+      const primeEst = tauxAssurance > 0 ? capital * (tauxAssurance / 100) / 12 : 0;
+      const mensualitePure = inp.mensualiteMax - primeEst;
+      if (mensualitePure <= capital * tauxMensuel && tauxMensuel > 0) {
+        errBanner.textContent = 'La mensualité est trop faible pour couvrir les intérêts du 1er mois.';
+        errBanner.classList.remove('hidden');
+        return;
+      }
+      n = calculateDuration(capital, tauxMensuel, mensualitePure);
+      if (!isFinite(n) || n > 600) {
+        errBanner.textContent = 'La mensualité est insuffisante pour rembourser ce crédit.';
+        errBanner.classList.remove('hidden');
+        return;
+      }
+      mensualiteBase = mensualitePure;
+      // MAJ champ durée
+      document.getElementById('inp-duree').value = n;
+      document.getElementById('sl-duree').value  = Math.min(120, Math.max(12, n));
+      calloutText.textContent = `Durée calculée : ${n} mois (${(n / 12).toFixed(1)} ans)`;
+      callout.classList.remove('hidden');
+
+    } else {
+      // ── Mode Alma : mensualité × N → montant maximum ──────────────────
+      // Formule inverse : Capital = M × [1 – (1+r)^(–n)] / r
+      // L'assurance dépend du capital (inconnu) → on itère pour converger.
+      n = inp.almaN;
+      let m = inp.almaMensualite;
+      for (let i = 0; i < 50; i++) {
+        capital = tauxMensuel === 0
+          ? m * n
+          : m * (1 - Math.pow(1 + tauxMensuel, -n)) / tauxMensuel;
+        const prime = tauxAssurance > 0 ? capital * (tauxAssurance / 100) / 12 : 0;
+        m = inp.almaMensualite - prime;
+        if (m <= 0) { m = 1; break; }
+      }
+      mensualiteBase = m;
+      capital = tauxMensuel === 0
+        ? m * n
+        : m * (1 - Math.pow(1 + tauxMensuel, -n)) / tauxMensuel;
+      // Affiche le montant calculé dans le panneau alma
+      document.getElementById('alma-computed-capital').textContent = fmt(capital);
+      // Synchronise les champs globaux pour cohérence si on change de mode ensuite
+      document.getElementById('inp-montant').value = capital.toFixed(0);
+      document.getElementById('sl-montant').value  = Math.min(75000, Math.max(200, capital)).toFixed(0);
+      document.getElementById('inp-duree').value   = n;
+      document.getElementById('sl-duree').value    = Math.min(120, Math.max(12, n));
+      calloutText.textContent = `Montant finançable : ${fmt(capital)} € sur ${n} mois`;
+      callout.classList.remove('hidden');
+    }
+
+    // ── Tableau d'amortissement ──
+    const rows = generateAmortizationTable(
+      capital, mensualiteBase, tauxMensuel, n, tauxAssurance, inp.dateDebut
+    );
+
+    if (rows.length === 0) return;
+
+    // ── Agrégats ──
+    const totalInterets  = rows.reduce((s, r) => s + r.interets, 0);
+    const totalAssurance = rows.reduce((s, r) => s + r.assurance, 0);
+    const totalCredit    = totalInterets + totalAssurance + inp.frais;
+    const mensualiteAffichee = mensualiteBase + (tauxAssurance > 0 ? capital * (tauxAssurance / 100) / 12 : 0);
+    const taeg = estimateTAEG(capital, inp.frais, rows) * 100;
+
+    // ── Affichage résultats ──
+    document.getElementById('res-mensualite').textContent  = fmt(mensualiteAffichee);
+    document.getElementById('res-cout-total').textContent  = fmt(totalCredit);
+    document.getElementById('res-interets').textContent    = fmt(totalInterets);
+    document.getElementById('res-assurance').textContent   = fmt(totalAssurance);
+    document.getElementById('res-taeg').textContent        = taeg.toFixed(2);
+    document.getElementById('res-duree').textContent       = n;
+    document.getElementById('res-capital').textContent     = fmt(capital);
+
+    // ── Graphiques & tableau ──
+    updateCharts(rows, capital);
+    renderTable(rows, inp.frais);
+  }
+
+  // ── Mise à jour des graphiques ────────────────────────────────────────
+  function updateCharts(rows, capital) {
+    const labels     = rows.map(r => r.mois % 6 === 0 || r.mois === 1 ? `M${r.mois}` : '');
+    const resteDus   = rows.map(r => parseFloat(r.restedu.toFixed(2)));
+    const capitaux   = rows.map(r => parseFloat(r.capital.toFixed(2)));
+    const interets   = rows.map(r => parseFloat(r.interets.toFixed(2)));
+    const assurances = rows.map(r => parseFloat(r.assurance.toFixed(2)));
+
+    // Graphique capital restant
+    if (chartCapital) chartCapital.destroy();
+    const ctxC = document.getElementById('chart-capital').getContext('2d');
+    chartCapital = new Chart(ctxC, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Capital restant dû (€)',
+          data: resteDus,
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { ticks: { font: { size: 10 }, callback: v => fmt(v) + ' €' } }
+        }
+      }
+    });
+
+    // Graphique décomposition mensualités (barres empilées)
+    if (chartDecomp) chartDecomp.destroy();
+    const ctxD = document.getElementById('chart-decomposition').getContext('2d');
+    chartDecomp = new Chart(ctxD, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Capital', data: capitaux,   backgroundColor: '#2563eb' },
+          { label: 'Intérêts', data: interets,  backgroundColor: '#f97316' },
+          { label: 'Assurance', data: assurances, backgroundColor: '#a855f7' },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { stacked: true, ticks: { font: { size: 10 }, callback: v => fmt(v) + ' €' } }
+        }
+      }
+    });
+  }
+
+  // ── Rendu du tableau ──────────────────────────────────────────────────
+  function renderTable(rows, frais) {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = rows.map((r, i) => {
+      const mensualiteAffichee = r.mensualite + r.assurance + (i === 0 ? frais : 0);
+      const isFrais = i === 0 && frais > 0;
+      return `<tr class="hover:bg-slate-50 ${i % 2 === 0 ? '' : 'bg-slate-50/50'}">
+        <td class="px-3 py-1.5 font-medium">${r.mois}</td>
+        <td class="px-3 py-1.5 text-slate-500">${r.date}</td>
+        <td class="px-3 py-1.5 text-right font-medium">${fmt(mensualiteAffichee)} €${isFrais ? '<span class="text-orange-400 ml-1" title="Inclut les frais de dossier">*</span>' : ''}</td>
+        <td class="px-3 py-1.5 text-right text-orange-600">${fmt(r.interets)} €</td>
+        <td class="px-3 py-1.5 text-right text-blue-600">${fmt(r.capital)} €</td>
+        <td class="px-3 py-1.5 text-right text-violet-600">${fmt(r.assurance)} €</td>
+        <td class="px-3 py-1.5 text-right font-semibold">${fmt(r.restedu)} €</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Export CSV ────────────────────────────────────────────────────────
+  function exportCSV() {
+    const inp  = getInputs();
+    const rows = document.querySelectorAll('#table-body tr');
+    if (!rows.length) return;
+
+    const headers = ['Mois','Date','Mensualité (€)','Intérêts (€)','Capital (€)','Assurance (€)','Reste dû (€)'];
+    const lines   = [headers.join(';')];
+
+    rows.forEach(tr => {
+      const cells = tr.querySelectorAll('td');
+      const line  = Array.from(cells).map(td => td.textContent.replace(/\s*[€*]/g, '').trim()).join(';');
+      lines.push(line);
+    });
+
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'consoscope_amortissement.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Réinitialisation ──────────────────────────────────────────────────
+  function resetAll() {
+    document.getElementById('inp-montant').value        = 10000;
+    document.getElementById('sl-montant').value         = 10000;
+    document.getElementById('inp-duree').value          = 48;
+    document.getElementById('sl-duree').value           = 48;
+    document.getElementById('inp-taux').value           = 5.50;
+    document.getElementById('sl-taux').value            = 5.50;
+    document.getElementById('inp-mensualite-max').value = 300;
+    document.getElementById('sl-mensualite-max').value  = 300;
+    document.getElementById('chk-assurance').checked   = true;
+    document.getElementById('group-taux-assurance').classList.remove('hidden');
+    document.getElementById('inp-taux-assurance').value = 0.45;
+    document.getElementById('inp-frais').value          = 0;
+    // Mode alma
+    document.getElementById('inp-alma-n').value         = 12;
+    document.getElementById('sl-alma-n').value          = 12;
+    document.getElementById('inp-alma-mens').value      = 200;
+    document.getElementById('sl-alma-mens').value       = 200;
+    document.getElementById('alma-computed-capital').textContent = '–';
+    setAlmaPreset(12, false);
+    setDefaultDate();
+    setMode('mensualite');
+  }
+
+  // ── Utilitaire formatage ──────────────────────────────────────────────
+  function fmt(val) {
+    return Number(val).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  // ── Modale import offre banque ─────────────────────────────────────
+  function openImportModal() {
+    document.getElementById('import-modal-overlay').classList.remove('hidden');
+    document.getElementById('import-textarea').value = '';
+    document.getElementById('import-results').classList.add('hidden');
+    document.getElementById('import-results').innerHTML = '';
+    document.getElementById('import-textarea').focus();
+  }
+
+  function closeImportModal() {
+    document.getElementById('import-modal-overlay').classList.add('hidden');
+  }
+
+  // Fermeture en cliquant sur l'overlay
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('import-modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeImportModal();
+    });
+    // Fermeture avec Échap
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeImportModal();
+    });
+  });
+
+  /**
+   * Analyse le texte collé pour extraire les paramètres du crédit.
+   * Appelé par le bouton "Analyser le texte" de la modale.
+   */
+
+  // Stockage du dernier résultat parsé (évite le passage de JSON dans les attributs onclick)
+  let _lastParsedOffer = null;
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // PARSER INTELLIGENT D'OFFRES BANCAIRES
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * parseCreditOffer(text)
+   *
+   * Extrait automatiquement les paramètres d'un crédit depuis un texte libre
+   * (mentions légales, petits caractères, résultat de simulateur bancaire).
+   *
+   * Formats supportés :
+   *   - Alma    : "2 107€63", "remboursable en 11 fois", "Acompte de 424€04"
+   *   - Cetelem / Sofinco : "5,90 %", "mensualité de 243,12 €"
+   *   - Younited / générique : "TAEG fixe 6,08 %", "frais de dossier : 80 €"
+   *   - Textes partiellement en anglais : "fixed annual rate 5.90%", "APR 6.08%"
+   *
+   * @param  {string} text  Texte brut à analyser
+   * @returns {Object} Champs détectés (null si absent) :
+   *   montantCredit, tauxDebiteur, taeg, dureeMois, mensualite,
+   *   coutTotalCredit, tauxAssurance, fraisDossier, acompte,
+   *   _tauxEstimeDuTaeg (flag interne)
+   */
+  function parseCreditOffer(text) {
+
+    // ── Pré-traitement ─────────────────────────────────────────────────────
+    // Unifie les espaces insécables et convertit le format Alma (2 107€63 → 2 107,63).
+    const t = text
+      .replace(/\u00a0/g, ' ')                       // espace insécable → normal
+      .replace(/\u202f/g, ' ')                        // espace fine insécable → normal
+      .replace(/(\d)\u20ac(\d{2})\b/g, '$1,$2')       // 2107€63  → 2107,63
+      .replace(/(\d)\s*€\s*(\d{2})\b/g, '$1,$2');     // 2107 € 63 → 2107,63
+
+    // Helper – convertit une chaîne monétaire en Float (gère formats FR et EN).
+    // Exemples : "2 107,63" → 2107.63 | "8 000" → 8000 | "1 234.56" → 1234.56
+    function parseEuro(raw) {
+      if (raw == null) return null;
+      const s = raw.trim().replace(/\s/g, '').replace(',', '.');
+      const v = parseFloat(s);
+      return isNaN(v) ? null : Math.round(v * 100) / 100;
+    }
+
+    // Helper – convertit une chaîne pourcentage en Float.
+    // Exemples : "23,46 %" → 23.46 | "5.90%" → 5.9 | "6,08" → 6.08
+    function parsePct(raw) {
+      if (raw == null) return null;
+      const s = raw.trim().replace(/\s/g, '').replace(',', '.').replace('%', '');
+      const v = parseFloat(s);
+      return isNaN(v) ? null : Math.round(v * 10000) / 10000;
+    }
+
+    const result = {
+      montantCredit:     null,
+      tauxDebiteur:      null,
+      taeg:              null,
+      dureeMois:         null,
+      mensualite:        null,
+      coutTotalCredit:   null,
+      tauxAssurance:     null,
+      fraisDossier:      null,
+      acompte:           null,
+      _tauxEstimeDuTaeg: false,
+      _isAlmaMode:       false,
+      _simMensualite:    null,   // mensualité théorique actuarielle FR (calculée en fin de parse)
+    };
+
+    // ── REGEX 1 : Montant du crédit ──────────────────────────────────────
+    // "Crédit d'un montant de 2 107,63 €"  (Alma, Sofinco)
+    // "Montant emprunté : 8 000 €"          (Cetelem)
+    // "Capital : 10 000 €" / "Emprunt de 5 000 €"
+    // "Montant du crédit : 1 500 €"         (générique)
+    // "Vous empruntez 3 000 €"              (Younited)
+    const rMontant = [
+      /cr[eé]dit\s+d['''\u2019]un\s+montant\s+de\s+([\d\s]{1,12}[,.]\d{2})/i,
+      /montant\s+(?:emprunt[eé]|du\s+cr[eé]dit|total|financ[eé]|de\s+l['''\u2019]emprunt)\s*[:\-–]?\s*([\d\s]{1,12}(?:[,.]\d{2})?)/i,
+      /montant\s*[:\-–]\s*([\d\s]{1,12}[,.]\d{2})/i,
+      /(?:capital|emprunt)\s+de\s+([\d\s]{1,12}[,.]\d{2})/i,
+      /vous\s+empruntez\s+([\d\s]{1,12}[,.]\d{2})/i,
+      /somme\s+(?:totale\s+)?(?:emprunt[eé]e?\s+)?(?:de\s+)?([\d\s]{1,12}[,.]\d{2})/i,
+    ];
+    for (const rx of rMontant) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.montantCredit = parseEuro(m[1]); break; }
+    }
+
+    // ── REGEX 2 : Taux débiteur nominal ─────────────────────────────────
+    // "taux débiteur fixe de 23,46 %"         (Alma)
+    // "taux nominal annuel fixe : 5,90 %"     (Cetelem)
+    // "taux d'intérêt annuel fixe 6,08 %"     (générique)
+    // "fixed annual rate 5.90%"               (EN)
+    // NB : on exclut les matches contenant "effectif / global / TAEG" (→ REGEX 3).
+    const rTauxDebiteur = [
+      /taux\s+d[eé]biteur\s+(?:annuel\s+)?(?:fixe|variable)?\s+(?:de\s+)?([\d,.\s]{1,8})\s*%/i,
+      /taux\s+nominal\s+(?:annuel\s+)?(?:fixe\s+)?(?:de\s+)?([\d,.\s]{1,8})\s*%/i,
+      /taux\s+d['''\u2019]int[eé]r[eêe]t\s+(?:annuel\s+)?(?:fixe\s+)?(?:de\s+)?([\d,.\s]{1,8})\s*%/i,
+      /taux\s+annuel\s+(?:fixe\s+)?(?:de\s+)?([\d,.\s]{1,8})\s*%(?!\s*(?:effectif|global|T\.?A|TAEG))/i,
+      /fixed\s+annual\s+(?:interest\s+)?rate[:\s]+([\d,.\s]{1,8})\s*%/i,
+    ];
+    for (const rx of rTauxDebiteur) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.tauxDebiteur = parsePct(m[1]); break; }
+    }
+
+    // ── REGEX 3 : TAEG ───────────────────────────────────────────────────
+    // "TAEG fixe 23,46 %"  /  "TAEG de 6,08 %"   (Alma, générique)
+    // "T.A.E.G. : 5,90 %"                         (format avec points)
+    // "taux annuel effectif global 6,08 %"         (version longue)
+    // "APR : 5.90%"                                (anglais)
+    const rTaeg = [
+      /T\.?A\.?E\.?G\.?\s*(?:fixe|variable)?\s*[:\-–]?\s*(?:de\s+)?([\d,.\s]{1,8})\s*%/i,
+      /taux\s+annuel\s+effectif\s+global\s*(?:fixe\s+)?[:\-–]?\s*(?:de\s+)?([\d,.\s]{1,8})\s*%/i,
+      /APR[:\s]+([\d,.\s]{1,8})\s*%/i,
+    ];
+    for (const rx of rTaeg) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.taeg = parsePct(m[1]); break; }
+    }
+
+    // ── REGEX 4 : Durée ──────────────────────────────────────────────────
+    // "durée : 36 mois"  /  "sur 11 mois"         (Cetelem, générique)
+    // "remboursable en 11 fois"                    (Alma — "fois" = mensualités)
+    // "en 11 mensualités"  /  "24 échéances"       (générique)
+    // "sur 3 ans" → × 12                           (conversion années)
+    const rDuree = [
+      /dur[eé]e\s*(?:de\s+remboursement\s*)?[:\-–]?\s*(\d{1,3})\s*mois/i,
+      /sur\s+(?:une\s+dur[eé]e\s+(?:totale\s+)?de\s+)?(\d{1,3})\s*mois/i,
+      /remboursable\s+en\s+(\d{1,3})\s*(?:fois|mensualit[eé]s?|[eé]ch[eé]ances?)/i,
+      /en\s+(\d{1,3})\s*(?:fois|mensualit[eé]s?|[eé]ch[eé]ances?)\b/i,
+      /(\d{1,3})\s*mensualit[eé]s?\b/i,
+      /(\d{1,3})\s*[eé]ch[eé]ances?\b/i,
+      /sur\s+(\d{1,2})\s*ans?\b/i,
+    ];
+    for (const rx of rDuree) {
+      const m = t.match(rx);
+      if (m?.[1]) {
+        let n = parseInt(m[1]);
+        if (rx.source.includes('ans')) n *= 12;         // conversion années → mois
+        if (n >= 1 && n <= 360) { result.dureeMois = n; break; }
+      }
+    }
+
+    // ── REGEX 5 : Mensualité ─────────────────────────────────────────────
+    // "mensualité de 212,20 €"  /  "mensualités de 243,12 €"
+    // "212,20 € par mois"  /  "212,20 €/mois"
+    // "paiement mensuel : 300 €"  /  "monthly payment: 200.00"
+    const rMensualite = [
+      /mensualit[eé]s?\s+(?:de\s+|d['''\u2019]un\s+montant\s+de\s+)?([\d\s]{1,7}[,.]\d{2})\s*€?/i,
+      /(?:paiement|pr[eé]l[eè]vement)\s+mensuel\s*[:\-–]?\s*([\d\s]{1,7}[,.]\d{2})/i,
+      /([\d\s]{1,7}[,.]\d{2})\s*€?\s+(?:par\s+mois|\/\s*mois)/i,
+      /monthly\s+(?:payment|instalment)[:\s]+([\d,.\s]{1,9})/i,
+    ];
+    for (const rx of rMensualite) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.mensualite = parseEuro(m[1]); break; }
+    }
+
+    // ── REGEX 6 : Coût total du crédit ───────────────────────────────────
+    // "coût total du crédit : 2 546,52 €"  (Alma, Cetelem)
+    // "coût du crédit : 438,89 €"           (générique)
+    // "total à rembourser : 8 438,89 €"     (générique)
+    // "Total : 2 546,52 €"                  (Alma simplifié)
+    const rCout = [
+      /co[uû]t\s+total\s+du\s+cr[eé]dit\s*[:\-–]?\s*([\d\s]{1,12}[,.]\d{2})/i,
+      /co[uû]t\s+du\s+cr[eé]dit\s*[:\-–]?\s*([\d\s]{1,12}[,.]\d{2})/i,
+      /(?:total\s+[àa]\s+rembourser|montant\s+total\s+d[uû])\s*[:\-–]?\s*([\d\s]{1,12}[,.]\d{2})/i,
+      /\btotal\s*[:\-–]\s*([\d\s]{1,12}[,.]\d{2})/i,
+    ];
+    for (const rx of rCout) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.coutTotalCredit = parseEuro(m[1]); break; }
+    }
+
+    // ── REGEX 7 : Assurance emprunteur ───────────────────────────────────
+    // "assurance facultative : 0,34 %"   (Cetelem)
+    // "assurance emprunteur 0,45 % /an"  (Sofinco)
+    // "taux d'assurance : 0,30 % par an" (générique)
+    const rAssurance = [
+      /assurance\s+(?:emprunteur|facultative|obligatoire)?\s*[:\-–]?\s*([\d,.]{1,6})\s*%/i,
+      /taux\s+d['''\u2019]assurance\s*[:\-–]?\s*([\d,.]{1,6})\s*%/i,
+    ];
+    for (const rx of rAssurance) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.tauxAssurance = parsePct(m[1]); break; }
+    }
+
+    // ── REGEX 8 : Frais de dossier ───────────────────────────────────────
+    // "frais de dossier : 80 €"   /   "frais d'ouverture : 50 €"
+    // "frais de gestion : 30 €"   /   "frais administratifs : 20 €"
+    const rFrais = [
+      /frais\s+de\s+dossier\s*[:\-–]?\s*([\d\s]{1,6}(?:[,.]\d{2})?)\s*€?/i,
+      /frais\s+d['''\u2019]ouverture\s*[:\-–]?\s*([\d\s]{1,6}(?:[,.]\d{2})?)\s*€?/i,
+      /frais\s+(?:de\s+)?(?:gestion|administratifs?)\s*[:\-–]?\s*([\d\s]{1,6}(?:[,.]\d{2})?)\s*€?/i,
+    ];
+    for (const rx of rFrais) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.fraisDossier = parseEuro(m[1]); break; }
+    }
+
+    // ── REGEX 9 : Acompte / versement initial ────────────────────────────
+    // "Acompte de 424,04 €"   (Alma — premier paiement à l'achat)
+    // "Apport : 500 €"   /   "Versement initial : 1 000 €"
+    const rAcompte = [
+      /acompte\s+de\s+([\d\s]{1,10}[,.]\d{2})/i,
+      /apport\s*[:\-–]?\s*([\d\s]{1,10}[,.]\d{2})/i,
+      /versement\s+initial\s*[:\-–]?\s*([\d\s]{1,10}[,.]\d{2})/i,
+    ];
+    for (const rx of rAcompte) {
+      const m = t.match(rx);
+      if (m?.[1]) { result.acompte = parseEuro(m[1]); break; }
+    }
+
+    // ── Fallback heuristique : montant ───────────────────────────────────
+    // Si aucun montant contextuel n'est trouvé, on prend le plus grand nombre
+    // entre 100 € et 75 000 € dans le texte (évite l'échec sur formats atypiques).
+    if (!result.montantCredit) {
+      const all = [...t.matchAll(/([\d]{1,3}(?:[\s]?\d{3})*[,.]\d{2})/g)]
+        .map(m => parseEuro(m[1]))
+        .filter(v => v !== null && v >= 100 && v <= 75000)
+        .sort((a, b) => b - a);
+      if (all.length > 0) result.montantCredit = all[0];
+    }
+
+    // ── Heuristique taux : TAEG → taux débiteur si ce dernier est absent ─
+    // Le TAEG inclut frais et assurance, donc légèrement supérieur au nominal.
+    // On l'utilise comme approximation en levant le flag _tauxEstimeDuTaeg.
+    if (!result.tauxDebiteur && result.taeg) {
+      result.tauxDebiteur    = result.taeg;
+      result._tauxEstimeDuTaeg = true;
+    }
+
+    // ── Détection mode Alma (paiement en X fois) ────────────────────────
+    // Patterns textuels explicites : Alma/BNPL/facilité de paiement
+    const almaSignals = [
+      /\b\d+\s*[x×]\b/i,                                           // "12x", "3×"
+      /paiement\s+en\s+\d+\s*fois/i,                               // "paiement en 3 fois"
+      /\b(?:remboursable\s+)?en\s+\d+\s*fois(?:\s+sans\s+(?:frais|int[eé]))?/i, // "remboursable en 11 fois"
+      /facilit[eé]\s+de\s+paiement/i,                              // "facilité de paiement"
+      /pay(?:er|ment)?\s+(?:in\s+)?\d+\s*(?:times?|installments?)/i, // EN
+      /\d+\s*mensualit[eé]s?\s+de\s+[\d]/i,                       // "11 mensualités de 214"
+      /mensualit[eé]s?\s+de\s+[\d]/i,                             // "mensualités de 214,80 €"
+    ];
+    if (almaSignals.some(rx => rx.test(t))) result._isAlmaMode = true;
+
+    // Fallback durée courte : ≤ 24 mois → très probablement un paiement fractionné
+    if (!result._isAlmaMode && result.dureeMois !== null && result.dureeMois <= 24) {
+      result._isAlmaMode = true;
+    }
+
+    // ── Mensualité théorique (formule actuarielle française) ─────────────
+    // Calculée ici une fois pour tout, et stockée dans _simMensualite.
+    // Utilisée par appliquerALaSimulation pour remplir le champ Alma
+    // sans dépendre des champs de saisie (évite les effets de bord).
+    if (result.montantCredit !== null && result.dureeMois !== null &&
+        result.tauxDebiteur  !== null &&
+        result.montantCredit > 0     && result.dureeMois > 0) {
+      const tauxM    = result.tauxDebiteur / 100 / 12;
+      const nSim     = result.dureeMois;
+      const capSim   = result.montantCredit;
+      const mensBase = tauxM === 0
+        ? capSim / nSim
+        : capSim * (tauxM * Math.pow(1 + tauxM, nSim)) / (Math.pow(1 + tauxM, nSim) - 1);
+      const prime    = (result.tauxAssurance ?? 0) > 0
+        ? capSim * (result.tauxAssurance / 100) / 12 : 0;
+      result._simMensualite = Math.round((mensBase + prime) * 100) / 100;
+    }
+
+    return result;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * analyserTexteOffre()
+   * Lit la textarea, parse l'offre, affiche les champs détectés,
+   * évalue la conformité avec notre simulateur et propose d'appliquer.
+   */
+  function analyserTexteOffre() {
+    const texte     = document.getElementById('import-textarea').value.trim();
+    const resultsEl = document.getElementById('import-results');
+
+    // ── Texte vide ────────────────────────────────────────────────────────
+    if (!texte) {
+      resultsEl.innerHTML = `
+        <div class="flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm">
+          <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          Veuillez coller du texte avant d'analyser.
+        </div>`;
+      resultsEl.classList.remove('hidden');
+      return;
+    }
+
+    // ── Parsing ───────────────────────────────────────────────────────────
+    const parsed = parseCreditOffer(texte);
+    _lastParsedOffer = parsed;
+
+    const fieldsDetected = Object.entries(parsed)
+      .filter(([k, v]) => !k.startsWith('_') && v !== null).length;
+
+    if (fieldsDetected === 0) {
+      resultsEl.innerHTML = `
+        <div class="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm">
+          <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          Aucune information reconnue. Essayez un extrait plus complet (mentions légales, résumé d'offre).
+        </div>`;
+      resultsEl.classList.remove('hidden');
+      return;
+    }
+
+    // ── Simulation avec les valeurs parsées (pour comparaison) ────────────
+    const simTauxMensuel = (parsed.tauxDebiteur || 0) / 100 / 12;
+    const simN           = parsed.dureeMois     || 0;
+    const simCapital     = parsed.montantCredit || 0;
+    const simAssurance   = parsed.tauxAssurance || 0;
+    const simFrais       = parsed.fraisDossier  || 0;
+
+    let simMensualite = null;
+    let simTaeg       = null;
+
+    if (simCapital > 0 && simN > 0) {
+      const mensBase = calculateMonthlyPayment(simCapital, simTauxMensuel, simN);
+      const prime    = simAssurance > 0 ? simCapital * (simAssurance / 100) / 12 : 0;
+      simMensualite  = mensBase + prime;
+      const rows     = generateAmortizationTable(simCapital, mensBase, simTauxMensuel, simN, simAssurance, null);
+      simTaeg        = estimateTAEG(simCapital, simFrais, rows) * 100;
+    }
+
+    // ── Évaluation de conformité ──────────────────────────────────────────
+    // Niveaux : 'parfait' | 'attention' | 'incoherence'
+    const diffs = [];
+    let level   = 'parfait';
+
+    if (parsed.mensualite && simMensualite) {
+      const diff = Math.abs(parsed.mensualite - simMensualite) / parsed.mensualite * 100;
+      if (diff > 10) {
+        level = 'incoherence';
+        diffs.push(`Mensualité officielle ${fmt(parsed.mensualite)} € vs simulée ${fmt(simMensualite)} € (écart ${diff.toFixed(1)} %)`);
+      } else if (diff > 1.5) {
+        if (level !== 'incoherence') level = 'attention';
+        diffs.push(`Mensualité : écart de ${diff.toFixed(1)} % — officielle ${fmt(parsed.mensualite)} €, simulée ${fmt(simMensualite)} €`);
+      }
+    }
+
+    if (parsed.taeg && simTaeg !== null) {
+      const diffTaeg = Math.abs(parsed.taeg - simTaeg);
+      if (diffTaeg > 5) {
+        level = 'incoherence';
+        diffs.push(`TAEG officiel ${parsed.taeg.toFixed(2)} % vs simulé ${simTaeg.toFixed(2)} % — vérifiez les paramètres`);
+      } else if (diffTaeg > 0.5) {
+        if (level !== 'incoherence') level = 'attention';
+        const hint = (!parsed.tauxAssurance && parsed.taeg > (parsed.tauxDebiteur || 0) + 0.5)
+          ? ' (pensez à activer l\'assurance ou les frais)'
+          : '';
+        diffs.push(`TAEG officiel ${parsed.taeg.toFixed(2)} % vs simulé ${simTaeg.toFixed(2)} %${hint}`);
+      }
+    }
+
+    if (parsed.coutTotalCredit && simMensualite && simCapital > 0) {
+      const simCout  = simMensualite * simN + simFrais - simCapital;
+      const diffCout = Math.abs(parsed.coutTotalCredit - simCout) / parsed.coutTotalCredit * 100;
+      if (diffCout > 10 && level === 'parfait') {
+        level = 'attention';
+        diffs.push(`Coût total officiel ${fmt(parsed.coutTotalCredit)} € vs simulé ${fmt(simCout)} €`);
+      }
+    }
+
+    // ── Bannière de conformité ────────────────────────────────────────────
+    const bannerCfg = {
+      parfait:     { bg: 'bg-emerald-50', border: 'border-emerald-300', text: 'text-emerald-800', icon: '✅', label: 'Votre offre correspond à la simulation.' },
+      attention:   { bg: 'bg-amber-50',   border: 'border-amber-300',   text: 'text-amber-800',   icon: '⚠️', label: 'Quelques différences détectées.' },
+      incoherence: { bg: 'bg-red-50',     border: 'border-red-300',     text: 'text-red-800',     icon: '❌', label: 'Incohérence entre l\'offre et la simulation.' },
+    };
+    const cfg = bannerCfg[level];
+
+    // Helper – ligne du tableau de résultats
+    function fieldRow(label, value, note) {
+      if (value === null) return '';
+      return `
+        <div class="flex items-center justify-between py-1.5 border-b border-slate-100 last:border-0">
+          <span class="text-sm text-slate-500">${label}</span>
+          <span class="text-sm font-semibold text-slate-800">${value}${note ? `<span class="ml-1.5 text-xs font-normal text-amber-600">${note}</span>` : ''}</span>
+        </div>`;
+    }
+
+    const noteTaux = parsed._tauxEstimeDuTaeg ? '⚠ TAEG utilisé comme approximation' : '';
+
+    resultsEl.innerHTML = `
+      <div class="${cfg.bg} border ${cfg.border} ${cfg.text} rounded-xl px-4 py-3 text-sm">
+        <p class="font-semibold mb-1">${cfg.icon} ${cfg.label}</p>
+        ${diffs.length ? `<ul class="list-disc list-inside space-y-0.5 text-xs opacity-90">${diffs.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+      </div>
+      ${parsed._isAlmaMode && simMensualite !== null ? `<p class="text-xs text-slate-400 mt-2 italic px-1">Note&nbsp;: Alma utilise parfois un arrondi ou une convention légèrement différente. La mensualité simulée (${fmt(simMensualite)}&nbsp;€) est la valeur théorique standard française.</p>` : ''}
+
+      <div class="bg-slate-50 rounded-xl border border-slate-200 px-4 py-2 mt-3">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Données détectées (${fieldsDetected} champ${fieldsDetected > 1 ? 's' : ''})</p>
+        ${fieldRow('Montant du crédit',     parsed.montantCredit   !== null ? fmt(parsed.montantCredit)  + ' €'      : null, '')}
+        ${fieldRow('Durée',                 parsed.dureeMois       !== null ? parsed.dureeMois + ' mois' : null, '')}
+        ${fieldRow('Taux débiteur nominal', parsed.tauxDebiteur    !== null ? parsed.tauxDebiteur.toFixed(2) + ' %'  : null, noteTaux)}
+        ${fieldRow('TAEG',                  parsed.taeg            !== null ? parsed.taeg.toFixed(2)     + ' %'      : null, '')}
+        ${fieldRow('Mensualité (offre)',     parsed.mensualite      !== null ? fmt(parsed.mensualite)     + ' €'      : null, '')}
+        ${fieldRow('Coût total du crédit',  parsed.coutTotalCredit !== null ? fmt(parsed.coutTotalCredit)+ ' €'      : null, '')}
+        ${fieldRow('Assurance emprunteur',  parsed.tauxAssurance   !== null ? parsed.tauxAssurance.toFixed(2) + ' % / an' : null, '')}
+        ${fieldRow('Frais de dossier',      parsed.fraisDossier    !== null ? fmt(parsed.fraisDossier)   + ' €'      : null, '')}
+        ${fieldRow('Acompte',               parsed.acompte         !== null ? fmt(parsed.acompte)        + ' €'      : null, '')}
+        ${simMensualite !== null ? fieldRow('Mensualité simulée',   fmt(simMensualite) + ' €', '') : ''}
+        ${simTaeg       !== null ? fieldRow('TAEG simulé',          simTaeg.toFixed(2) + ' %', '')  : ''}
+      </div>
+
+      ${(parsed.montantCredit || parsed.dureeMois || parsed.tauxDebiteur) ? `
+      <button onclick="appliquerALaSimulation()"
+        class="w-full mt-3 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        Appliquer à la simulation
+      </button>` : ''}
+    `;
+    resultsEl.classList.remove('hidden');
+  }
+
+  /**
+   * appliquerALaSimulation()
+   * Remplit les champs du simulateur avec les valeurs de _lastParsedOffer,
+   * déclenche le recalcul, ferme la modale et affiche un toast de confirmation.
+   */
+  function appliquerALaSimulation() {
+    const parsed = _lastParsedOffer;
+    if (!parsed) return;
+
+    // ── Champs communs à tous les modes ───────────────────────────────────
+    if (parsed.tauxDebiteur !== null && parsed.tauxDebiteur > 0) {
+      // Les crédits conso (Alma, etc.) peuvent dépasser 20 % → on ne bride pas à 20
+      // Le slider est visuellement limité à 20 % mais l'input reflète la vraie valeur
+      const v = Math.min(30, Math.max(0, parsed.tauxDebiteur));
+      document.getElementById('inp-taux').value = v.toFixed(2);
+      document.getElementById('sl-taux').value  = Math.min(20, v).toFixed(2);
+    }
+    if (parsed.tauxAssurance !== null && parsed.tauxAssurance > 0) {
+      document.getElementById('chk-assurance').checked = true;
+      document.getElementById('group-taux-assurance').classList.remove('hidden');
+      document.getElementById('inp-taux-assurance').value = parsed.tauxAssurance.toFixed(2);
+    }
+    if (parsed.fraisDossier !== null && parsed.fraisDossier > 0) {
+      document.getElementById('inp-frais').value = parsed.fraisDossier.toFixed(2);
+    }
+
+    // ── Sélection du mode et remplissage spécifique ───────────────────────
+    if (parsed._isAlmaMode && parsed.dureeMois) {
+      // ── Mode Alma : paiement en X fois ──────────────────────────────────
+      // Nombre de fois : valeur exacte parsée (11 reste 11, pas arrondi à 12)
+      const n = Math.min(60, Math.max(2, parsed.dureeMois));
+      // Mensualité : on préfère la valeur théorique actuarielle (_simMensualite)
+      // car c'est elle qui, appliquée en inverse, redonne exactement le capital
+      const mensRaw = parsed._simMensualite ?? parsed.mensualite ?? 0;
+      const mens    = Math.min(2000, Math.max(10, Math.round(mensRaw * 100) / 100));
+      document.getElementById('inp-alma-n').value    = n;
+      document.getElementById('sl-alma-n').value     = n;
+      document.getElementById('inp-alma-mens').value = mens.toFixed(2);
+      document.getElementById('sl-alma-mens').value  = Math.round(Math.min(2000, Math.max(10, mens)));
+      setAlmaPreset(n, false);
+      setMode('alma');
+      recalculate();
+      closeImportModal();
+      showToast('Offre Alma appliquée — simulation mise à jour !', 'success');
+    } else {
+      // ── Mode classique : mensualite ──────────────────────────────────────
+      setMode('mensualite');
+      if (parsed.montantCredit !== null && parsed.montantCredit > 0) {
+        // Valeur exacte au centime : on ne fait plus d'arrondi à la centaine
+        const v = Math.min(75000, Math.max(200, parsed.montantCredit));
+        document.getElementById('inp-montant').value = v.toFixed(2);
+        document.getElementById('sl-montant').value  = Math.round(Math.min(75000, Math.max(200, v)));
+      }
+      if (parsed.dureeMois !== null && parsed.dureeMois > 0) {
+        // L'input peut afficher des durées < 12 (hors range slider) ; le slider se clampe
+        document.getElementById('inp-duree').value = parsed.dureeMois;
+        document.getElementById('sl-duree').value  = Math.min(120, Math.max(12, parsed.dureeMois));
+      }
+      recalculate();
+      closeImportModal();
+      showToast('Offre appliquée — simulation mise à jour !', 'success');
+    }
+  }
+
+  // ── Tooltips pédagogiques ──────────────────────────────────────────────────
+  /** @type {HTMLElement|null} */
+  let _activeTooltipBtn = null;
+
+  /**
+   * showInfoTooltip(btn, text)
+   * Affiche la bulle d'aide positionnée au-dessus (ou en dessous si manque de place) du bouton btn.
+   * Disparaît au clic en dehors via le listener global sur document.
+   */
+  function showInfoTooltip(btn, text) {
+    const tip    = document.getElementById('info-tooltip');
+    const textEl = document.getElementById('info-tooltip-text');
+    const arrow  = document.getElementById('info-tooltip-arrow');
+
+    // Injecte le texte et rend visible pour mesurer les dimensions réelles
+    tip.style.visibility = 'hidden';
+    tip.classList.remove('hidden');
+    textEl.textContent = text;
+
+    const rect  = btn.getBoundingClientRect();
+    const tipW  = tip.offsetWidth  || 260;
+    const tipH  = tip.offsetHeight || 60;
+    const gap   = 10; // px entre le bouton et la bulle
+    const marg  = 8;  // marge minimale par rapport aux bords de l'écran
+
+    // Horizontal : centrer sur le bouton, en restant dans la fenêtre
+    const btnCX   = rect.left + rect.width / 2;
+    const tipLeft = Math.max(marg, Math.min(window.innerWidth - tipW - marg, btnCX - tipW / 2));
+
+    // Vertical : préférer au-dessus, sinon en dessous
+    let tipTop   = rect.top - tipH - gap;
+    let arrowPos = 'bottom'; // la flèche est en bas de la bulle (pointe vers le bas)
+    if (tipTop < marg) {
+      tipTop   = rect.bottom + gap;
+      arrowPos = 'top';      // la flèche est en haut de la bulle (pointe vers le haut)
+    }
+
+    tip.style.left       = tipLeft + 'px';
+    tip.style.top        = tipTop  + 'px';
+    tip.style.visibility = 'visible';
+
+    // Calcul de la position horizontale de la flèche (pointe vers le centre du bouton)
+    const arrowSz   = 12;
+    const arrowLeft = Math.max(6, Math.min(tipW - arrowSz - 6, Math.round(btnCX - tipLeft - arrowSz / 2)));
+    const bdr       = '1px solid #bfdbfe'; // blue-200
+
+    if (arrowPos === 'bottom') {
+      // Flèche en bas : vertex bas = coin BR de la pré-rotation → border-right + border-bottom
+      arrow.style.cssText =
+        `position:absolute;width:${arrowSz}px;height:${arrowSz}px;background:white;` +
+        `border-right:${bdr};border-bottom:${bdr};border-top:none;border-left:none;` +
+        `transform:rotate(45deg);z-index:1;bottom:-6px;top:auto;left:${arrowLeft}px;`;
+    } else {
+      // Flèche en haut : vertex haut = coin TL de la pré-rotation → border-left + border-top
+      arrow.style.cssText =
+        `position:absolute;width:${arrowSz}px;height:${arrowSz}px;background:white;` +
+        `border-left:${bdr};border-top:${bdr};border-right:none;border-bottom:none;` +
+        `transform:rotate(45deg);z-index:1;top:-6px;bottom:auto;left:${arrowLeft}px;`;
+    }
+
+    _activeTooltipBtn = btn;
+  }
+
+  /** Masque la bulle d'aide courante. */
+  function hideInfoTooltip() {
+    document.getElementById('info-tooltip')?.classList.add('hidden');
+    _activeTooltipBtn = null;
+  }
+
+  // Ferme la bulle si on clique en dehors du bouton actif
+  document.addEventListener('click', e => {
+    if (_activeTooltipBtn && !_activeTooltipBtn.contains(e.target)) hideInfoTooltip();
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /**
+   * showToast(message, type)
+   * Affiche une notification temporaire (3,5 s) en bas à droite.
+   * @param {string} message
+   * @param {'success'|'error'|'info'} type
+   */
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const palette   = {
+      success: 'bg-emerald-600 text-white',
+      error:   'bg-red-600 text-white',
+      info:    'bg-blue-600 text-white',
+    };
+    const iconPath = {
+      success: 'M5 13l4 4L19 7',
+      error:   'M6 18L18 6M6 6l12 12',
+      info:    'M13 16h-1v-4h-1m1-4h.01',
+    };
+    const toast = document.createElement('div');
+    toast.className = [
+      'pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium',
+      palette[type] || palette.success,
+      'translate-y-4 opacity-0 transition-all duration-300',
+    ].join(' ');
+    toast.innerHTML = `
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath[type] || iconPath.success}"/>
+      </svg>
+      <span>${message}</span>`;
+    container.appendChild(toast);
+    // Entrée animée
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0');
+    }));
+    // Auto-disparition
+    setTimeout(() => {
+      toast.classList.add('translate-y-4', 'opacity-0');
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+  </script>
+
+  <!-- ══════════════════════════════════════════ MODALE IMPORT OFFRE ══ -->
+  <div id="import-modal-overlay"
+    class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+
+      <!-- En-tête modale -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div>
+          <h2 id="import-modal-title" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            Importer une offre de crédit
+          </h2>
+          <p class="text-sm text-slate-500 mt-0.5">
+            Collez ci-dessous le texte des mentions légales ou des petits caractères de votre
+            simulateur bancaire (Alma, Cetelem, Sofinco, Younited, etc.).
+          </p>
+        </div>
+        <button onclick="closeImportModal()" aria-label="Fermer"
+          class="ml-4 flex-shrink-0 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-1.5 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Corps modale -->
+      <div class="px-6 py-5 overflow-y-auto flex-1 space-y-4">
+
+        <div>
+          <label for="import-textarea" class="block text-sm font-semibold text-slate-700 mb-1.5">
+            Texte de l'offre
+          </label>
+          <textarea id="import-textarea" rows="12"
+            placeholder="Exemple :
+Offre de crédit personnel – Montant emprunté : 8 000 € – Durée : 36 mois – Taux débiteur fixe : 5,90 % – TAEG fixe : 6,08 % – Mensualité : 243,12 € – Assurance facultative : 0,34 % – Frais de dossier : 80 €..."
+            class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 resize-none
+                   focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-slate-400
+                   leading-relaxed font-mono"></textarea>
+        </div>
+
+        <!-- Zone résultats (cachée par défaut) -->
+        <div id="import-results" class="hidden"></div>
+
+      </div>
+
+      <!-- Pied modale -->
+      <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3">
+        <p class="text-xs text-slate-400">Aucune donnée n'est transmise à un serveur — tout est traité localement.</p>
+        <div class="flex gap-2">
+          <button onclick="closeImportModal()"
+            class="text-sm px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 transition">
+            Annuler
+          </button>
+          <button onclick="analyserTexteOffre()"
+            class="text-sm px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2l.002.001"/>
+            </svg>
+            Analyser le texte
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast container (notifications temporaires) -->
+  <div id="toast-container"
+    class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+  </div>
+
+  <!-- ─── Tooltip pédagogique (singleton positionné par JS) ──────────────── -->
+  <div id="info-tooltip" role="tooltip"
+    class="hidden fixed z-[9999] pointer-events-none"
+    style="filter:drop-shadow(0 4px 14px rgba(37,99,235,0.13));">
+    <!-- Flèche (z-index:1 derrière la bulle) — styles définis par JS -->
+    <div id="info-tooltip-arrow" style="position:absolute;z-index:1;"></div>
+    <!-- Bulle (z-index:2, couvre la moitié interne de la flèche) -->
+    <div class="relative bg-white border border-blue-200 rounded-xl px-3 py-2.5 max-w-[260px]" style="z-index:2;">
+      <span id="info-tooltip-text" class="text-xs text-slate-700 leading-relaxed"></span>
+    </div>
+  </div>
+
+</body>
+</html>

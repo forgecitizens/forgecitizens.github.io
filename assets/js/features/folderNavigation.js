@@ -46,6 +46,11 @@ const fileSystem = {
                         type: 'file',
                         icon: 'img/igi.png',
                         action: 'openIGI'
+                    },
+                    'Consoscope': {
+                        type: 'file',
+                        icon: 'img/consoscope.png',
+                        action: 'openConsoscope'
                     }
                 }
             },
@@ -472,6 +477,14 @@ function openQualifR() {
 function openSophiscope() {
     console.log('🔬 Opening Sophiscope...');
     window.open('/sophiscope/', '_blank');
+}
+
+/**
+ * Open Consoscope in a new tab
+ */
+function openConsoscope() {
+    console.log('💳 Opening Consoscope...');
+    window.open('consoscope.html', '_blank');
 }
 
 /**
