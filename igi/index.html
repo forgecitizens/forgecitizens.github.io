@@ -945,7 +945,8 @@
             }
 
             function getCurrentZoomWindow() {
-                const windowEnd = toStartOfDay(new Date());
+                const latestDataPoint = allRawData[allRawData.length - 1];
+                const windowEnd = toStartOfDay(latestDataPoint ? latestDataPoint.date : new Date());
                 const zoomLevel = ZOOM_LEVELS[currentZoomIndex];
                 let windowStart;
 
