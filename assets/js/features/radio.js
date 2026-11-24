@@ -81,11 +81,53 @@ function updateRadioDisplay() {
         }
     }
     
+    renderRadioPlaylist();
+
     // Update play/pause button icon
     const playBtn = document.getElementById('radio-play-btn');
     if (playBtn) {
         playBtn.textContent = isRadioPlaying ? '⏸' : '▶';
     }
+}
+
+/**
+ * Render the playlist and highlight the current track
+ */
+function renderRadioPlaylist() {
+    const list = document.getElementById('radio-playlist');
+    if (!list) return;
+
+    if (list.childElementCount !== radioTracks.length) {
+        list.textContent = '';
+        radioTracks.forEach((track, index) => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'radio-playlist-item';
+            item.setAttribute('role', 'option');
+            item.textContent = `${index + 1}. ${track.split('/').pop().replace(/\.mp3$/i, '')}`;
+            item.addEventListener('click', () => radioSelectTrack(index));
+            list.appendChild(item);
+        });
+    }
+
+    Array.from(list.children).forEach((item, index) => {
+        const isCurrent = index === currentTrackIndex;
+        item.classList.toggle('active', isCurrent);
+        item.setAttribute('aria-selected', String(isCurrent));
+        if (isCurrent) item.scrollIntoView({ block: 'nearest' });
+    });
+}
+
+/**
+ * Play a track chosen from the playlist
+ */
+function radioSelectTrack(index) {
+    if (typeof playClickSound === 'function') {
+        playClickSound();
+    }
+
+    loadTrack(index);
+    radioPlay();
 }
 
 /**
@@ -206,6 +248,7 @@ function openRadio() {
                 <button class="radio-btn radio-btn-play" id="radio-play-btn" onclick="radioTogglePlay()" title="Lecture/Pause">▶</button>
                 <button class="radio-btn" onclick="radioNextTrack()" title="Piste suivante">⏭</button>
             </div>
+            <div class="radio-playlist" id="radio-playlist" role="listbox" aria-label="Playlist"></div>
         </div>
     `;
     

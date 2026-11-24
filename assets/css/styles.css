@@ -2355,15 +2355,20 @@
         .radio-window {
             width: auto !important;
             height: auto !important;
-            min-width: 180px;
-            max-width: 200px;
+            min-width: 280px;
+            max-width: 320px;
+            min-height: 0;
+            max-height: none;
+            resize: none;
             background: #c0c0c0;
         }
         
         /* Mobile: Radio reste compacte */
         @media (max-width: 480px) {
             .radio-window {
-                width: 200px !important;
+                width: 280px !important;
+                min-width: 0;
+                max-width: 95vw;
                 height: auto !important;
                 left: 50% !important;
                 transform: translateX(-50%);
@@ -2383,7 +2388,8 @@
         
         .radio-content {
             padding: 8px;
-            background: #2a2a2a;
+            background: #000;
+            color: #fff;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -2435,6 +2441,45 @@
         .radio-btn-play {
             width: 44px;
             font-size: 16px;
+        }
+
+        /* Playlist : 10 lignes visibles, scroll interne au-delà */
+        .radio-playlist {
+            --radio-row-height: 22px;
+            max-height: calc(var(--radio-row-height) * 10);
+            overflow-y: auto;
+            background: #000;
+            border: 2px inset #c0c0c0;
+            scrollbar-color: #808080 #000;
+            scrollbar-width: thin;
+        }
+
+        .radio-playlist-item {
+            display: block;
+            width: 100%;
+            height: var(--radio-row-height);
+            box-sizing: border-box;
+            padding: 0 6px;
+            border: 0;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: var(--radio-row-height);
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .radio-playlist-item:hover {
+            background: #222;
+        }
+
+        .radio-playlist-item.active {
+            background: #808080;
+            color: #fff;
         }
 
         /* Responsive adjustments */
