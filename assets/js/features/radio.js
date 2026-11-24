@@ -16,9 +16,13 @@ let isRadioPlaying = false;
  * Since we can't dynamically scan folders in browser, we'll maintain a list
  */
 const radioTrackList = [
-    // Add your radio tracks here
-    // Example: 'radio/song1.mp3', 'radio/song2.mp3'
-    'radio/Disco Elysium - The Final Cut OST - Advesperascit (British Sea Power) (1).mp3',
+    'radio/01 - Neostalgia.mp3',
+    'radio/02 - Folders.mp3',
+    'radio/03 - Unité d\'habitation (instrumental).mp3',
+    'radio/04 - Broadcasting House.mp3',
+    'radio/05 - Apollo Pavilion.mp3',
+    'radio/06 - Auditorium (instrumental).mp3',
+    'radio/07 - Erkannt.mp3',
 ];
 
 /**

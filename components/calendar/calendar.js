@@ -98,6 +98,12 @@ class RetroCalendar {
                 text: 'Consoscope est un simulateur de crédit à la consommation gratuit et évidemment sans inscription. L\'objectif est de permettre à tout un chacun de comprendre les mécanismes du crédit à la consommation, de visualiser le montant réel des mensualités qui seront débitées via des graphiques mais aussi de calculer la mensualité réelle.\n\nVous pouvez, par exemple, copier/coller le texte de proposition de crédit qu\'une banque vous fait et Consoscope remplira automatiquement les champs adéquats. Ne vous faites plus avoir par les frais cachés écrits en tout petits caractères ou par les phrases sans queue ni tête !',
                 link: 'https://www.forgecitizens.com/consoscope.html',
                 linkText: 'Accéder à Consoscope'
+            },
+            '2026-11-24': {
+                title: 'Sortie de Noir York City - Album post-punk/éléctronique',
+                text: 'Sortie de l\'album Noir York City, un mélange de post-punk et de musique éléctronique (Berlin School). Disponible ici https://www.youtube.com/@staticmassofficial ou via la radio du site',
+                link: 'https://www.youtube.com/@staticmassofficial',
+                linkText: 'Voir la chaîne YouTube'
             }
         };
         
